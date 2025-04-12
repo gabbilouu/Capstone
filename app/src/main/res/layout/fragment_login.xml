@@ -2,58 +2,67 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/LoginPageFrame"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/blue">
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/fragment_login_container" />
+    android:background="@color/blue"
+    tools:context=".LoginFragment" >
+
     <TextView
-        android:id="@+id/appName"
+        android:id="@+id/AppName"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="100dp"
         android:text="@string/app_name"
         android:textColor="@color/white"
-        android:textSize="24sp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        android:textSize="34sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.10" />
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/loginStreak"
+        android:id="@+id/WelcomeText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Login Streak Day #"
+        android:layout_marginTop="20dp"
+        android:text="@string/welcome"
         android:textColor="@color/white"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/appName" />
+        app:layout_constraintTop_toBottomOf="@+id/AppName" />
 
     <TextView
-        android:id="@+id/textView3"
+        android:id="@+id/LoginStreak"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="32dp"
-        android:text="Welcome back, ___!"
+        android:layout_marginTop="20dp"
+        android:text="@string/login_streak"
         android:textColor="@color/white"
-        android:textSize="24sp"
+        android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/loginStreak" />
+        app:layout_constraintTop_toBottomOf="@+id/WelcomeText" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:contentDescription="@string/logo_desc"
+        android:src="@drawable/logo"
+        app:layout_constraintBottom_toTopOf="@+id/ButtonToHome"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/LoginStreak" />
 
     <Button
-        android:id="@+id/button"
+        android:id="@+id/ButtonToHome"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="250dp"
+        android:layout_marginBottom="50dp"
         android:backgroundTint="@color/white"
-        android:onClick="goToHome"
-        android:text="Start off your day!"
-        android:textColor="@color/peach"
+        android:text="@string/start_button"
+        android:textColor="#D32F2F"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
