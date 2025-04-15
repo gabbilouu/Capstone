@@ -2,18 +2,26 @@ package com.example.elevate;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link SettingsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class SettingsFragment extends Fragment {
+public class SettingsFragment extends Fragment implements View.OnClickListener{
+
+    NavController navC = null;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -60,5 +68,53 @@ public class SettingsFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_settings, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        navC = Navigation.findNavController(view);
+        ImageButton checkButton = view.findViewById(R.id.CheckButton);
+        ImageButton listButton = view.findViewById(R.id.ListButton);
+        ImageButton homeButton = view.findViewById(R.id.HomeButton);
+        Button logoutButton = view.findViewById(R.id.LogOutButton);
+        if (checkButton != null) {
+            checkButton.setOnClickListener(this);
+        } else {
+            Log.e("SettingsFragment", "CheckButton not found!");
+        }
+
+        if (listButton != null) {
+            listButton.setOnClickListener(this);
+        } else {
+            Log.e("SettingsFragment", "ListButton not found!");
+        }
+
+        if (homeButton != null) {
+            homeButton.setOnClickListener(this);
+        } else {
+            Log.e("SettingsFragment", "HomeButton not found!");
+        }
+
+        if (logoutButton != null) {
+            logoutButton.setOnClickListener(this);
+        } else {
+            Log.e("SettingsFragment", "LogOutButton not found!");
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (navC != null) {
+            if (v.getId() == R.id.CheckButton) {
+                navC.navigate(R.id.action_settingsFragment_to_taskListFragment);
+            } else if (v.getId() == R.id.ListButton) {
+                navC.navigate(R.id.action_settingsFragment_to_eventListFragment);
+            } else if (v.getId() == R.id.HomeButton) {
+                navC.navigate(R.id.action_settingsFragment_to_mainPageFragment);
+            } else if (v.getId() == R.id.LogOutButton) {
+                navC.navigate(R.id.action_settingsFragment_to_loginFragment);
+            }
+        }
     }
 }

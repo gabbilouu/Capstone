@@ -2,11 +2,16 @@ package com.example.elevate;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -14,6 +19,8 @@ import android.view.ViewGroup;
  * create an instance of this fragment.
  */
 public class MainPageFragment extends Fragment implements View.OnClickListener{
+
+    NavController navC = null;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -63,7 +70,41 @@ public class MainPageFragment extends Fragment implements View.OnClickListener{
     }
 
     @Override
-    public void onClick(View v) {
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        navC = Navigation.findNavController(view);
+        ImageButton checkButton = view.findViewById(R.id.CheckButton);
+        ImageButton listButton = view.findViewById(R.id.ListButton);
+        ImageButton profileButton = view.findViewById(R.id.ProfileButton);
+        if (checkButton != null) {
+            checkButton.setOnClickListener(this);
+        } else {
+            Log.e("MainPageFragment", "CheckButton not found!");
+        }
 
+        if (listButton != null) {
+            listButton.setOnClickListener(this);
+        } else {
+            Log.e("MainPageFragment", "ListButton not found!");
+        }
+
+        if (profileButton != null) {
+            profileButton.setOnClickListener(this);
+        } else {
+            Log.e("MainPageFragment", "ProfileButton not found!");
+        }
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (navC != null) {
+            if (v.getId() == R.id.CheckButton) {
+                navC.navigate(R.id.action_mainPageFragment_to_taskListFragment);
+            } else if (v.getId() == R.id.ListButton) {
+                navC.navigate(R.id.action_mainPageFragment_to_eventListFragment);
+            } else if (v.getId() == R.id.ProfileButton) {
+                navC.navigate(R.id.action_mainPageFragment_to_settingsFragment);
+            }
+        }
     }
 }

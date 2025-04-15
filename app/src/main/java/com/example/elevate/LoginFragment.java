@@ -7,6 +7,7 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -71,12 +72,17 @@ public class LoginFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        navC = Navigation.findNavController(view);
+        navC = Navigation.findNavController(requireActivity(), R.id.nav_host_fragment);
         view.findViewById(R.id.ButtonToHome).setOnClickListener(this);
     }
 
     @Override
     public void onClick(View v) {
-        navC.navigate(R.id.action_loginFragment_to_mainPageFragment);
+        if (navC != null) {
+            navC.navigate(R.id.action_loginFragment_to_mainPageFragment);
+        } else {
+            // Debugging log to check if navC is null
+            Log.e("LoginFragment", "Navigation Controller is NULL!");
+        }
     }
 }
