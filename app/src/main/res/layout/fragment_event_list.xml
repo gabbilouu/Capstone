@@ -1,137 +1,184 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/EventFrame"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/blue"
-    tools:context=".EventListFragment" >
+    android:orientation="vertical"
+    android:background="@android:color/white">
 
-    <Button
-        android:id="@+id/UpcomingEventButton2"
-        android:layout_width="300dp"
-        android:layout_height="80dp"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="@color/white"
-        android:text="@string/event_listing"
-        android:textAlignment="textStart"
-        android:textColor="@color/black"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/UpcomingEventButton1" />
-
-    <Button
-        android:id="@+id/UpcomingEventButton3"
-        android:layout_width="300dp"
-        android:layout_height="80dp"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="@color/white"
-        android:text="@string/event_listing"
-        android:textAlignment="textStart"
-        android:textColor="@color/black"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/UpcomingEventButton2" />
-
-    <Button
-        android:id="@+id/UpcomingEventButton4"
-        android:layout_width="300dp"
-        android:layout_height="80dp"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="@color/white"
-        android:text="@string/event_listing"
-        android:textAlignment="textStart"
-        android:textColor="@color/black"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/UpcomingEventButton3" />
-
-    <Button
-        android:id="@+id/UpcomingEventButton1"
-        android:layout_width="300dp"
-        android:layout_height="80dp"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="@color/white"
-        android:text="@string/event_listing"
-        android:textAlignment="textStart"
-        android:textColor="@color/black"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/EventPageLabel" />
-
-    <TextView
-        android:id="@+id/EventPageLabel"
-        android:layout_width="wrap_content"
+    <!-- Month Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="@string/event_page"
-        android:textColor="@color/white"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/AppName" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="16dp">
 
-    <TextView
-        android:id="@+id/AppName"
-        android:layout_width="wrap_content"
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="September 2025"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black" />
+
+        <Button
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:text="+"
+            android:background="@android:color/holo_green_light"
+            android:textColor="@android:color/white" />
+    </LinearLayout>
+
+    <!-- Category Filters -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="80dp"
-        android:text="@string/app_name"
-        android:textColor="@color/white"
-        android:textSize="34sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:padding="8dp"
+        android:scrollbars="none">
 
-    <ImageButton
-        android:id="@+id/HomeButton"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginBottom="60dp"
-        android:background="#00FFFFFF"
-        android:contentDescription="@string/hello_blank_fragment"
-        android:src="@drawable/home_icon"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:dividerPadding="8dp">
 
-    <ImageButton
-        android:id="@+id/CheckButton"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_marginBottom="60dp"
-        android:background="#00FFFFFF"
-        android:contentDescription="@string/checklist_button"
-        android:src="@drawable/check_icon"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/ListButton"
-        app:layout_constraintStart_toEndOf="@+id/HomeButton" />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="School"
+                android:backgroundTint="@android:color/holo_blue_light" />
 
-    <ImageButton
-        android:id="@+id/ListButton"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_marginBottom="60dp"
-        android:background="#00FFFFFF"
-        android:contentDescription="@string/event_button"
-        android:src="@drawable/list_icon"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/ProfileButton"
-        app:layout_constraintStart_toEndOf="@+id/CheckButton" />
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Personal"
+                android:backgroundTint="@android:color/holo_red_light" />
 
-    <ImageButton
-        android:id="@+id/ProfileButton"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="60dp"
-        android:background="#00FFFFFF"
-        android:contentDescription="@string/profile_button"
-        android:src="@drawable/profile_icon"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Work"
+                android:backgroundTint="@android:color/holo_orange_light" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Orgs."
+                android:backgroundTint="@android:color/holo_green_light" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Events"
+                android:backgroundTint="@android:color/holo_purple" />
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <!-- Calendar Placeholder -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        android:layout_margin="8dp"
+        android:background="@android:color/darker_gray">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Calendar Grid Here"
+            android:textColor="@android:color/white"/>
+    </FrameLayout>
+
+    <!-- Today's Schedule -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Today's Schedule"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Monday - September 08, 2025"
+            android:textSize="14sp"
+            android:textColor="@android:color/darker_gray"
+            android:layout_marginBottom="8dp"/>
+
+        <!-- Example Schedule Item -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="8dp"
+            android:background="@android:color/white">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="2:00 - 4:50PM  Business Programming Class"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="NOTE: Doing Java assignment in class today"
+                android:textSize="14sp"
+                android:textColor="@android:color/darker_gray" />
+        </LinearLayout>
+
+        <!-- Add more schedule items here -->
+
+    </LinearLayout>
+
+    <!-- Bottom Navigation Bar -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:weightSum="4"
+        android:padding="8dp"
+        android:background="@android:color/white">
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="🏠 Home"
+            android:background="@android:color/transparent"/>
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="✅ Tasks"
+            android:background="@android:color/transparent"/>
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="📅 Calendar"
+            android:textStyle="bold"
+            android:textColor="@android:color/holo_red_dark"
+            android:background="@android:color/transparent"/>
+
+        <Button
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="⚙️ Settings"
+            android:background="@android:color/transparent"/>
+    </LinearLayout>
+
+</LinearLayout>

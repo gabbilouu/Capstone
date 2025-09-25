@@ -1,95 +1,285 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/HomePageFrame"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/blue"
-    tools:context=".MainPageFragment" >
+    android:orientation="vertical"
+    android:background="@android:color/white">
 
-    <TextView
-        android:id="@+id/AppName"
-        android:layout_width="wrap_content"
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="80dp"
-        android:text="@string/app_name"
-        android:textColor="@color/white"
-        android:textSize="34sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="16dp">
 
-    <TextView
-        android:id="@+id/HomePageLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="@string/home_page"
-        android:textColor="@color/white"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/AppName" />
+        <TextView
+            android:id="@+id/tvName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Perry"
+            android:textSize="20sp"
+            android:textStyle="bold" />
 
-    <ImageButton
-        android:id="@+id/CheckButton"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_marginBottom="60dp"
-        android:background="#00FFFFFF"
-        android:contentDescription="@string/checklist_button"
-        android:src="@drawable/check_icon"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/ListButton"
-        app:layout_constraintStart_toEndOf="@+id/HomeButton" />
+        <ProgressBar
+            android:id="@+id/progressLevel"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="0dp"
+            android:layout_height="8dp"
+            android:layout_weight="1"
+            android:layout_marginStart="16dp"
+            android:progress="40"
+            android:max="100"
+            android:progressDrawable="@drawable/progress_bar_custom" />
 
-    <ImageButton
-        android:id="@+id/HomeButton"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginBottom="60dp"
-        android:background="#00FFFFFF"
-        android:contentDescription="@string/hello_blank_fragment"
-        android:src="@drawable/home_icon"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        <!-- Plant points -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginStart="16dp"
+            android:gravity="center_vertical">
 
-    <ImageButton
-        android:id="@+id/ListButton"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_marginBottom="60dp"
-        android:background="#00FFFFFF"
-        android:contentDescription="@string/event_button"
-        android:src="@drawable/list_icon"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/ProfileButton"
-        app:layout_constraintStart_toEndOf="@+id/CheckButton" />
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@drawable/ic_leaf" />
 
-    <ImageButton
-        android:id="@+id/ProfileButton"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="60dp"
-        android:background="#00FFFFFF"
-        android:contentDescription="@string/profile_button"
-        android:src="@drawable/profile_icon"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+            <TextView
+                android:id="@+id/tvLeaves"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="3" />
 
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="12dp"
+                android:src="@drawable/ic_flower" />
+
+            <TextView
+                android:id="@+id/tvFlowers"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                android:text="67" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Plant Image -->
     <ImageView
-        android:id="@+id/Plant"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:contentDescription="@string/sprout"
-        android:scaleX="5"
-        android:scaleY="5"
-        android:src="@drawable/plant"
-        app:layout_constraintBottom_toTopOf="@+id/CheckButton"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/HomePageLabel" />
-</androidx.constraintlayout.widget.ConstraintLayout>
+        android:id="@+id/imgPlant"
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:layout_gravity="center_horizontal"
+        android:src="@drawable/ic_plant"
+        android:contentDescription="Plant" />
+
+    <!-- Dashboard Grid -->
+    <GridLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:rowCount="2"
+        android:columnCount="2"
+        android:padding="16dp"
+        android:layout_gravity="center">
+
+        <!-- Tasks Card -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_row="0"
+            android:layout_column="0"
+            android:layout_margin="8dp"
+            android:layout_columnWeight="1"
+            android:orientation="vertical"
+            android:background="@drawable/card_bg"
+            android:padding="12dp">
+
+            <TextView
+                android:id="@+id/tvTasksTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tasks"
+                android:drawableStart="@drawable/ic_tasks"
+                android:drawablePadding="8dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvTasksCount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="3/15"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Events Card -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_row="0"
+            android:layout_column="1"
+            android:layout_margin="8dp"
+            android:layout_columnWeight="1"
+            android:orientation="vertical"
+            android:background="@drawable/card_bg"
+            android:padding="12dp">
+
+            <TextView
+                android:id="@+id/tvEventsTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Events"
+                android:drawableStart="@drawable/ic_calendar"
+                android:drawablePadding="8dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvEventName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Doctor's Appointment" />
+
+            <TextView
+                android:id="@+id/tvEventTime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="5:30 - 6:30PM"
+                android:textSize="12sp"
+                android:textColor="#777" />
+        </LinearLayout>
+
+        <!-- Mood Card -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_row="1"
+            android:layout_column="0"
+            android:layout_margin="8dp"
+            android:layout_columnWeight="1"
+            android:orientation="vertical"
+            android:background="@drawable/card_bg"
+            android:padding="12dp">
+
+            <TextView
+                android:id="@+id/tvMoodTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Mood"
+                android:drawableStart="@drawable/ic_mood"
+                android:drawablePadding="8dp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvMood"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Happy"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- Misc Card -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_row="1"
+            android:layout_column="1"
+            android:layout_margin="8dp"
+            android:layout_columnWeight="1"
+            android:orientation="vertical"
+            android:background="@drawable/card_bg"
+            android:padding="12dp">
+
+            <TextView
+                android:id="@+id/tvMisc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Misc."
+                android:textStyle="bold" />
+        </LinearLayout>
+    </GridLayout>
+
+    <!-- Bottom Navigation -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:background="@android:color/white">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_home" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Home" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_tasks" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tasks" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_calendar" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Calendar" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_settings" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Settings" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@android:color/white"
+    android:padding="24dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+
+        <!-- Title -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Help us understand"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginTop="32dp"
+            android:layout_marginBottom="8dp"/>
+
+        <!-- Subtitle -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="you."
+            android:textSize="20sp"
+            android:textStyle="italic"
+            android:layout_marginBottom="16dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="What brings you here?"
+            android:textSize="16sp"
+            android:layout_marginBottom="24dp"/>
+
+        <!-- Option Buttons -->
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="I'm looking for ways to manage my stress and anxiety"
+            android:background="@android:color/darker_gray"
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="12dp"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="I want to track my mood and emotions throughout a period of time"
+            android:background="@android:color/darker_gray"
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="12dp"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="I want to organize my lifestyles and habits"
+            android:background="@android:color/darker_gray"
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="12dp"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="I'm looking for a way to develop better habits"
+            android:background="@android:color/darker_gray"
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="12dp"/>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Other"
+            android:background="@android:color/darker_gray"
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="32dp"/>
+
+        <!-- Next Button -->
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Next"
+            android:background="@android:color/darker_gray"
+            android:textColor="@android:color/white"
+            android:padding="12dp"/>
+
+    </LinearLayout>
+</ScrollView>

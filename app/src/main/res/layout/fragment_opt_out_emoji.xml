@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="24dp"
+    android:background="@android:color/white">
+
+    <!-- Question -->
+    <TextView
+        android:id="@+id/assessmentQuestion"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="How are you feeling today?"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:gravity="center"
+        android:layout_marginBottom="24dp"/>
+
+    <!-- Emoji Options -->
+    <GridLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:rowCount="2"
+        android:columnCount="3"
+        android:alignmentMode="alignBounds"
+        android:useDefaultMargins="true">
+
+        <!-- Very Happy -->
+        <ImageButton
+            android:id="@+id/emojiVeryHappy"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:src="@drawable/emoji_very_happy"
+            android:background="@null"
+            android:contentDescription="Very Happy"/>
+
+        <!-- Happy -->
+        <ImageButton
+            android:id="@+id/emojiHappy"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:src="@drawable/emoji_happy"
+            android:background="@null"
+            android:contentDescription="Happy"/>
+
+        <!-- Neutral -->
+        <ImageButton
+            android:id="@+id/emojiNeutral"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:src="@drawable/emoji_neutral"
+            android:background="@null"
+            android:contentDescription="Neutral"/>
+
+        <!-- Sad -->
+        <ImageButton
+            android:id="@+id/emojiSad"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:src="@drawable/emoji_sad"
+            android:background="@null"
+            android:contentDescription="Sad"/>
+
+        <!-- Tired (Missing before) -->
+        <ImageButton
+            android:id="@+id/emojiTired"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:src="@drawable/emoji_tired"
+            android:background="@null"
+            android:contentDescription="Tired"/>
+
+    </GridLayout>
+
+    <!-- Next Button -->
+    <Button
+        android:id="@+id/nextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Next"
+        android:background="@android:color/darker_gray"
+        android:textColor="@android:color/white"
+        android:padding="12dp"
+        android:layout_marginTop="40dp"/>
+</LinearLayout>

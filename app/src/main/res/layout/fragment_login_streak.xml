@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="24dp"
+    android:background="@android:color/white">
+
+    <!-- Streak Number -->
+    <TextView
+        android:id="@+id/streakNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="3"
+        android:textSize="48sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:layout_marginBottom="8dp"
+        android:gravity="center"/>
+
+    <!-- Streak Label -->
+    <TextView
+        android:id="@+id/streakLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="DAY STREAK"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:gravity="center"
+        android:layout_marginBottom="24dp"/>
+
+    <!-- Week Progress Layout -->
+    <LinearLayout
+        android:id="@+id/weekLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginBottom="40dp">
+
+        <!-- Example: repeat programmatically -->
+        <TextView
+            android:id="@+id/day_sun"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:gravity="center"
+            android:text="S"
+            android:textSize="14sp"
+            android:background="@android:color/darker_gray"
+            android:textColor="@android:color/white"
+            android:layout_margin="4dp"/>
+
+        <TextView
+            android:id="@+id/day_mon"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:gravity="center"
+            android:text="M"
+            android:textSize="14sp"
+            android:background="@android:color/darker_gray"
+            android:textColor="@android:color/white"
+            android:layout_margin="4dp"/>
+
+        <!-- Add TU, W, TH, F, SA similarly -->
+    </LinearLayout>
+
+    <!-- Button -->
+    <Button
+        android:id="@+id/startButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Let’s get started!"
+        android:padding="12dp"/>
+</LinearLayout>

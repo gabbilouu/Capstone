@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="16dp">
+
+    <!-- Back Button -->
+    <ImageButton
+        android:id="@+id/back_button"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:src="@android:drawable/ic_menu_revert"
+        android:contentDescription="Back"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="16dp"/>
+
+    <!-- Sign Up Title -->
+    <TextView
+        android:id="@+id/sign_up_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sign Up"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/back_button"
+        android:layout_marginTop="32dp"/>
+
+    <!-- Email Label -->
+    <TextView
+        android:id="@+id/email_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Email"
+        android:textSize="16sp"
+        android:layout_below="@id/sign_up_title"
+        android:layout_marginTop="32dp"
+        android:layout_alignParentStart="true"/>
+
+    <!-- Email Input Field -->
+    <EditText
+        android:id="@+id/email_input"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:hint="Sign up using your school email"
+        android:inputType="textEmailAddress"
+        android:layout_below="@id/email_label"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/input_background"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:layout_marginEnd="16dp"/>
+
+    <!-- Password Label -->
+    <TextView
+        android:id="@+id/password_label"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Password"
+        android:textSize="16sp"
+        android:layout_below="@id/email_input"
+        android:layout_marginTop="16dp"
+        android:layout_alignParentStart="true"/>
+
+    <!-- Password Input Field -->
+    <EditText
+        android:id="@+id/password_input"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:hint="Password must be at least 8 characters long, includes 1 capital letter, 1 number, and 1 special character."
+        android:inputType="textPassword"
+        android:layout_below="@id/password_label"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/input_background"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:layout_marginEnd="16dp"/>
+
+    <!-- Sign Up Button -->
+    <Button
+        android:id="@+id/sign_up_button"
+        android:layout_width="match_parent"
+        android:layout_height="48dp"
+        android:text="Sign Up"
+        android:layout_below="@id/password_input"
+        android:layout_marginTop="32dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginStart="16dp"/>
+
+</RelativeLayout>

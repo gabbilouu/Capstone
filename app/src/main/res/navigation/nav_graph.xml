@@ -9,72 +9,125 @@
         android:id="@+id/loginFragment"
         android:name="com.example.elevate.LoginFragment"
         android:label="fragment_login"
-        tools:layout="@layout/fragment_login" >
-        <action
-            android:id="@+id/action_loginFragment_to_mainPageFragment"
-            app:destination="@id/mainPageFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_login" />
     <fragment
-        android:id="@+id/mainPageFragment"
-        android:name="com.example.elevate.MainPageFragment"
-        android:label="fragment_main_page"
-        tools:layout="@layout/fragment_home_page" >
-        <action
-            android:id="@+id/action_mainPageFragment_to_settingsFragment"
-            app:destination="@id/settingsFragment" />
-        <action
-            android:id="@+id/action_mainPageFragment_to_taskListFragment"
-            app:destination="@id/taskListFragment" />
-        <action
-            android:id="@+id/action_mainPageFragment_to_eventListFragment"
-            app:destination="@id/eventListFragment" />
-    </fragment>
+        android:id="@+id/homePageFragment"
+        android:name="com.example.elevate.HomePageFragment"
+        android:label="fragment_home_page"
+        tools:layout="@layout/fragment_home_page" />
     <fragment
         android:id="@+id/taskListFragment"
         android:name="com.example.elevate.TaskListFragment"
         android:label="fragment_task_list"
-        tools:layout="@layout/fragment_task_list" >
-        <action
-            android:id="@+id/action_taskListFragment_to_settingsFragment"
-            app:destination="@id/settingsFragment" />
-        <action
-            android:id="@+id/action_taskListFragment_to_mainPageFragment"
-            app:destination="@id/mainPageFragment" />
-        <action
-            android:id="@+id/action_taskListFragment_to_eventListFragment"
-            app:destination="@id/eventListFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_task_list" />
     <fragment
-        android:id="@+id/eventListFragment"
+        android:id="@+id/eventFragment"
         android:name="com.example.elevate.EventListFragment"
-        android:label="fragment_event_list"
-        tools:layout="@layout/fragment_event_list" >
-        <action
-            android:id="@+id/action_eventListFragment_to_settingsFragment"
-            app:destination="@id/settingsFragment" />
-        <action
-            android:id="@+id/action_eventListFragment_to_taskListFragment"
-            app:destination="@id/taskListFragment" />
-        <action
-            android:id="@+id/action_eventListFragment_to_mainPageFragment"
-            app:destination="@id/mainPageFragment" />
-    </fragment>
+        android:label="event"
+        tools:layout="@layout/fragment_event_list"/>
     <fragment
         android:id="@+id/settingsFragment"
         android:name="com.example.elevate.SettingsFragment"
         android:label="fragment_settings"
-        tools:layout="@layout/fragment_settings" >
-        <action
-            android:id="@+id/action_settingsFragment_to_loginFragment"
-            app:destination="@id/loginFragment" />
-        <action
-            android:id="@+id/action_settingsFragment_to_mainPageFragment"
-            app:destination="@id/mainPageFragment" />
-        <action
-            android:id="@+id/action_settingsFragment_to_taskListFragment"
-            app:destination="@id/taskListFragment" />
-        <action
-            android:id="@+id/action_settingsFragment_to_eventListFragment"
-            app:destination="@id/eventListFragment" />
-    </fragment>
+        tools:layout="@layout/fragment_settings" />
+    <fragment
+        android:id="@+id/loginpageFragment"
+        android:name="com.example.elevate.loginpage"
+        android:label="fragment_loginpage"
+        tools:layout="@layout/fragment_loginpage" />
+    <fragment
+        android:id="@+id/SignUpFragment"
+        android:name="com.example.elevate.SignUpFragment"
+        android:label="fragment_SignUp"
+        tools:layout="@layout/fragment_sign_up" />
+    <fragment
+        android:id="@+id/questionaireFragment"
+        android:name="com.example.elevate.QuestionaireFragment"
+        android:label="fragment_questionaire"
+        tools:layout="@layout/fragment_questionaire" />
+    <fragment
+        android:id="@+id/thanksFragment"
+        android:name="com.example.elevate.thanksFragment"
+        android:label="fragment_thanks"
+        tools:layout="@layout/fragment_thanks" />
+    <fragment
+        android:id="@+id/beginFragment"
+        android:name="com.example.elevate.beginFragment"
+        android:label="fragment_begin"
+        tools:layout="@layout/fragment_begin" />
+    <fragment
+        android:id="@+id/dailyWeeklyFragment"
+        android:name="com.example.elevate.DailyWeeklyFragment"
+        android:label="fragment_daily_weekly"
+        tools:layout="@layout/fragment_daily_weekly" />
+    <fragment
+        android:id="@+id/dailyFragment"
+        android:name="com.example.elevate.DailyFragment"
+        android:label="fragment_daily"
+        tools:layout="@layout/fragment_daily" />
+    <fragment
+        android:id="@+id/assessmentFragment"
+        android:name="com.example.elevate.AssessmentFragment"
+        android:label="fragment_assessment"
+        tools:layout="@layout/fragment_assessment" />
+    <fragment
+        android:id="@+id/optOutEmoji"
+        android:name="com.example.elevate.OptOutEmoji"
+        android:label="fragment_opt_out_emoji"
+        tools:layout="@layout/fragment_opt_out_emoji" />
+    <fragment
+        android:id="@+id/weeklyFragment"
+        android:name="com.example.elevate.WeeklyFragment"
+        android:label="fragment_weekly"
+        tools:layout="@layout/fragment_weekly" />
+    <fragment
+        android:id="@+id/welcomeFragment"
+        android:name="com.example.elevate.WelcomeFragment"
+        android:label="fragment_welcome"
+        tools:layout="@layout/fragment_welcome" />
+    <fragment
+        android:id="@+id/loginStreakFragment"
+        android:name="com.example.elevate.LoginStreakFragment"
+        android:label="fragment_login_streak"
+        tools:layout="@layout/fragment_login_streak" />
+    <fragment
+        android:id="@+id/aboutFragment"
+        android:name="com.example.elevate.AboutFragment"
+        android:label="fragment_about"
+        tools:layout="@layout/fragment_about" />
+    <fragment
+        android:id="@+id/privacyFragment"
+        android:name="com.example.elevate.PrivacyFragment"
+        android:label="fragment_privacy"
+        tools:layout="@layout/fragment_privacy" />
+    <fragment
+        android:id="@+id/termsOfUseFragment"
+        android:name="com.example.elevate.TermsOfUseFragment"
+        android:label="fragment_terms_of_use"
+        tools:layout="@layout/fragment_terms_of_use" />
+    <fragment
+        android:id="@+id/socialsFragment"
+        android:name="com.example.elevate.SocialsFragment"
+        android:label="fragment_socials"
+        tools:layout="@layout/fragment_socials" />
+    <fragment
+        android:id="@+id/newTaskFragment"
+        android:name="com.example.elevate.NewTaskFragment"
+        android:label="fragment_new_task"
+        tools:layout="@layout/fragment_new_task" />
+    <fragment
+        android:id="@+id/newEventFragment"
+        android:name="com.example.elevate.NewEventFragment"
+        android:label="fragment_new_event"
+        tools:layout="@layout/fragment_new_event" />
+    <fragment
+        android:id="@+id/editTaskFragment"
+        android:name="com.example.elevate.EditTaskFragment"
+        android:label="fragment_edit_task"
+        tools:layout="@layout/fragment_edit_task" />
+    <fragment
+        android:id="@+id/startingFragment"
+        android:name="com.example.elevate.StartingFragment"
+        android:label="fragment_starting"
+        tools:layout="@layout/fragment_starting" />
 </navigation>

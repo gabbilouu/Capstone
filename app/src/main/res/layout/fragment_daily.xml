@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="24dp"
+    android:background="@android:color/white">
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/dailyTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Daily it is!"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:gravity="center"
+        android:layout_marginBottom="12dp"/>
+
+    <!-- Subtitle -->
+    <TextView
+        android:id="@+id/dailySubtitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="We’ll send you a weekly report based off of your response. Let’s jump right in!"
+        android:textSize="16sp"
+        android:textColor="@android:color/darker_gray"
+        android:gravity="center"
+        android:layout_marginBottom="8dp"/>
+
+    <!-- Extra info text -->
+    <TextView
+        android:id="@+id/dailyInfo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="You can also check your report in your user profile!"
+        android:textSize="14sp"
+        android:textColor="@android:color/darker_gray"
+        android:alpha="0.7"
+        android:gravity="center"
+        android:layout_marginBottom="40dp"/>
+
+    <!-- Next Button -->
+    <Button
+        android:id="@+id/nextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Next"
+        android:background="@android:color/darker_gray"
+        android:textColor="@android:color/white"
+        android:padding="12dp"/>
+
+</LinearLayout>

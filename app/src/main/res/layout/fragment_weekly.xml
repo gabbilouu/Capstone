@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:padding="24dp"
+    android:background="@android:color/white">
+
+    <!-- Title -->
+    <TextView
+        android:id="@+id/screenTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Weekly it is!"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:layout_marginBottom="12dp"
+        android:gravity="center"/>
+
+    <!-- Description -->
+    <TextView
+        android:id="@+id/screenDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="We’ll send you a monthly report based off of your response. Let’s jump right in!"
+        android:textSize="14sp"
+        android:textColor="@android:color/black"
+        android:gravity="center"
+        android:layout_marginBottom="8dp"/>
+
+    <!-- Subtext -->
+    <TextView
+        android:id="@+id/screenSubtext"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="You can also check your report in in your user profile!"
+        android:textSize="12sp"
+        android:textColor="@android:color/darker_gray"
+        android:gravity="center"
+        android:layout_marginBottom="32dp"/>
+
+    <!-- Next Button -->
+    <Button
+        android:id="@+id/nextButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Next"
+        android:padding="12dp"/>
+</LinearLayout>
