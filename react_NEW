@@ -1,0 +1,500 @@
+import React, { useEffect, useMemo, useState } from "react";
+import { motion } from "framer-motion";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/badge";
+import {
+  Tabs,
+  TabsContent,
+  TabsList,
+  TabsTrigger,
+} from "@/components/ui/tabs";
+import { Switch } from "@/components/ui/switch";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  Tooltip,
+  ResponsiveContainer,
+  CartesianGrid,
+} from "recharts";
+import { CalendarDays, Bell, Leaf, TrendingUp, PlusCircle } from "lucide-react";
+
+// ————————————————————————————————————————
+// Minimal in-memory “store” with localStorage persistence
+// ————————————————————————————————————————
+const STORAGE_KEY = "elevate.mood.entries.v1";
+
+function useLocalStore(key, initial) {
+  const [state, setState] = useState(() => {
+    try {
+      const raw = localStorage.getItem(key);
+      return raw ? JSON.parse(raw) : initial;
+    } catch {
+      return initial;
+    }
+  });
+  useEffect(() => {
+    try {
+      localStorage.setItem(key, JSON.stringify(state));
+    } catch {}
+  }, [key, state]);
+  return [state, setState];
+}
+
+// ————————————————————————————————————————
+// Types
+// ————————————————————————————————————————
+/**
+ * MoodEntry: one bi‑weekly check‑in.
+ */
+
+// Utility helpers
+const fmtDate = (d) => new Date(d).toLocaleDateString();
+const todayISO = () => new Date().toISOString();
+
+// Example, science‑informed activity library (placeholder — swap with SME‑approved set)
+const ACTIVITY_LIBRARY = [
+  { id: "walk10", label: "10‑min brisk walk", tags: ["low","anxious","stressed"], minutes: 10 },
+  { id: "boxbreath", label: "Box breathing 4‑4‑4‑4 (5 min)", tags: ["anxious","stressed"], minutes: 5 },
+  { id: "journaling", label: "Reflective journaling (10 min)", tags: ["rumination","sad"], minutes: 10 },
+  { id: "gratitude3", label: "Write 3 gratitudes", tags: ["neutral","sad"], minutes: 5 },
+  { id: "stretch", label: "Gentle stretch flow", tags: ["low","tense"], minutes: 8 },
+  { id: "social", label: "Text a friend you trust", tags: ["isolated","sad"], minutes: 3 },
+  { id: "sunlight", label: "5 min daylight exposure", tags: ["groggy","low"], minutes: 5 },
+];
+
+function selectActivities(mood, tags) {
+  // Very simple rules: lower mood → more regulation tasks
+  const base = ACTIVITY_LIBRARY.filter(a => a.tags.some(t => tags.includes(t)));
+  const curated = base.length ? base : ACTIVITY_LIBRARY;
+  const pick = (arr, n) => arr.sort(() => 0.5 - Math.random()).slice(0, n);
+  if (mood <= 3) return pick(curated, 4);
+  if (mood <= 6) return pick(curated, 3);
+  return pick(curated, 2);
+}
+
+// Gamified plant buddy
+function plantStage(points) {
+  if (points >= 200) return { stage: "🌳", name: "Tree", next: 999 };
+  if (points >= 120) return { stage: "🌿", name: "Sprout", next: 200 };
+  if (points >= 60) return { stage: "🌱", name: "Seedling", next: 120 };
+  return { stage: "🫘", name: "Seed", next: 60 };
+}
+
+// ————————————————————————————————————————
+// Main App
+// ————————————————————————————————————————
+export default function App() {
+  const [entries, setEntries] = useLocalStore(STORAGE_KEY, []);
+  const [reminders, setReminders] = useState(true);
+
+  const totalPoints = useMemo(() => entries.reduce((a, e) => a + (e.points || 5), 0), [entries]);
+  const stage = plantStage(totalPoints);
+
+  const addEntry = (e) => setEntries(prev => [e, ...prev]);
+
+  // Simple mock reminder (visual only)
+  const nextDue = useMemo(() => {
+    const last = entries[0]?.date ? new Date(entries[0].date) : null;
+    const due = new Date();
+    due.setDate(due.getDate() + 14); // bi‑weekly cadence placeholder
+    return { last: last ? fmtDate(last) : "—", next: fmtDate(due) };
+  }, [entries]);
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white text-slate-900">
+      <header className="sticky top-0 z-10 backdrop-blur supports-[backdrop-filter]:bg-white/60 border-b">
+        <div className="mx-auto max-w-6xl px-4 py-3 flex items-center gap-3">
+          <Leaf className="w-6 h-6" />
+          <h1 className="text-xl font-semibold">Elevate</h1>
+          <div className="ml-auto flex items-center gap-4 text-sm">
+            <div className="flex items-center gap-2"><Bell className="w-4 h-4"/> Reminders <Switch checked={reminders} onCheckedChange={setReminders}/></div>
+          </div>
+        </div>
+      </header>
+
+      <main className="mx-auto max-w-6xl p-4 md:p-6">
+        <Tabs defaultValue="checkin" className="w-full">
+          <TabsList className="grid grid-cols-4 w-full">
+            <TabsTrigger value="checkin">Check‑in</TabsTrigger>
+            <TabsTrigger value="insights">Insights</TabsTrigger>
+            <TabsTrigger value="activities">Activities</TabsTrigger>
+            <TabsTrigger value="profile">Profile</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="checkin" className="mt-6">
+            <div className="grid md:grid-cols-3 gap-6">
+              <Card className="md:col-span-2">
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2"><CalendarDays className="w-5 h-5"/> Bi‑weekly mood check‑in</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CheckInForm onSubmit={(payload) => {
+                    const pts = 5 + Math.max(0, 10 - payload.mood); // lower mood → a bit more points for showing up
+                    const recs = selectActivities(payload.mood, payload.tags);
+                    addEntry({ ...payload, id: crypto.randomUUID(), points: pts, recommendations: recs });
+                  }} />
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle className="flex items-center gap-2"><Leaf className="w-5 h-5"/> Your plant buddy</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <motion.div initial={{ scale: 0.9, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} className="flex flex-col items-center text-center gap-2">
+                    <div className="text-6xl">{stage.stage}</div>
+                    <div className="font-medium">{stage.name}</div>
+                    <div className="text-sm text-slate-600">{totalPoints} pts • Next stage at {stage.next} pts</div>
+                  </motion.div>
+                  <div className="mt-6 text-sm bg-slate-50 border rounded p-3">
+                    <div className="font-medium mb-1 flex items-center gap-2"><Bell className="w-4 h-4"/> Check‑in cadence</div>
+                    <div>Last: {nextDue.last}</div>
+                    <div>Next suggested: {nextDue.next}</div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            <RecentEntries entries={entries} />
+          </TabsContent>
+
+          <TabsContent value="insights" className="mt-6">
+            <Insights entries={entries} />
+          </TabsContent>
+
+          <TabsContent value="activities" className="mt-6">
+            <Activities entries={entries} />
+          </TabsContent>
+
+          <TabsContent value="profile" className="mt-6">
+            <Profile />
+          </TabsContent>
+        </Tabs>
+      </main>
+
+      <footer className="mx-auto max-w-6xl p-6 text-xs text-slate-500">
+        Elevate prototype • Replace placeholder activities with SME‑approved, science‑backed set.
+      </footer>
+    </div>
+  );
+}
+
+function TagPill({ label, active, onClick }) {
+  return (
+    <button
+      onClick={onClick}
+      className={`px-2 py-1 rounded-full border text-xs transition ${active ? "bg-slate-900 text-white" : "hover:bg-slate-100"}`}
+    >
+      {label}
+    </button>
+  );
+}
+
+function CheckInForm({ onSubmit }) {
+  const [mood, setMood] = useState(5);
+  const [energy, setEnergy] = useState(5);
+  const [sleep, setSleep] = useState(6);
+  const [notes, setNotes] = useState("");
+  const [freeTags, setFreeTags] = useState("");
+  const [tags, setTags] = useState([]);
+
+  const SUGGESTED = ["low","anxious","stressed","sad","neutral","isolated","groggy","tense","rumination"];
+
+  const toggle = (t) => setTags((prev) => prev.includes(t) ? prev.filter(x => x !== t) : [...prev, t]);
+
+  return (
+    <form
+      onSubmit={(e) => {
+        e.preventDefault();
+        const allTags = [...new Set([...tags, ...freeTags.split(",").map(s => s.trim()).filter(Boolean)])];
+        onSubmit({ date: todayISO(), mood: Number(mood), energy: Number(energy), sleep: Number(sleep), tags: allTags, notes });
+        setNotes("");
+        setFreeTags("");
+        setTags([]);
+        setMood(5); setEnergy(5); setSleep(6);
+      }}
+      className="space-y-5"
+    >
+      <div className="grid md:grid-cols-3 gap-4">
+        <SliderField label="Mood" value={mood} onChange={setMood} min={1} max={10} help="1=very low, 10=great" />
+        <SliderField label="Energy" value={energy} onChange={setEnergy} min={1} max={10} help="1=exhausted, 10=energized" />
+        <SliderField label="Sleep (hrs)" value={sleep} onChange={setSleep} min={0} max={12} />
+      </div>
+
+      <div>
+        <div className="text-sm font-medium mb-2">What best describes today?</div>
+        <div className="flex flex-wrap gap-2">
+          {SUGGESTED.map(t => (
+            <TagPill key={t} label={t} active={tags.includes(t)} onClick={() => toggle(t)} />
+          ))}
+        </div>
+        <div className="mt-3 text-xs text-slate-600">Add your own, comma‑separated</div>
+        <Input
+          placeholder="e.g., deadline, social, cramps"
+          value={freeTags}
+          onChange={(e) => setFreeTags(e.target.value)}
+        />
+      </div>
+
+      <div>
+        <div className="text-sm font-medium mb-2">Anything else you want to note?</div>
+        <Textarea placeholder="Optional notes" value={notes} onChange={(e) => setNotes(e.target.value)} />
+      </div>
+
+      <div className="flex items-center gap-3">
+        <Button type="submit" className="gap-2"><PlusCircle className="w-4 h-4"/> Save check‑in</Button>
+        <div className="text-xs text-slate-600">You earn points for every check‑in. Lower mood days earn a few extra for showing up. 💜</div>
+      </div>
+    </form>
+  );
+}
+
+function SliderField({ label, value, onChange, min=0, max=10, help }) {
+  return (
+    <Card>
+      <CardHeader className="pb-2">
+        <CardTitle className="text-base">{label}</CardTitle>
+      </CardHeader>
+      <CardContent>
+        <input
+          type="range"
+          min={min}
+          max={max}
+          value={value}
+          onChange={(e) => onChange(Number(e.target.value))}
+          className="w-full"
+        />
+        <div className="mt-2 text-sm"><Badge variant="secondary">{value}</Badge></div>
+        {help ? <div className="text-xs text-slate-500 mt-1">{help}</div> : null}
+      </CardContent>
+    </Card>
+  );
+}
+
+function RecentEntries({ entries }) {
+  if (!entries.length) return (
+    <div className="mt-6 text-sm text-slate-500">No entries yet — your last two weeks will appear here once you check in.</div>
+  );
+  return (
+    <div className="mt-6 grid md:grid-cols-2 gap-6">
+      {entries.slice(0, 4).map(e => (
+        <Card key={e.id}>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-base flex items-center gap-2"><TrendingUp className="w-4 h-4"/> {fmtDate(e.date)}</CardTitle>
+          </CardHeader>
+          <CardContent className="text-sm space-y-2">
+            <div className="flex gap-4">
+              <Metric label="Mood" value={e.mood} />
+              <Metric label="Energy" value={e.energy} />
+              <Metric label="Sleep" value={`${e.sleep}h`} />
+            </div>
+            {!!e.tags?.length && (
+              <div className="flex flex-wrap gap-1">{e.tags.map(t => <Badge key={t} variant="outline">{t}</Badge>)}</div>
+            )}
+            {e.notes && (<div className="text-slate-700 bg-slate-50 border rounded p-2">{e.notes}</div>)}
+            {!!e.recommendations?.length && (
+              <div>
+                <div className="text-xs uppercase tracking-wide text-slate-500 mb-1">Suggested activities</div>
+                <ul className="list-disc ml-5 space-y-1">
+                  {e.recommendations.map(a => <li key={a.id}>{a.label}</li>)}
+                </ul>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      ))}
+    </div>
+  );
+}
+
+function Metric({ label, value }) {
+  return (
+    <div>
+      <div className="text-xs text-slate-500">{label}</div>
+      <div className="font-medium">{value}</div>
+    </div>
+  );
+}
+
+function Insights({ entries }) {
+  const data = useMemo(() => entries
+    .slice()
+    .reverse()
+    .map(e => ({ date: fmtDate(e.date), mood: e.mood, energy: e.energy, sleep: e.sleep })), [entries]);
+
+  return (
+    <div className="grid lg:grid-cols-3 gap-6">
+      <Card className="lg:col-span-2">
+        <CardHeader>
+          <CardTitle>Mood trend</CardTitle>
+        </CardHeader>
+        <CardContent style={{ height: 320 }}>
+          {data.length ? (
+            <ResponsiveContainer width="100%" height="100%">
+              <LineChart data={data}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="date" />
+                <YAxis domain={[0, 10]} />
+                <Tooltip />
+                <Line type="monotone" dataKey="mood" dot={false} />
+              </LineChart>
+            </ResponsiveContainer>
+          ) : (
+            <div className="text-sm text-slate-500">Complete a few check‑ins to unlock trends.</div>
+          )}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Highlights</CardTitle>
+        </CardHeader>
+        <CardContent className="text-sm space-y-2">
+          <InsightBullets entries={entries} />
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function InsightBullets({ entries }) {
+  if (!entries.length) return <div className="text-slate-500">No data yet.</div>;
+  const last3 = entries.slice(0,3);
+  const avg = (arr, k) => (arr.reduce((a, e) => a + (Number(e[k])||0), 0) / Math.max(1, arr.length)).toFixed(1);
+  const avgMood = avg(entries, "mood");
+  const avgSleep = avg(entries, "sleep");
+  const commonTags = Object.entries(entries.reduce((acc, e) => {
+    (e.tags||[]).forEach(t => acc[t] = (acc[t]||0)+1);
+    return acc;
+  }, {})).sort((a,b) => b[1]-a[1]).slice(0,3).map(([t]) => t);
+  return (
+    <ul className="list-disc ml-5 space-y-1">
+      <li>Average mood: <span className="font-medium">{avgMood}</span> (last {entries.length} entries)</li>
+      <li>Average sleep: <span className="font-medium">{avgSleep} h</span></li>
+      {commonTags.length ? <li>Most frequent tags: {commonTags.map(t => <Badge key={t} variant="outline" className="ml-1">{t}</Badge>)}</li> : null}
+      {last3.length >= 2 && <li>Recent trend: {trendWord(last3)}</li>}
+    </ul>
+  );
+}
+
+function trendWord(entries) {
+  const [a,b,c] = entries.map(e => e.mood);
+  if (c > b && b > a) return "getting better";
+  if (c < b && b < a) return "slipping a bit";
+  return "holding steady";
+}
+
+function Activities({ entries }) {
+  const last = entries[0];
+  const [picked, setPicked] = useState([]);
+
+  useEffect(() => {
+    if (last) setPicked(selectActivities(last.mood, last.tags||[]));
+  }, [last?.id]);
+
+  if (!last) return <div className="text-sm text-slate-500">Log a check‑in to see tailored suggestions.</div>;
+
+  return (
+    <div className="grid md:grid-cols-2 gap-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Based on your last check‑in</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          {picked.map(a => (
+            <div key={a.id} className="flex items-center justify-between border rounded p-3">
+              <div>
+                <div className="font-medium">{a.label}</div>
+                <div className="text-xs text-slate-500">~{a.minutes} min</div>
+              </div>
+              <Button size="sm" variant="secondary">Start</Button>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Browse ideas</CardTitle>
+        </CardHeader>
+        <CardContent className="grid gap-2">
+          {ACTIVITY_LIBRARY.map(a => (
+            <div key={a.id} className="text-sm flex items-center justify-between border rounded p-2">
+              <div>{a.label}</div>
+              <Badge variant="outline">{a.minutes} min</Badge>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+function Profile() {
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  useEffect(() => {
+    try {
+      const raw = localStorage.getItem("elevate.profile");
+      if (raw) {
+        const p = JSON.parse(raw);
+        setName(p.name||"");
+        setEmail(p.email||"");
+      }
+    } catch {}
+  }, []);
+  useEffect(() => {
+    try { localStorage.setItem("elevate.profile", JSON.stringify({ name, email })); } catch {}
+  }, [name, email]);
+
+  return (
+    <div className="grid md:grid-cols-2 gap-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Account</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-3">
+          <div>
+            <div className="text-sm mb-1">Name</div>
+            <Input placeholder="Your name" value={name} onChange={(e) => setName(e.target.value)} />
+          </div>
+          <div>
+            <div className="text-sm mb-1">Email</div>
+            <Input placeholder="name@example.com" value={email} onChange={(e) => setEmail(e.target.value)} />
+          </div>
+          <div className="text-xs text-slate-500">(Auth is mocked in this prototype — wire to your real auth later.)</div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Data & Privacy</CardTitle>
+        </CardHeader>
+        <CardContent className="text-sm space-y-2">
+          <p>Your entries are saved locally in your browser for this demo.</p>
+          <div className="flex gap-2">
+            <Button variant="destructive" onClick={() => { localStorage.clear(); location.reload(); }}>Reset demo data</Button>
+            <Button variant="secondary" onClick={() => {
+              const raw = localStorage.getItem(STORAGE_KEY) || "[]";
+              const blob = new Blob([raw], { type: "application/json" });
+              const url = URL.createObjectURL(blob);
+              const a = document.createElement("a");
+              a.href = url; a.download = "elevate-entries.json"; a.click();
+              URL.revokeObjectURL(url);
+            }}>Export entries</Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
