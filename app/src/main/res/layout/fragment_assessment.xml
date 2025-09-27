@@ -12,7 +12,7 @@
         android:id="@+id/assessmentQuestion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="How are you feeling today?"
+        android:text="@string/how_are_you_feeling_today"
         android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="@android:color/black"
