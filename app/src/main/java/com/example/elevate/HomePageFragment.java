@@ -1,33 +1,28 @@
 package com.example.elevate;
 
 import android.os.Bundle;
-
+import android.os.Handler;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ProgressBar;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link HomePageFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class HomePageFragment extends Fragment implements View.OnClickListener{
+public class HomePageFragment extends Fragment implements View.OnClickListener {
 
-    NavController navC = null;
+    private NavController navC = null;
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
+    // Declare the ProgressBar to update dynamically
+    private ProgressBar progressBar;
+
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
-    // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
 
@@ -35,15 +30,6 @@ public class HomePageFragment extends Fragment implements View.OnClickListener{
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment HomePageFragment.
-     */
-    // TODO: Rename and change types and number of parameters
     public static HomePageFragment newInstance(String param1, String param2) {
         HomePageFragment fragment = new HomePageFragment();
         Bundle args = new Bundle();
@@ -72,10 +58,45 @@ public class HomePageFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+
+        // Find the ProgressBar by ID
+        progressBar = view.findViewById(R.id.progressLevel);
+
+        // Set initial progress (optional, already set in XML)
+        progressBar.setProgress(40);
+
+        // You can also initialize the progress bar as needed (for example, starting from 0)
+        // progressBar.setProgress(0);
+
+        // Start a background task to update the progress dynamically
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                for (int i = 40; i <= 100; i++) {  // Start from 40 (as defined in XML)
+                    try {
+                        Thread.sleep(100);  // Simulate some work (like loading)
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                    // Update the progress bar in the main thread
+                    final int progress = i;
+                    requireActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            progressBar.setProgress(progress);
+                        }
+                    });
+                }
+            }
+        }).start();
+
+        // Set up buttons to handle navigation (already present in your code)
         navC = Navigation.findNavController(view);
-        ImageButton checkButton = view.findViewById(R.id.CheckButton);
-        ImageButton listButton = view.findViewById(R.id.ListButton);
-        ImageButton profileButton = view.findViewById(R.id.ProfileButton);
+        ImageButton checkButton = view.findViewById(R.id.TaskButton);
+        ImageButton listButton = view.findViewById(R.id.CalendarButton);
+        ImageButton profileButton = view.findViewById(R.id.SettingsButton);
+
         if (checkButton != null) {
             checkButton.setOnClickListener(this);
         } else {
@@ -98,12 +119,12 @@ public class HomePageFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onClick(View v) {
         if (navC != null) {
-            if (v.getId() == R.id.CheckButton) {
-                navC.navigate(R.id.action_mainPageFragment_to_taskListFragment);
-            } else if (v.getId() == R.id.ListButton) {
-                navC.navigate(R.id.action_mainPageFragment_to_eventListFragment);
-            } else if (v.getId() == R.id.ProfileButton) {
-                navC.navigate(R.id.action_mainPageFragment_to_settingsFragment);
+            if (v.getId() == R.id.TaskButton) {
+                navC.navigate(R.id.action_homePageFragment_to_taskListFragment);
+            } else if (v.getId() == R.id.CalendarButton) {
+                navC.navigate(R.id.action_homePageFragment_to_eventFragment);
+            } else if (v.getId() == R.id.SettingsButton) {
+                navC.navigate(R.id.action_homePageFragment_to_settingsFragment);
             }
         }
     }

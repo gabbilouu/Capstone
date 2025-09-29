@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="happy">Happy</string>
+    <string name="neutral">Neutral</string>
+    <string name="sad">Sad</string>
+    <string name="very_happy">Very Happy</string>
+    <string name="very_sad">Very Sad</string>
+
+
+</resources>

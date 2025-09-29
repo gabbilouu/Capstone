@@ -74,8 +74,8 @@ public class EventListFragment extends Fragment implements View.OnClickListener{
         super.onViewCreated(view, savedInstanceState);
         navC = Navigation.findNavController(view);
         ImageButton homeButton = view.findViewById(R.id.HomeButton);
-        ImageButton checkButton = view.findViewById(R.id.CheckButton);
-        ImageButton profileButton = view.findViewById(R.id.ProfileButton);
+        ImageButton checkButton = view.findViewById(R.id.TaskButton);
+        ImageButton profileButton = view.findViewById(R.id.SettingsButton);
         if (homeButton != null) {
             homeButton.setOnClickListener(this);
         } else {
@@ -99,11 +99,11 @@ public class EventListFragment extends Fragment implements View.OnClickListener{
     public void onClick(View v) {
         if (navC != null) {
             if (v.getId() == R.id.HomeButton) {
-                navC.navigate(R.id.action_eventListFragment_to_mainPageFragment);
-            } else if (v.getId() == R.id.CheckButton) {
-                navC.navigate(R.id.action_eventListFragment_to_taskListFragment);
-            } else if (v.getId() == R.id.ProfileButton) {
-                navC.navigate(R.id.action_eventListFragment_to_settingsFragment);
+                navC.navigate(R.id.action_eventFragment_to_homePageFragment);
+            } else if (v.getId() == R.id.TaskButton) {
+                navC.navigate(R.id.action_eventFragment_to_taskListFragment);
+            } else if (v.getId() == R.id.SettingsButton) {
+                navC.navigate(R.id.action_eventFragment_to_settingsFragment);
             }
         }
     }

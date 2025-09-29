@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Repeat options array -->
+    <string-array name="repeat_options">
+        <item>Never</item>
+        <item>Daily</item>
+        <item>Weekly</item>
+        <item>Monthly</item>
+        <item>Yearly</item>
+    </string-array>
+    <string-array name="task_types">
+        <item>Sleep</item>
+        <item>Exercise</item>
+        <item>Work</item>
+        <item>Study</item>
+        <item>Relax</item>
+        <item>Shopping</item>
+        <!-- Add more task types as needed -->
+    </string-array>
+</resources>

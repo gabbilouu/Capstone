@@ -73,9 +73,9 @@ public class MainPageFragment extends Fragment implements View.OnClickListener{
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         navC = Navigation.findNavController(view);
-        ImageButton checkButton = view.findViewById(R.id.CheckButton);
-        ImageButton listButton = view.findViewById(R.id.ListButton);
-        ImageButton profileButton = view.findViewById(R.id.ProfileButton);
+        ImageButton checkButton = view.findViewById(R.id.TaskButton);
+        ImageButton listButton = view.findViewById(R.id.CalendarButton);
+        ImageButton profileButton = view.findViewById(R.id.SettingsButton);
         if (checkButton != null) {
             checkButton.setOnClickListener(this);
         } else {
@@ -98,12 +98,12 @@ public class MainPageFragment extends Fragment implements View.OnClickListener{
     @Override
     public void onClick(View v) {
         if (navC != null) {
-            if (v.getId() == R.id.CheckButton) {
-                navC.navigate(R.id.action_mainPageFragment_to_taskListFragment);
-            } else if (v.getId() == R.id.ListButton) {
-                navC.navigate(R.id.action_mainPageFragment_to_eventListFragment);
-            } else if (v.getId() == R.id.ProfileButton) {
-                navC.navigate(R.id.action_mainPageFragment_to_settingsFragment);
+            if (v.getId() == R.id.TaskButton) {
+                navC.navigate(R.id.action_homePageFragment_to_taskListFragment);
+            } else if (v.getId() == R.id.CalendarButton) {
+                navC.navigate(R.id.action_homePageFragment_to_eventFragment);
+            } else if (v.getId() == R.id.SettingsButton) {
+                navC.navigate(R.id.action_homePageFragment_to_settingsFragment);
             }
         }
     }

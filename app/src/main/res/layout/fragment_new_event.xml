@@ -26,7 +26,7 @@
                 android:layout_weight="1"
                 android:text="Cancel"
                 android:textColor="@android:color/white"
-                android:background="@drawable/pill_button" />
+                android:background="#47675E" />
 
             <TextView
                 android:id="@+id/tvTitle"
@@ -45,7 +45,7 @@
                 android:layout_weight="1"
                 android:text="Add"
                 android:textColor="@android:color/white"
-                android:background="@drawable/pill_button" />
+                android:background="#47675E" />
         </LinearLayout>
 
         <!-- General Section -->
@@ -88,51 +88,57 @@
             android:layout_height="wrap_content"
             android:text="All-day" />
 
+        <!-- Start Date + Time -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="space_between">
+            android:weightSum="2">
 
             <Button
                 android:id="@+id/btnStartDate"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="Sep 8, 2025"
                 android:textColor="@android:color/white"
-                android:background="@drawable/pill_button" />
+                android:background="#47675E" />
 
             <Button
                 android:id="@+id/btnStartTime"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="00:00AM"
                 android:textColor="@android:color/white"
-                android:background="@drawable/pill_button" />
+                android:background="#47675E" />
         </LinearLayout>
 
+        <!-- End Date + Time -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="space_between"
+            android:weightSum="2"
             android:layout_marginTop="8dp">
 
             <Button
                 android:id="@+id/btnEndDate"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="Sep 8, 2025"
                 android:textColor="@android:color/white"
-                android:background="@drawable/pill_button" />
+                android:background="#47675E" />
 
             <Button
                 android:id="@+id/btnEndTime"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="00:00AM"
                 android:textColor="@android:color/white"
-                android:background="@drawable/pill_button" />
+                android:background="#47675E" />
         </LinearLayout>
 
         <!-- Misc Section -->

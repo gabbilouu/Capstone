@@ -1,9 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:background="@android:color/white">
+    android:layout_height="match_parent">
+
+    <!-- Main content in a vertical LinearLayout -->
+    <LinearLayout
+        android:id="@+id/contentContainer"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingBottom="64dp"
+        android:layout_alignParentTop="true">
 
     <!-- Header -->
     <LinearLayout
@@ -11,7 +18,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:padding="16dp">
+        android:padding="12dp">
 
         <TextView
             android:id="@+id/tvName"
@@ -32,7 +39,7 @@
             android:max="100"
             android:progressDrawable="@drawable/progress_bar_custom" />
 
-        <!-- Plant points -->
+        <!-- Points -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -67,14 +74,35 @@
         </LinearLayout>
     </LinearLayout>
 
-    <!-- Plant Image -->
-    <ImageView
-        android:id="@+id/imgPlant"
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:layout_gravity="center_horizontal"
-        android:src="@drawable/ic_plant"
-        android:contentDescription="Plant" />
+    <!-- Plant + Soil + Badge -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="250dp">
+
+        <!-- Soil -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#A47140"
+            android:layout_gravity="bottom" />
+
+        <!-- Plant -->
+        <ImageView
+            android:id="@+id/imgPlant"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:layout_gravity="center|bottom"
+            android:src="@drawable/ic_plant"
+            android:contentDescription="Plant" />
+
+        <!-- Floating flower badge -->
+        <ImageView
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="end|top"
+            android:layout_margin="12dp"
+            android:src="@drawable/flowershop" />
+    </FrameLayout>
 
     <!-- Dashboard Grid -->
     <GridLayout
@@ -94,25 +122,39 @@
             android:layout_margin="8dp"
             android:layout_columnWeight="1"
             android:orientation="vertical"
-            android:background="@drawable/card_bg"
             android:padding="12dp">
 
-            <TextView
-                android:id="@+id/tvTasksTitle"
+            <!-- Icon + Title -->
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tasks"
-                android:drawableStart="@drawable/ic_tasks"
-                android:drawablePadding="8dp"
-                android:textStyle="bold" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
 
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_tasks"
+                    android:contentDescription="Tasks Icon" />
+
+                <TextView
+                    android:id="@+id/tvTasksTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:text="Tasks"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- Task count -->
             <TextView
                 android:id="@+id/tvTasksCount"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="3/15"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_marginTop="4dp" />
         </LinearLayout>
 
         <!-- Events Card -->
@@ -124,23 +166,36 @@
             android:layout_margin="8dp"
             android:layout_columnWeight="1"
             android:orientation="vertical"
-            android:background="@drawable/card_bg"
             android:padding="12dp">
 
-            <TextView
-                android:id="@+id/tvEventsTitle"
+            <!-- Icon + Title -->
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Events"
-                android:drawableStart="@drawable/ic_calendar"
-                android:drawablePadding="8dp"
-                android:textStyle="bold" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_calendar"
+                    android:contentDescription="Calendar Icon" />
+
+                <TextView
+                    android:id="@+id/tvEventsTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:text="Events"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/tvEventName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Doctor's Appointment" />
+                android:text="Doctor's Appointment"
+                android:layout_marginTop="4dp"/>
 
             <TextView
                 android:id="@+id/tvEventTime"
@@ -160,17 +215,29 @@
             android:layout_margin="8dp"
             android:layout_columnWeight="1"
             android:orientation="vertical"
-            android:background="@drawable/card_bg"
             android:padding="12dp">
 
-            <TextView
-                android:id="@+id/tvMoodTitle"
+            <!-- Icon + Title -->
+            <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Mood"
-                android:drawableStart="@drawable/ic_mood"
-                android:drawablePadding="8dp"
-                android:textStyle="bold" />
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <ImageView
+                    android:layout_width="20dp"
+                    android:layout_height="20dp"
+                    android:src="@drawable/ic_mood"
+                    android:contentDescription="Mood Icon" />
+
+                <TextView
+                    android:id="@+id/tvMoodTitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:text="Mood"
+                    android:textStyle="bold" />
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/tvMood"
@@ -178,7 +245,8 @@
                 android:layout_height="wrap_content"
                 android:text="Happy"
                 android:textSize="18sp"
-                android:textStyle="bold" />
+                android:textStyle="bold"
+                android:layout_marginTop="4dp" />
         </LinearLayout>
 
         <!-- Misc Card -->
@@ -190,7 +258,6 @@
             android:layout_margin="8dp"
             android:layout_columnWeight="1"
             android:orientation="vertical"
-            android:background="@drawable/card_bg"
             android:padding="12dp">
 
             <TextView
@@ -201,85 +268,100 @@
                 android:textStyle="bold" />
         </LinearLayout>
     </GridLayout>
+</LinearLayout>
 
-    <!-- Bottom Navigation -->
+    <!-- Bottom Navigation (forced at bottom) -->
     <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="64dp"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:background="@android:color/white">
+    android:id="@+id/bottomNav"
+    android:layout_width="match_parent"
+    android:layout_height="64dp"
+    android:orientation="horizontal"
+    android:gravity="center"
+    android:background="@android:color/white"
+    android:layout_alignParentBottom="true">
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center">
+    <!-- Home -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center">
 
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_home" />
+        <ImageView
+            android:id="@+id/HomeButton"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_home_inactive" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Home" />
-        </LinearLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Home"
+            android:textSize="12sp"/>
+    </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center">
+    <!-- Tasks -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center">
 
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_tasks" />
+        <ImageView
+            android:id="@+id/TaskButton"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_tasks_active" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Tasks" />
-        </LinearLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tasks"
+            android:textSize="12sp"/>
+    </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center">
+    <!-- Calendar -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center">
 
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_calendar" />
+        <ImageView
+            android:id="@+id/CalendarButton"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_calendar_active" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Calendar" />
-        </LinearLayout>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Calendar"
+            android:textSize="12sp"/>
+    </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:orientation="vertical"
-            android:gravity="center">
+<!-- Settings -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center">
 
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_settings" />
+        <ImageView
+            android:id="@+id/SettingsButton"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_settings_active" />
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Settings" />
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Settings"
+            android:textSize="12sp"/>
         </LinearLayout>
     </LinearLayout>
-</LinearLayout>
+</RelativeLayout>

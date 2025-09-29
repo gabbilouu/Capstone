@@ -23,6 +23,7 @@
             android:textColor="@android:color/black" />
 
         <TextView
+            android:id="@+id/tvTimer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="⟳ 11 hrs 32 mins"
@@ -30,63 +31,14 @@
             android:textColor="@android:color/darker_gray" />
     </LinearLayout>
 
-    <!-- Task List -->
-    <ScrollView
+    <!-- RecyclerView replaces ScrollView -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/recyclerViewTasks"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1">
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:divider="?android:attr/dividerHorizontal"
-            android:showDividers="middle">
-
-            <!-- Example Task -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:padding="12dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="🌞"
-                    android:textSize="18sp"
-                    android:layout_marginEnd="8dp"/>
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Get out of bed"
-                    android:textSize="16sp"
-                    android:textColor="@android:color/black" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="✔️"
-                    android:textSize="18sp"/>
-            </LinearLayout>
-
-            <!-- Repeat for other tasks -->
-            <!-- 🧴 Do morning skincare routine -->
-            <!-- 🤸 Do morning stretches -->
-            <!-- 🏋️ Workout (with "1h") -->
-            <!-- 🍳 Eat Breakfast -->
-            <!-- 🍱 Eat Lunch -->
-            <!-- 🚶 Go for a walk -->
-            <!-- 📓 Journal & Self-Reflection -->
-            <!-- 🎮 Me time! (30m) -->
-            <!-- 📚 Do homework -->
-            <!-- 🍽️ Eat Dinner -->
-
-        </LinearLayout>
-    </ScrollView>
+        android:layout_weight="1"
+        android:divider="?android:attr/dividerHorizontal"
+        android:scrollbars="vertical" />
 
     <!-- Bottom Navigation Bar -->
     <LinearLayout
@@ -99,6 +51,7 @@
         android:background="@android:color/white">
 
         <Button
+            android:id="@+id/HomeButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -106,6 +59,7 @@
             android:background="@android:color/transparent"/>
 
         <Button
+            android:id="@+id/TaskButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -113,6 +67,7 @@
             android:background="@android:color/transparent"/>
 
         <Button
+            android:id="@+id/CalendarButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -120,6 +75,7 @@
             android:background="@android:color/transparent"/>
 
         <Button
+            android:id="@+id/SettingsButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"

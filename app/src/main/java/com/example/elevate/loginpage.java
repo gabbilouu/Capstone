@@ -19,12 +19,12 @@ public class loginpage extends Fragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
                              @Nullable Bundle savedInstanceState) {
         // Inflate the fragment layout
-        View view = inflater.inflate(R.layout.fragment_login, container, false);
+        View view = inflater.inflate(R.layout.fragment_loginpage, container, false);
 
         // Initialize UI elements
-        EditText LoginUsernameField = view.findViewById(R.id.LoginUsernameField);
-        EditText LoginPasswordField = view.findViewById(R.id.LoginPasswordField);
-        Button buttonLogin = view.findViewById(R.id.LoginButton);
+        EditText LoginUsernameField = view.findViewById(R.id.email);
+        EditText LoginPasswordField = view.findViewById(R.id.password);
+        Button buttonLogin = view.findViewById(R.id.loginButton);
 
         // Set login button click listener
         buttonLogin.setOnClickListener(view1 -> {
