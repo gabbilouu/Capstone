@@ -1,26 +1,27 @@
 package com.example.elevate;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
-public class LoginFragment extends Fragment {
+public class OptOutFragment extends Fragment {
 
     private NavController navC;
 
-    public LoginFragment() {
+    public OptOutFragment() {
         // Required empty public constructor
     }
 
-    public static LoginFragment newInstance(String param1, String param2) {
-        LoginFragment fragment = new LoginFragment();
+    public static OptOutFragment newInstance(String param1, String param2) {
+        OptOutFragment fragment = new OptOutFragment();
         Bundle args = new Bundle();
         args.putString("param1", param1);
         args.putString("param2", param2);
@@ -31,23 +32,19 @@ public class LoginFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_login, container, false);
+        return inflater.inflate(R.layout.fragment_opt_out, container, false);
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Get NavController from this fragment's view
         navC = Navigation.findNavController(view);
 
-        // Set click listener on the entire root view
-        view.setOnClickListener(v -> {
+        Button nextButton = view.findViewById(R.id.btn_next);
+        nextButton.setOnClickListener(v -> {
             if (navC != null) {
-                navC.navigate(R.id.action_loginFragment_to_startingFragment);
-            } else {
-                Log.e("LoginFragment", "NavController is null!");
+                navC.navigate(R.id.action_optOutFragment_to_assessmentFragment);
             }
         });
     }

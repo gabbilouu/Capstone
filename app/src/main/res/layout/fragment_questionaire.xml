@@ -39,6 +39,7 @@
 
         <!-- Option Buttons -->
         <Button
+            android:id="@+id/option1"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="I'm looking for ways to manage my stress and anxiety"
@@ -47,6 +48,7 @@
             android:layout_marginBottom="12dp"/>
 
         <Button
+            android:id="@+id/option2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="I want to track my mood and emotions throughout a period of time"
@@ -55,6 +57,7 @@
             android:layout_marginBottom="12dp"/>
 
         <Button
+            android:id="@+id/option3"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="I want to organize my lifestyles and habits"
@@ -63,6 +66,7 @@
             android:layout_marginBottom="12dp"/>
 
         <Button
+            android:id="@+id/option4"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="I'm looking for a way to develop better habits"
@@ -71,6 +75,7 @@
             android:layout_marginBottom="12dp"/>
 
         <Button
+            android:id="@+id/option5"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Other"
@@ -80,6 +85,7 @@
 
         <!-- Next Button -->
         <Button
+            android:id="@+id/nextButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Next"

@@ -32,7 +32,7 @@
 
     <!-- Next Button -->
     <Button
-        android:id="@+id/nextButton"
+        android:id="@+id/nextButtonT"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Next"

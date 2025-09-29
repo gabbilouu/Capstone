@@ -1,64 +1,88 @@
 package com.example.elevate;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
+import android.text.TextUtils;
+import android.util.Log;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link SignUpFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import androidx.annotation.NonNull;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
+
+import java.util.regex.Pattern;
+
 public class SignUpFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private NavController navC;
+    private EditText emailInput, passwordInput;
+    private Button signUpButton;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
+    // Password pattern: 8+ chars, 1 uppercase, 1 number, 1 special char
+    private static final Pattern PASSWORD_PATTERN =
+            Pattern.compile("^" +
+                    "(?=.*[0-9])" +         // at least 1 digit
+                    "(?=.*[A-Z])" +         // at least 1 uppercase
+                    "(?=.*[@#$%^&+=!])" +   // at least 1 special char
+                    ".{8,}" +               // at least 8 characters
+                    "$");
 
-    public SignUpFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment SignUpFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static SignUpFragment newInstance(String param1, String param2) {
-        SignUpFragment fragment = new SignUpFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+    public SignUpFragment() { }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_sign_up, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        navC = Navigation.findNavController(view);
+
+        emailInput = view.findViewById(R.id.email_input);
+        passwordInput = view.findViewById(R.id.password_input);
+        signUpButton = view.findViewById(R.id.sign_up_button);
+
+        signUpButton.setOnClickListener(v -> validateAndSignUp());
+    }
+
+    private void validateAndSignUp() {
+        String email = emailInput.getText().toString().trim();
+        String password = passwordInput.getText().toString();
+
+        if (!isValidUniversityEmail(email)) {
+            emailInput.setError("Enter a valid university email");
+            emailInput.requestFocus();
+            return;
+        }
+
+        if (!isValidPassword(password)) {
+            passwordInput.setError("Password must be 8+ chars, include 1 uppercase, 1 number, 1 special char");
+            passwordInput.requestFocus();
+            return;
+        }
+
+        // Signup successful → navigate to welcome fragment
+        Toast.makeText(getContext(), "Signup successful!", Toast.LENGTH_SHORT).show();
+        navC.navigate(R.id.action_SignUpFragment_to_welcomeFragment);
+    }
+
+    private boolean isValidUniversityEmail(String email) {
+        // Basic email pattern + contains ".edu"
+        return !TextUtils.isEmpty(email) &&
+                Patterns.EMAIL_ADDRESS.matcher(email).matches() &&
+                email.endsWith(".edu");
+    }
+
+    private boolean isValidPassword(String password) {
+        return PASSWORD_PATTERN.matcher(password).matches();
     }
 }

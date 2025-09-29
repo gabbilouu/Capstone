@@ -181,7 +181,7 @@
     </fragment>
     <fragment
         android:id="@+id/optOutFragment"
-        android:name="com.example.elevate.OptOut"
+        android:name="com.example.elevate.OptOutFragment"
         android:label="fragment_opt_out"
         tools:layout="@layout/fragment_opt_out" >
         <action

@@ -1,17 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@android:color/white">
 
     <!-- Title Row -->
     <LinearLayout
+        android:id="@+id/titleRow"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="center_vertical"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:layout_alignParentTop="true"
+        android:layout_above="@+id/bottomNav">
 
         <TextView
             android:layout_width="0dp"
@@ -31,56 +33,74 @@
             android:textColor="@android:color/darker_gray" />
     </LinearLayout>
 
-    <!-- RecyclerView replaces ScrollView -->
+    <!-- RecyclerView -->
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerViewTasks"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="1"
-        android:divider="?android:attr/dividerHorizontal"
+        android:layout_height="match_parent"
+        android:layout_below="@id/titleRow"
+        android:layout_above="@+id/bottomNav"
         android:scrollbars="vertical" />
 
-    <!-- Bottom Navigation Bar -->
+    <!-- Bottom Navigation Bar (stuck to bottom) -->
     <LinearLayout
+        android:id="@+id/bottomNav"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="64dp"
+        android:layout_alignParentBottom="true"
         android:orientation="horizontal"
         android:gravity="center"
         android:weightSum="4"
-        android:padding="8dp"
-        android:background="@android:color/white">
+        android:background="@android:color/white"
+        android:padding="8dp">
 
-        <Button
+        <!-- Home -->
+        <ImageButton
             android:id="@+id/HomeButton"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="🏠 Home"
-            android:background="@android:color/transparent"/>
+            android:background="@null"
+            android:src="@drawable/ic_home_active"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:contentDescription="Home" />
 
-        <Button
+        <!-- Tasks -->
+        <ImageButton
             android:id="@+id/TaskButton"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="✅ Tasks"
-            android:background="@android:color/transparent"/>
+            android:background="@null"
+            android:src="@drawable/ic_tasks_inactive"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:contentDescription="Tasks" />
 
-        <Button
+        <!-- Calendar -->
+        <ImageButton
             android:id="@+id/CalendarButton"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="📅 Calendar"
-            android:background="@android:color/transparent"/>
+            android:background="@null"
+            android:src="@drawable/ic_calendar_active"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:contentDescription="Calendar" />
 
-        <Button
+        <!-- Settings -->
+        <ImageButton
             android:id="@+id/SettingsButton"
             android:layout_width="0dp"
-            android:layout_height="wrap_content"
+            android:layout_height="match_parent"
             android:layout_weight="1"
-            android:text="⚙️ Settings"
-            android:background="@android:color/transparent"/>
+            android:background="@null"
+            android:src="@drawable/ic_settings_active"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:contentDescription="Settings" />
     </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>

@@ -1,208 +1,274 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white">
 
-    <LinearLayout
+    <!-- Scrollable content -->
+    <ScrollView
+        android:id="@+id/scrollContent"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:layout_height="match_parent"
+        android:layout_above="@+id/bottomNav"
+        android:fillViewport="true">
 
-        <!-- Profile Card -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/darker_gray"
-            android:orientation="horizontal"
-            android:padding="12dp"
-            android:layout_marginBottom="16dp"
-            android:backgroundTint="@android:color/white"
-            android:elevation="2dp"
-            android:clipToPadding="false">
+            android:orientation="vertical"
+            android:padding="16dp">
 
-            <ImageView
-                android:id="@+id/profileImage"
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                android:src="@mipmap/ic_launcher"
-                android:background="@android:color/darker_gray"
-                android:scaleType="centerCrop" />
-
+            <!-- Profile Card -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginStart="12dp">
-
-                <TextView
-                    android:id="@+id/profileName"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="John Doe ✏️ He/Him"
-                    android:textSize="18sp"
-                    android:textStyle="bold"/>
-
-                <TextView
-                    android:id="@+id/profileDetails"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="University of North Texas '27\nComputer Science"
-                    android:textSize="14sp"
-                    android:layout_marginTop="4dp"/>
-
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:background="@android:color/darker_gray"
-                    android:layout_marginVertical="8dp"/>
-
-                <TextView
-                    android:id="@+id/userSince"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="User Since: September 1, 2025"
-                    android:textSize="12sp"/>
-            </LinearLayout>
-        </LinearLayout>
-
-        <!-- Stats Row -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="2"
-            android:layout_marginBottom="16dp">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="100dp"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:background="@android:color/white"
+                android:background="@android:color/darker_gray"
+                android:orientation="horizontal"
+                android:padding="12dp"
+                android:layout_marginBottom="16dp"
+                android:backgroundTint="@android:color/white"
                 android:elevation="2dp"
-                android:layout_marginEnd="8dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="🌱 5 day streak!"
-                    android:textSize="16sp"/>
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="100dp"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:gravity="center"
-                android:background="@android:color/white"
-                android:elevation="2dp"
-                android:layout_marginStart="8dp">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Personality Report"
-                    android:textSize="16sp"
-                    android:layout_marginBottom="8dp"/>
+                android:clipToPadding="false">
 
                 <ImageView
-                    android:layout_width="60dp"
-                    android:layout_height="60dp"
-                    android:src="@mipmap/ic_launcher" />
+                    android:id="@+id/profileImage"
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    android:src="@mipmap/ic_launcher"
+                    android:background="@android:color/darker_gray"
+                    android:scaleType="centerCrop" />
 
-                <TextView
-                    android:layout_width="wrap_content"
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Past 30 Days"
-                    android:textSize="12sp"
-                    android:textColor="@android:color/darker_gray"/>
+                    android:orientation="vertical"
+                    android:layout_marginStart="12dp">
+
+                    <TextView
+                        android:id="@+id/profileName"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="John Doe ✏️ He/Him"
+                        android:textSize="18sp"
+                        android:textStyle="bold"/>
+
+                    <TextView
+                        android:id="@+id/profileDetails"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="University of North Texas '27\nComputer Science"
+                        android:textSize="14sp"
+                        android:layout_marginTop="4dp"/>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@android:color/darker_gray"
+                        android:layout_marginVertical="8dp"/>
+
+                    <TextView
+                        android:id="@+id/userSince"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="User Since: September 1, 2025"
+                        android:textSize="12sp"/>
+                </LinearLayout>
             </LinearLayout>
-        </LinearLayout>
 
-        <!-- Goals + Mood -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="2"
-            android:layout_marginBottom="24dp">
+            <!-- Stats Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2"
+                android:layout_marginBottom="16dp">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:background="@android:color/white"
+                    android:elevation="2dp"
+                    android:layout_marginEnd="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🌱 5 day streak!"
+                        android:textSize="16sp"/>
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="100dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:background="@android:color/white"
+                    android:elevation="2dp"
+                    android:layout_marginStart="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Personality Report"
+                        android:textSize="16sp"
+                        android:layout_marginBottom="8dp"/>
+
+                    <ImageView
+                        android:layout_width="60dp"
+                        android:layout_height="60dp"
+                        android:src="@mipmap/ic_launcher" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Past 30 Days"
+                        android:textSize="12sp"
+                        android:textColor="@android:color/darker_gray"/>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Goals + Mood -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="2"
+                android:layout_marginBottom="24dp">
+
+                <Button
+                    android:id="@+id/myGoalsButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="My Goals"
+                    android:layout_marginEnd="8dp"/>
+
+                <Button
+                    android:id="@+id/moodReportButton"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="In-Depth Mood Report"
+                    android:layout_marginStart="8dp"/>
+            </LinearLayout>
+
+            <!-- General Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="GENERAL"
+                android:textStyle="bold"
+                android:layout_marginBottom="8dp"/>
 
             <Button
-                android:id="@+id/myGoalsButton"
-                android:layout_width="0dp"
+                android:id="@+id/generalButton"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="My Goals"
-                android:layout_marginEnd="8dp"/>
+                android:text="General" />
 
             <Button
-                android:id="@+id/moodReportButton"
-                android:layout_width="0dp"
+                android:id="@+id/aboutButton"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="In-Depth Mood Report"
-                android:layout_marginStart="8dp"/>
+                android:text="About"
+                android:layout_marginTop="4dp"/>
+
+            <Button
+                android:id="@+id/notificationsButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Notifications"
+                android:layout_marginTop="4dp"/>
+
+            <!-- Misc Section -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="MISC."
+                android:textStyle="bold"
+                android:layout_marginTop="24dp"
+                android:layout_marginBottom="8dp"/>
+
+            <Button
+                android:id="@+id/faqButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="FAQ" />
+
+            <Button
+                android:id="@+id/contactUsButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Contact Us"
+                android:layout_marginTop="4dp"/>
+
+            <Button
+                android:id="@+id/socialsButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Socials"
+                android:layout_marginTop="4dp"/>
         </LinearLayout>
+    </ScrollView>
 
-        <!-- General Section -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="GENERAL"
-            android:textStyle="bold"
-            android:layout_marginBottom="8dp"/>
+    <!-- Bottom Navigation Bar -->
+    <LinearLayout
+        android:id="@+id/bottomNav"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_alignParentBottom="true"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:weightSum="4"
+        android:background="@android:color/white">
 
-        <Button
-            android:id="@+id/generalButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="General" />
+        <ImageButton
+            android:id="@+id/HomeButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:src="@drawable/ic_home_active"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:contentDescription="Home" />
 
-        <Button
-            android:id="@+id/aboutButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="About"
-            android:layout_marginTop="4dp"/>
+        <ImageButton
+            android:id="@+id/TaskButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:src="@drawable/ic_tasks_inactive"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:contentDescription="Tasks" />
 
-        <Button
-            android:id="@+id/notificationsButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Notifications"
-            android:layout_marginTop="4dp"/>
+        <ImageButton
+            android:id="@+id/CalendarButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:src="@drawable/ic_calendar_active"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:contentDescription="Calendar" />
 
-        <!-- Misc Section -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="MISC."
-            android:textStyle="bold"
-            android:layout_marginTop="24dp"
-            android:layout_marginBottom="8dp"/>
-
-        <Button
-            android:id="@+id/faqButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="FAQ" />
-
-        <Button
-            android:id="@+id/contactUsButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Contact Us"
-            android:layout_marginTop="4dp"/>
-
-        <Button
-            android:id="@+id/socialsButton"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Socials"
-            android:layout_marginTop="4dp"/>
+        <ImageButton
+            android:id="@+id/SettingsButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:src="@drawable/ic_settings_active"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:contentDescription="Settings" />
     </LinearLayout>
-</ScrollView>
+
+</RelativeLayout>

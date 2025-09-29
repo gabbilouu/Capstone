@@ -1,64 +1,80 @@
 package com.example.elevate;
 
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.Toast;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link AssessmentFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.fragment.NavHostFragment;
+
 public class AssessmentFragment extends Fragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private ImageButton selectedEmoji = null; // Track selected emoji
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public AssessmentFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment AssessmentFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static AssessmentFragment newInstance(String param1, String param2) {
-        AssessmentFragment fragment = new AssessmentFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+    public AssessmentFragment() { }
 
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_assessment, container, false);
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        // Get NavController safely from the Fragment
+        NavController navController = NavHostFragment.findNavController(this);
+
+        // Emoji buttons
+        ImageButton emojiVeryHappy = view.findViewById(R.id.emojiVeryHappy);
+        ImageButton emojiHappy = view.findViewById(R.id.emojiHappy);
+        ImageButton emojiNeutral = view.findViewById(R.id.emojiNeutral);
+        ImageButton emojiSad = view.findViewById(R.id.emojiSad);
+        ImageButton emojiVerySad = view.findViewById(R.id.emojiVerySad);
+
+        final ImageButton[] emojis = {emojiVeryHappy, emojiHappy, emojiNeutral, emojiSad, emojiVerySad};
+
+        for (ImageButton emoji : emojis) {
+            emoji.setOnClickListener(v -> {
+                if (selectedEmoji != null) {
+                    selectedEmoji.setBackground(null); // remove previous highlight
+                }
+                selectedEmoji = emoji;
+                selectedEmoji.setBackgroundColor(getResources().getColor(android.R.color.holo_blue_light));
+            });
+        }
+
+        // Next button
+        Button nextButton = view.findViewById(R.id.nextButton);
+        nextButton.setOnClickListener(v -> {
+            if (selectedEmoji == null) {
+                Toast.makeText(getContext(), "Please select an emoji before proceeding", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            // Determine mood string
+            String mood;
+            switch (selectedEmoji.getId()) {
+                case R.id.emojiVeryHappy: mood = "Very Happy"; break;
+                case R.id.emojiHappy: mood = "Happy"; break;
+                case R.id.emojiNeutral: mood = "Neutral"; break;
+                case R.id.emojiSad: mood = "Sad"; break;
+                case R.id.emojiVerySad: mood = "Very Sad"; break;
+                default: mood = "Neutral";
+            }
+
+            // Pass mood to next fragment
+            Bundle bundle = new Bundle();
+            bundle.putString("selectedMood", mood);
+            navController.navigate(R.id.action_assessmentFragment_to_loginStreakFragment, bundle);
+        });
     }
 }
