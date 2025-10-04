@@ -9,6 +9,7 @@
 
     <!-- Back Arrow -->
     <ImageView
+        android:id="@+id/backArrow"
         android:layout_width="24dp"
         android:layout_height="24dp"
         android:src="@android:drawable/ic_media_previous"

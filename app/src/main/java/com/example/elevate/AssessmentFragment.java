@@ -1,5 +1,6 @@
 package com.example.elevate;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,6 +14,10 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
 
 public class AssessmentFragment extends Fragment {
 
@@ -30,7 +35,6 @@ public class AssessmentFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Get NavController safely from the Fragment
         NavController navController = NavHostFragment.findNavController(this);
 
         // Emoji buttons
@@ -71,7 +75,15 @@ public class AssessmentFragment extends Fragment {
                 default: mood = "Neutral";
             }
 
-            // Pass mood to next fragment
+            // Save today's mood to SharedPreferences
+            SharedPreferences prefs = requireContext().getSharedPreferences("MoodPrefs", 0);
+            String todayKey = new SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Calendar.getInstance().getTime());
+            prefs.edit().putString(todayKey, mood).apply();
+
+            // Optional: show confirmation
+            Toast.makeText(getContext(), "Mood saved: " + mood, Toast.LENGTH_SHORT).show();
+
+            // Navigate to streak page or next fragment
             Bundle bundle = new Bundle();
             bundle.putString("selectedMood", mood);
             navController.navigate(R.id.action_assessmentFragment_to_loginStreakFragment, bundle);

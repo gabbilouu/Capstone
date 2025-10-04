@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white">
@@ -22,11 +23,10 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:color/darker_gray"
+                android:background="@android:color/white"
                 android:orientation="horizontal"
                 android:padding="12dp"
                 android:layout_marginBottom="16dp"
-                android:backgroundTint="@android:color/white"
                 android:elevation="2dp"
                 android:clipToPadding="false">
 
@@ -70,7 +70,7 @@
                         android:id="@+id/userSince"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="User Since: September 1, 2025"
+                        android:text="User Since: --"
                         android:textSize="12sp"/>
                 </LinearLayout>
             </LinearLayout>
@@ -83,78 +83,87 @@
                 android:weightSum="2"
                 android:layout_marginBottom="16dp">
 
+                <!-- Streak -->
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="100dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical"
                     android:gravity="center"
                     android:background="@android:color/white"
                     android:elevation="2dp"
-                    android:layout_marginEnd="8dp">
+                    android:layout_marginEnd="8dp"
+                    android:padding="8dp">
 
                     <TextView
+                        android:id="@+id/streakText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="🌱 5 day streak!"
-                        android:textSize="16sp"/>
+                        android:text="🌱 -- day streak!"
+                        android:textSize="16sp"
+                        android:gravity="center"/>
                 </LinearLayout>
 
+                <!-- Personality Report -->
                 <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="100dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
                     android:orientation="vertical"
                     android:gravity="center"
                     android:background="@android:color/white"
                     android:elevation="2dp"
-                    android:layout_marginStart="8dp">
+                    android:layout_marginStart="8dp"
+                    android:padding="8dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Personality Report"
                         android:textSize="16sp"
-                        android:layout_marginBottom="8dp"/>
+                        android:layout_marginBottom="8dp"
+                        android:gravity="center"
+                        android:ellipsize="none"
+                        android:singleLine="false"/>
 
-                    <ImageView
-                        android:layout_width="60dp"
-                        android:layout_height="60dp"
-                        android:src="@mipmap/ic_launcher" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Past 30 Days"
-                        android:textSize="12sp"
-                        android:textColor="@android:color/darker_gray"/>
+                    <com.github.mikephil.charting.charts.RadarChart
+                        android:id="@+id/personalityRadarChart"
+                        android:layout_width="match_parent"
+                        android:layout_height="150dp"/>
                 </LinearLayout>
             </LinearLayout>
 
-            <!-- Goals + Mood -->
-            <LinearLayout
+            <!-- Goals + Mood Buttons -->
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:weightSum="2"
                 android:layout_marginBottom="24dp">
 
                 <Button
                     android:id="@+id/myGoalsButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:text="My Goals"
-                    android:layout_marginEnd="8dp"/>
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/moodReportButton"
+                    android:layout_marginEnd="8dp"
+                    android:gravity="center"/>
 
                 <Button
                     android:id="@+id/moodReportButton"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:text="In-Depth Mood Report"
-                    android:layout_marginStart="8dp"/>
-            </LinearLayout>
+                    app:layout_constraintStart_toEndOf="@id/myGoalsButton"
+                    app:layout_constraintTop_toTopOf="@id/myGoalsButton"
+                    app:layout_constraintBottom_toBottomOf="@id/myGoalsButton"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    android:layout_marginStart="8dp"
+                    android:gravity="center"/>
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <!-- General Section -->
             <TextView
@@ -205,13 +214,6 @@
                 android:layout_height="wrap_content"
                 android:text="Contact Us"
                 android:layout_marginTop="4dp"/>
-
-            <Button
-                android:id="@+id/socialsButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Socials"
-                android:layout_marginTop="4dp"/>
         </LinearLayout>
     </ScrollView>
 
@@ -243,7 +245,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@null"
-            android:src="@drawable/ic_tasks_inactive"
+            android:src="@drawable/ic_tasks_active"
             android:scaleType="fitCenter"
             android:adjustViewBounds="true"
             android:contentDescription="Tasks" />
@@ -265,7 +267,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@null"
-            android:src="@drawable/ic_settings_active"
+            android:src="@drawable/ic_settings_inactive"
             android:scaleType="fitCenter"
             android:adjustViewBounds="true"
             android:contentDescription="Settings" />

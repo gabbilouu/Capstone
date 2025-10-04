@@ -100,6 +100,9 @@
         <action
             android:id="@+id/action_settingsFragment_to_FAQFragment"
             app:destination="@id/FAQFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_questionaireFragment"
+            app:destination="@id/questionaireFragment" />
     </fragment>
     <fragment
         android:id="@+id/loginpageFragment"
@@ -127,6 +130,9 @@
         <action
             android:id="@+id/action_questionaireFragment_to_thanksFragment"
             app:destination="@id/thanksFragment" />
+        <action
+            android:id="@+id/action_questionaireFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
     </fragment>
     <fragment
         android:id="@+id/thanksFragment"

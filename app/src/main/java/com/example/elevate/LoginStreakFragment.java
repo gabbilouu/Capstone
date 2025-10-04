@@ -63,16 +63,12 @@ public class LoginStreakFragment extends Fragment {
         return view;
     }
 
-
-
-
-
     private void updateStreak() {
         int streak = prefs.getInt(KEY_STREAK, 0);
         String lastLoginStr = prefs.getString(KEY_LAST_LOGIN, "");
         Calendar today = Calendar.getInstance();
 
-        // Check if last login was yesterday (for streak continuation)
+        // Check last login
         Calendar lastLogin = Calendar.getInstance();
         if (!lastLoginStr.isEmpty()) {
             try {
@@ -83,15 +79,16 @@ public class LoginStreakFragment extends Fragment {
             }
         }
 
-        // If last login is not yesterday, reset streak
+        // Update streak
         if (!lastLoginStr.isEmpty()) {
             long diff = today.getTimeInMillis() - lastLogin.getTimeInMillis();
             long diffDays = diff / (1000 * 60 * 60 * 24);
             if (diffDays > 1) { // missed at least one day
-                streak = 0;
-            } else {
+                streak = 1; // reset streak to 1
+            } else if (diffDays == 1) {
                 streak++; // continue streak
             }
+            // if diffDays == 0, same day login → streak unchanged
         } else {
             streak = 1; // first login
         }
@@ -108,15 +105,17 @@ public class LoginStreakFragment extends Fragment {
     }
 
     private void highlightDays(int streak, int todayWeekDay) {
-        // Reset all days to "missed" color
+        // Reset all days to gray
         for (TextView day : daysOfWeek) {
             day.setBackgroundColor(Color.LTGRAY);
             day.setTextColor(Color.WHITE);
         }
 
-        // Highlight days logged in
+        // Only highlight last 7 days
+        int daysToHighlight = Math.min(streak, 7);
+
         int index = todayWeekDay - 1; // Calendar.SUNDAY=1 → index=0
-        for (int i = 0; i < streak; i++) {
+        for (int i = 0; i < daysToHighlight; i++) {
             int dayIndex = (index - i + 7) % 7;
             daysOfWeek[dayIndex].setBackgroundColor(Color.GREEN);
             daysOfWeek[dayIndex].setTextColor(Color.WHITE);
