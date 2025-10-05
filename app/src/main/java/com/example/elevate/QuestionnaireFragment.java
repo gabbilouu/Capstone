@@ -13,39 +13,37 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
-public class QuestionaireFragment extends Fragment {
+public class QuestionnaireFragment extends Fragment {
 
     private NavController navC;
 
     private Button option1, option2, option3, option4, option5, nextButton;
     private Button selectedOption = null;
 
-    // ✅ SharedPreferences keys
     private static final String PREFS_NAME = "UserChoicesPrefs";
     private static final String KEY_GOAL = "userGoal";
 
-    public QuestionaireFragment() { }
+    // ✅ Argument key to determine flow
+    private static final String ARG_FROM_WELCOME = "from_welcome";
+    private boolean fromWelcome = false;
 
-    public static QuestionaireFragment newInstance(String param1, String param2) {
-        QuestionaireFragment fragment = new QuestionaireFragment();
-        Bundle args = new Bundle();
-        args.putString("param1", param1);
-        args.putString("param2", param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+    public QuestionnaireFragment() { }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_questionaire, container, false);
+        return inflater.inflate(R.layout.fragment_questionnaire, container, false);
     }
 
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
         navC = Navigation.findNavController(view);
+
+        // ✅ Check if this fragment was opened from WelcomeFragment
+        if (getArguments() != null) {
+            fromWelcome = getArguments().getBoolean(ARG_FROM_WELCOME, false);
+        }
 
         // Initialize buttons
         option1 = view.findViewById(R.id.option1);
@@ -55,11 +53,10 @@ public class QuestionaireFragment extends Fragment {
         option5 = view.findViewById(R.id.option5);
         nextButton = view.findViewById(R.id.nextButton);
 
-        // ✅ Load previous selection (if any)
         SharedPreferences prefs = requireContext().getSharedPreferences(PREFS_NAME, 0);
         String savedGoal = prefs.getString(KEY_GOAL, null);
 
-        // ✅ Highlight the previously selected button
+        // Highlight previously selected option
         if (savedGoal != null) {
             if (option1.getText().toString().equals(savedGoal)) selectedOption = option1;
             else if (option2.getText().toString().equals(savedGoal)) selectedOption = option2;
@@ -71,19 +68,14 @@ public class QuestionaireFragment extends Fragment {
                 selectedOption.setBackgroundColor(getResources().getColor(android.R.color.holo_blue_light));
         }
 
-        // ✅ Click listener for options
         View.OnClickListener optionClickListener = v -> {
-            // Reset previous selection
             if (selectedOption != null) {
                 selectedOption.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
             }
-            // Highlight current selection
             selectedOption = (Button) v;
             selectedOption.setBackgroundColor(getResources().getColor(android.R.color.holo_blue_light));
 
-            // ✅ Save selected goal
-            String selectedGoal = selectedOption.getText().toString();
-            prefs.edit().putString(KEY_GOAL, selectedGoal).apply();
+            prefs.edit().putString(KEY_GOAL, selectedOption.getText().toString()).apply();
         };
 
         option1.setOnClickListener(optionClickListener);
@@ -92,19 +84,30 @@ public class QuestionaireFragment extends Fragment {
         option4.setOnClickListener(optionClickListener);
         option5.setOnClickListener(optionClickListener);
 
-        // ✅ "Next" button logic
         nextButton.setOnClickListener(v -> {
             if (selectedOption == null) {
                 Toast.makeText(getContext(), "Please select an option", Toast.LENGTH_SHORT).show();
                 return;
             }
 
-            // ✅ Save again (to ensure it's persisted)
-            String selectedGoal = selectedOption.getText().toString();
-            prefs.edit().putString(KEY_GOAL, selectedGoal).apply();
+            // Save selection
+            prefs.edit().putString(KEY_GOAL, selectedOption.getText().toString()).apply();
 
-            // ✅ Go back to SettingsFragment instead of ThanksFragment
-            navC.navigate(R.id.action_questionaireFragment_to_settingsFragment);
+            // ✅ Conditional navigation
+            if (fromWelcome) {
+                navC.navigate(R.id.action_questionnaireFragment_to_thanksFragment);
+            } else {
+                navC.navigate(R.id.action_questionnaireFragment_to_settingsFragment);
+            }
         });
+    }
+
+    // ✅ Helper method to create instance with argument
+    public static QuestionnaireFragment newInstance(boolean fromWelcome) {
+        QuestionnaireFragment fragment = new QuestionnaireFragment();
+        Bundle args = new Bundle();
+        args.putBoolean(ARG_FROM_WELCOME, fromWelcome);
+        fragment.setArguments(args);
+        return fragment;
     }
 }

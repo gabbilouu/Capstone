@@ -60,18 +60,47 @@ public class WelcomeFragment extends Fragment {
         nextButton.setOnClickListener(v -> {
             String name = inputName.getText().toString().trim();
             String birthday = inputBirthday.getText().toString().trim();
+            String other = inputOther.getText().toString().trim();
 
-            // Name is required
-            if (TextUtils.isEmpty(name)) {
-                inputName.setError("Name is required");
+            // Require first and last name
+            if (TextUtils.isEmpty(name) || !name.contains(" ")) {
+                inputName.setError("Please enter both first and last name");
                 inputName.requestFocus();
                 return;
             }
 
-            // All validations passed → navigate to Thanks fragment
-            Toast.makeText(getContext(), "Welcome, " + name + "!", Toast.LENGTH_SHORT).show();
-            navC.navigate(R.id.action_welcomeFragment_to_questionaireFragment);
+            // Capitalize first letters of first and last name
+            String[] nameParts = name.split("\\s+");
+            StringBuilder formattedName = new StringBuilder();
+            for (String part : nameParts) {
+                if (part.length() > 0) {
+                    formattedName.append(Character.toUpperCase(part.charAt(0)))
+                            .append(part.substring(1).toLowerCase())
+                            .append(" ");
+                }
+            }
+            String finalName = formattedName.toString().trim();
+
+            // Optional: format birthday if needed
+            String formattedBirthday = birthday; // you can format this differently if you want
+
+            // Create a bundle to pass to the next fragment
+            Bundle bundle = new Bundle();
+            bundle.putString("user_name", finalName);
+            bundle.putString("user_birthday", formattedBirthday);
+            bundle.putString("user_other", other);
+
+            // ✅ Add flag to indicate coming from WelcomeFragment
+            bundle.putBoolean("from_welcome", true);
+
+            // Navigate to next fragment with the bundle
+            navC.navigate(R.id.action_welcomeFragment_to_questionnaireFragment, bundle);
+
+            // Optional toast
+            Toast.makeText(getContext(), "Welcome, " + finalName + "!", Toast.LENGTH_SHORT).show();
         });
+
+
     }
 
     private void showDatePickerDialog() {

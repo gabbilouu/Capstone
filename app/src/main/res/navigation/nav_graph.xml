@@ -3,15 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/loginFragment">
+    app:startDestination="@id/splashFragment">
 
     <fragment
-        android:id="@+id/loginFragment"
-        android:name="com.example.elevate.LoginFragment"
+        android:id="@+id/splashFragment"
+        android:name="com.example.elevate.SplashFragment"
         android:label="fragment_login"
-        tools:layout="@layout/fragment_login" >
+        tools:layout="@layout/fragment_splash" >
         <action
-            android:id="@+id/action_loginFragment_to_startingFragment"
+            android:id="@+id/action_splashFragment_to_startingFragment"
             app:destination="@id/startingFragment" />
     </fragment>
     <fragment
@@ -92,26 +92,26 @@
             android:id="@+id/action_settingsFragment_to_notificationsFragment"
             app:destination="@id/notificationsFragment" />
         <action
-            android:id="@+id/action_settingsFragment_to_socialsFragment"
-            app:destination="@id/socialsFragment" />
-        <action
             android:id="@+id/action_settingsFragment_to_contactUsFragment"
             app:destination="@id/contactUsFragment" />
         <action
             android:id="@+id/action_settingsFragment_to_FAQFragment"
             app:destination="@id/FAQFragment" />
         <action
-            android:id="@+id/action_settingsFragment_to_questionaireFragment"
-            app:destination="@id/questionaireFragment" />
+            android:id="@+id/action_settingsFragment_to_questionnaireFragment"
+            app:destination="@id/questionnaireFragment" />
     </fragment>
     <fragment
-        android:id="@+id/loginpageFragment"
-        android:name="com.example.elevate.loginpage"
-        android:label="fragment_loginpage"
-        tools:layout="@layout/fragment_loginpage" >
+        android:id="@+id/LoginPageFragment"
+        android:name="com.example.elevate.LoginPageFragment"
+        android:label="fragment_login_page"
+        tools:layout="@layout/fragment_login_page" >
         <action
-            android:id="@+id/action_loginpageFragment_to_assessmentFragment"
+            android:id="@+id/action_LoginPageFragment_to_assessmentFragment"
             app:destination="@id/assessmentFragment" />
+        <action
+            android:id="@+id/action_LoginPageFragment_to_welcomeFragment"
+            app:destination="@id/welcomeFragment" />
     </fragment>
     <fragment
         android:id="@+id/SignUpFragment"
@@ -119,19 +119,19 @@
         android:label="fragment_SignUp"
         tools:layout="@layout/fragment_sign_up" >
         <action
-            android:id="@+id/action_SignUpFragment_to_welcomeFragment"
-            app:destination="@id/welcomeFragment" />
+            android:id="@+id/action_SignUpFragment_to_startingFragment"
+            app:destination="@id/startingFragment" />
     </fragment>
     <fragment
-        android:id="@+id/questionaireFragment"
-        android:name="com.example.elevate.QuestionaireFragment"
-        android:label="fragment_questionaire"
-        tools:layout="@layout/fragment_questionaire" >
+        android:id="@+id/questionnaireFragment"
+        android:name="com.example.elevate.QuestionnaireFragment"
+        android:label="fragment_questionnaire"
+        tools:layout="@layout/fragment_questionnaire" >
         <action
-            android:id="@+id/action_questionaireFragment_to_thanksFragment"
+            android:id="@+id/action_questionnaireFragment_to_thanksFragment"
             app:destination="@id/thanksFragment" />
         <action
-            android:id="@+id/action_questionaireFragment_to_settingsFragment"
+            android:id="@+id/action_questionnaireFragment_to_settingsFragment"
             app:destination="@id/settingsFragment" />
     </fragment>
     <fragment
@@ -209,8 +209,8 @@
         android:label="fragment_welcome"
         tools:layout="@layout/fragment_welcome" >
         <action
-            android:id="@+id/action_welcomeFragment_to_questionaireFragment"
-            app:destination="@id/questionaireFragment" />
+            android:id="@+id/action_welcomeFragment_to_questionnaireFragment"
+            app:destination="@id/questionnaireFragment" />
     </fragment>
     <fragment
         android:id="@+id/loginStreakFragment"
@@ -244,11 +244,6 @@
         android:label="fragment_terms_of_use"
         tools:layout="@layout/fragment_terms_of_use" />
     <fragment
-        android:id="@+id/socialsFragment"
-        android:name="com.example.elevate.SocialsFragment"
-        android:label="fragment_socials"
-        tools:layout="@layout/fragment_socials" />
-    <fragment
         android:id="@+id/newTaskFragment"
         android:name="com.example.elevate.NewTaskFragment"
         android:label="fragment_new_task"
@@ -273,7 +268,7 @@
             app:destination="@id/SignUpFragment" />
         <action
             android:id="@+id/action_startingFragment_to_loginpageFragment"
-            app:destination="@id/loginpageFragment" />
+            app:destination="@id/LoginPageFragment" />
     </fragment>
     <fragment
         android:id="@+id/notificationsFragment"

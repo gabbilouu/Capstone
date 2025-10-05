@@ -11,16 +11,16 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
-public class LoginFragment extends Fragment {
+public class SplashFragment extends Fragment {
 
     private NavController navC;
 
-    public LoginFragment() {
+    public SplashFragment() {
         // Required empty public constructor
     }
 
-    public static LoginFragment newInstance(String param1, String param2) {
-        LoginFragment fragment = new LoginFragment();
+    public static SplashFragment newInstance(String param1, String param2) {
+        SplashFragment fragment = new SplashFragment();
         Bundle args = new Bundle();
         args.putString("param1", param1);
         args.putString("param2", param2);
@@ -32,7 +32,7 @@ public class LoginFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_login, container, false);
+        return inflater.inflate(R.layout.fragment_splash, container, false);
     }
 
     @Override
@@ -45,9 +45,9 @@ public class LoginFragment extends Fragment {
         // Set click listener on the entire root view
         view.setOnClickListener(v -> {
             if (navC != null) {
-                navC.navigate(R.id.action_loginFragment_to_startingFragment);
+                navC.navigate(R.id.action_splashFragment_to_startingFragment);
             } else {
-                Log.e("LoginFragment", "NavController is null!");
+                Log.e("SplashFragment", "NavController is null!");
             }
         });
     }

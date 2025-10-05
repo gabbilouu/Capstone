@@ -23,22 +23,19 @@ import java.util.regex.Pattern;
 public class SignUpFragment extends Fragment {
 
     private NavController navC;
-    private EditText emailInput, passwordInput;
+    private EditText emailInput, passwordInput, confirmPasswordInput;
     private Button signUpButton;
     private FirebaseAuth mAuth;
 
-    // Password pattern: 8+ chars, 1 uppercase, 1 number, 1 special char
     private static final Pattern PASSWORD_PATTERN =
             Pattern.compile("^" +
-                    "(?=.*[0-9])" +         // at least 1 digit
-                    "(?=.*[A-Z])" +         // at least 1 uppercase
-                    "(?=.*[@#$%^&+=!])" +   // at least 1 special char
-                    ".{8,}" +               // at least 8 characters
+                    "(?=.*[0-9])" +
+                    "(?=.*[A-Z])" +
+                    "(?=.*[@#$%^&+=!])" +
+                    ".{8,}" +
                     "$");
 
-    public SignUpFragment() {
-        // Required empty public constructor
-    }
+    public SignUpFragment() { }
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -55,6 +52,7 @@ public class SignUpFragment extends Fragment {
 
         emailInput = view.findViewById(R.id.email_input);
         passwordInput = view.findViewById(R.id.password_input);
+        confirmPasswordInput = view.findViewById(R.id.confirm_password_input);
         signUpButton = view.findViewById(R.id.sign_up_button);
 
         signUpButton.setOnClickListener(v -> validateAndSignUp());
@@ -63,6 +61,7 @@ public class SignUpFragment extends Fragment {
     private void validateAndSignUp() {
         String email = emailInput.getText().toString().trim();
         String password = passwordInput.getText().toString();
+        String confirmPassword = confirmPasswordInput.getText().toString();
 
         if (!isValidUniversityEmail(email)) {
             emailInput.setError("Enter a valid university email");
@@ -76,17 +75,31 @@ public class SignUpFragment extends Fragment {
             return;
         }
 
-        // ✅ Create Firebase user
+        if (!password.equals(confirmPassword)) {
+            confirmPasswordInput.setError("Passwords do not match");
+            confirmPasswordInput.requestFocus();
+            return;
+        }
+
         mAuth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         FirebaseUser user = mAuth.getCurrentUser();
                         if (user != null) {
-                            Toast.makeText(getContext(),
-                                    "Signup successful! Welcome " + user.getEmail(),
-                                    Toast.LENGTH_SHORT).show();
+                            user.sendEmailVerification().addOnCompleteListener(emailTask -> {
+                                if (emailTask.isSuccessful()) {
+                                    Toast.makeText(getContext(),
+                                            "Signup successful! Verification email sent to " + user.getEmail(),
+                                            Toast.LENGTH_LONG).show();
+                                    mAuth.signOut(); // sign out until verified
+                                    navC.navigate(R.id.action_SignUpFragment_to_startingFragment);
+                                } else {
+                                    Toast.makeText(getContext(),
+                                            "Failed to send verification email: " + emailTask.getException().getMessage(),
+                                            Toast.LENGTH_LONG).show();
+                                }
+                            });
                         }
-                        navC.navigate(R.id.action_SignUpFragment_to_welcomeFragment);
                     } else {
                         Toast.makeText(getContext(),
                                 "Signup failed: " + task.getException().getMessage(),

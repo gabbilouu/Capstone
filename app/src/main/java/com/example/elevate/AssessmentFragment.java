@@ -72,7 +72,7 @@ public class AssessmentFragment extends Fragment {
                 case R.id.emojiNeutral: mood = "Neutral"; break;
                 case R.id.emojiSad: mood = "Sad"; break;
                 case R.id.emojiVerySad: mood = "Very Sad"; break;
-                default: mood = "Neutral";
+                default: mood = "Unknown";
             }
 
             // Save today's mood to SharedPreferences

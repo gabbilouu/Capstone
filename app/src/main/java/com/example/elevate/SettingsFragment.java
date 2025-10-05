@@ -2,7 +2,6 @@ package com.example.elevate;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,6 +52,18 @@ public class SettingsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         navC = Navigation.findNavController(view);
 
+        // --- Load name & pronoun from SharedPreferences ---
+        SharedPreferences userPrefs = requireContext().getSharedPreferences("UserPrefs", 0);
+        String userName = userPrefs.getString("user_name", ""); // default blank
+        String userPronoun = userPrefs.getString("user_pronoun", ""); // default blank
+
+        TextView profileName = view.findViewById(R.id.profileName);
+        String displayText = userName;
+        if (!userPronoun.isEmpty()) {
+            displayText += " ✏️ " + userPronoun;
+        }
+        profileName.setText(displayText);
+
         // --- User since ---
         FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
         TextView userSince = view.findViewById(R.id.userSince);
@@ -86,21 +97,26 @@ public class SettingsFragment extends Fragment {
         Button faqButton = view.findViewById(R.id.faqButton);
         Button contactUsButton = view.findViewById(R.id.contactUsButton);
 
-        // My Goals button — shows user's goal and lets them change it
+        // --- My Goals button ---
         myGoalsButton.setOnClickListener(v -> {
-            SharedPreferences prefs = requireContext().getSharedPreferences(PREFS_NAME, 0);
-            String currentGoal = prefs.getString(KEY_GOAL, "No goal set");
+            SharedPreferences goalPrefs = requireContext().getSharedPreferences(PREFS_NAME, 0);
+            String currentGoal = goalPrefs.getString(KEY_GOAL, "No goal set");
 
             new AlertDialog.Builder(requireContext())
                     .setTitle("Your Goal")
                     .setMessage("You selected:\n\n" + currentGoal)
-                    .setPositiveButton("Change Goal", (dialog, which) ->
-                            navC.navigate(R.id.action_settingsFragment_to_questionaireFragment))
+                    .setPositiveButton("Change Goal", (dialog, which) -> {
+                        // ✅ Pass argument to indicate NOT coming from WelcomeFragment
+                        Bundle args = new Bundle();
+                        args.putBoolean("from_welcome", false);  // Important
+                        navC.navigate(R.id.action_settingsFragment_to_questionnaireFragment, args);
+                    })
                     .setNegativeButton("Close", null)
                     .show();
         });
 
-        // Other button navigations
+
+        // --- Other button navigations ---
         generalButton.setOnClickListener(v -> navC.navigate(R.id.action_settingsFragment_to_generalSettingsFragment));
         aboutButton.setOnClickListener(v -> navC.navigate(R.id.action_settingsFragment_to_aboutFragment));
         notificationsButton.setOnClickListener(v -> navC.navigate(R.id.action_settingsFragment_to_notificationsFragment));
