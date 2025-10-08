@@ -49,6 +49,12 @@
         <action
             android:id="@+id/action_taskListFragment_to_editTaskFragment"
             app:destination="@id/editTaskFragment" />
+        <action
+            android:id="@+id/action_taskListFragment_to_editTaskFragment2"
+            app:destination="@id/editTaskFragment" />
+        <action
+            android:id="@+id/action_taskListFragment_to_editTaskFragment3"
+            app:destination="@id/editTaskFragment" />
     </fragment>
     <fragment
         android:id="@+id/eventFragment"
@@ -247,7 +253,11 @@
         android:id="@+id/newTaskFragment"
         android:name="com.example.elevate.NewTaskFragment"
         android:label="fragment_new_task"
-        tools:layout="@layout/fragment_new_task" />
+        tools:layout="@layout/fragment_new_task" >
+        <action
+            android:id="@+id/action_newTaskFragment_to_taskListFragment"
+            app:destination="@id/taskListFragment" />
+    </fragment>
     <fragment
         android:id="@+id/newEventFragment"
         android:name="com.example.elevate.NewEventFragment"
@@ -257,7 +267,11 @@
         android:id="@+id/editTaskFragment"
         android:name="com.example.elevate.EditTaskFragment"
         android:label="fragment_edit_task"
-        tools:layout="@layout/fragment_edit_task" />
+        tools:layout="@layout/fragment_edit_task" >
+        <action
+            android:id="@+id/action_editTaskFragment_to_taskListFragment"
+            app:destination="@id/taskListFragment" />
+    </fragment>
     <fragment
         android:id="@+id/startingFragment"
         android:name="com.example.elevate.StartingFragment"

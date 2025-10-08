@@ -18,6 +18,7 @@
             android:gravity="center_vertical">
 
             <Button
+                android:id="@+id/btnCancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Cancel"
@@ -34,6 +35,7 @@
                 android:textStyle="bold"/>
 
             <Button
+                android:id="@+id/btnAdd"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Add"
@@ -49,15 +51,21 @@
             android:gravity="center"
             android:padding="24dp">
 
-            <ImageView
+            <TextView
+                android:id="@+id/ivTaskEmoji"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
-                android:src="@drawable/ic_sleep" />
+                android:gravity="center"
+                android:textSize="40sp"
+                android:text="📝"
+                android:contentDescription="Task Emoji" />
+
 
             <EditText
+                android:id="@+id/editText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:hint="Enter a new task"
+                android:hint="Task Name"
                 android:gravity="center"
                 android:textSize="16sp"
                 android:background="@android:color/transparent"/>
@@ -159,6 +167,7 @@
                     android:layout_gravity="center_vertical"/>
 
                 <Spinner
+                    android:id="@+id/spinnerRepeat"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:entries="@array/repeat_options"/>
@@ -186,7 +195,9 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp"
+                android:gravity="center_vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -194,16 +205,16 @@
                     android:text="Task Type"
                     android:layout_gravity="center_vertical"/>
 
-                <Button
-                    android:layout_width="wrap_content"
+                <Spinner
+                    android:id="@+id/spinnerTaskType"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Sleep"
-                    android:textColor="@android:color/white"
-                    android:background="#47675E"/>
+                    android:entries="@array/task_type_options" />
             </LinearLayout>
 
             <!-- Notes -->
             <EditText
+                android:id="@+id/editTextNotes"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
                 android:hint="Notes"

@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -9,7 +10,7 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Header with Cancel and Add -->
+        <!-- Header with Cancel and Save -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -17,6 +18,7 @@
             android:gravity="center_vertical">
 
             <Button
+                android:id="@+id/btnCancel"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Cancel"
@@ -33,14 +35,15 @@
                 android:textStyle="bold"/>
 
             <Button
+                android:id="@+id/btnSave"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Add"
+                android:text="Save"
                 android:background="@android:color/holo_green_dark"
                 android:textColor="@android:color/white"/>
         </LinearLayout>
 
-        <!-- Task Icon + Pre-filled Name -->
+        <!-- Task Icon + Task Name -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -48,16 +51,20 @@
             android:gravity="center"
             android:padding="24dp">
 
-            <ImageView
+            <TextView
+                android:id="@+id/tvTaskEmoji"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
-                android:src="@drawable/ic_sleep" />
+                android:gravity="center"
+                android:textSize="40sp"
+                android:text="📝"
+                android:contentDescription="Task Emoji" />
 
             <EditText
+                android:id="@+id/etTaskName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Task Name"
-                android:text="Task Name"
                 android:gravity="center"
                 android:textSize="16sp"
                 android:background="@android:color/transparent"/>
@@ -80,58 +87,88 @@
             android:elevation="2dp"
             android:padding="8dp">
 
-            <!-- Start -->
+            <!-- Start Row -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Start" />
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="center_vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Start"/>
+                android:weightSum="2"
+                android:layout_marginTop="4dp">
 
                 <Button
-                    android:layout_width="wrap_content"
+                    android:id="@+id/btnStartDate"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Sep 8, 2025   00:00AM"/>
-            </LinearLayout>
-
-            <!-- End -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="End"/>
+                    android:layout_weight="1"
+                    android:text="Sep 8, 2025"
+                    android:textColor="@android:color/white"
+                    android:background="#47675E"/>
 
                 <Button
-                    android:layout_width="wrap_content"
+                    android:id="@+id/btnStartTime"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Sep 8, 2025   00:00AM"/>
+                    android:layout_weight="1"
+                    android:text="00:00AM"
+                    android:textColor="@android:color/white"
+                    android:background="#47675E"/>
             </LinearLayout>
 
-            <!-- Repeat -->
+            <!-- End Row -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="End"
+                android:layout_marginTop="8dp"/>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:weightSum="2"
+                android:layout_marginTop="4dp">
+
+                <Button
+                    android:id="@+id/btnEndDate"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Sep 8, 2025"
+                    android:textColor="@android:color/white"
+                    android:background="#47675E"/>
+
+                <Button
+                    android:id="@+id/btnEndTime"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="00:00AM"
+                    android:textColor="@android:color/white"
+                    android:background="#47675E"/>
+            </LinearLayout>
+
+            <!-- Repeat Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginTop="8dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Repeat"/>
+                    android:text="Repeat"
+                    android:layout_gravity="center_vertical"/>
 
                 <Spinner
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:entries="@array/repeat_options"/>
+                    android:id="@+id/spinnerRepeat"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
             </LinearLayout>
         </LinearLayout>
 
@@ -152,29 +189,28 @@
             android:elevation="2dp"
             android:padding="8dp">
 
-            <!-- Task Type Section -->
+            <!-- Task Type -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                android:layout_marginTop="8dp">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Task Type"
-                    android:layout_gravity="start" /> <!-- Aligns TextView to the left -->
+                    android:text="Task Type"/>
 
-                <!-- Spinner for Task Types -->
                 <Spinner
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="end"
-                    android:entries="@array/task_types" />
+                    android:id="@+id/spinnerTaskType"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
             </LinearLayout>
 
             <!-- Notes -->
             <EditText
+                android:id="@+id/etNotes"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
                 android:hint="Notes"

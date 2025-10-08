@@ -1,7 +1,11 @@
 package com.example.elevate;
 
-import android.app.AlertDialog;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -11,36 +15,28 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import android.util.Log;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.ImageButton;
+import com.google.firebase.firestore.DocumentChange;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TaskListFragment extends Fragment implements View.OnClickListener {
 
-    NavController navC = null;
-
+    private NavController navC;
     private RecyclerView recyclerView;
     private TaskAdapter adapter;
     private List<Task> taskList;
+    private List<String> docIds;
+    private FirebaseFirestore db;
 
-    public TaskListFragment() {
-        // Required empty public constructor
-    }
-
-    public static TaskListFragment newInstance(String param1, String param2) {
-        TaskListFragment fragment = new TaskListFragment();
-        Bundle args = new Bundle();
-        args.putString("param1", param1);
-        args.putString("param2", param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+    public TaskListFragment() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -51,63 +47,125 @@ public class TaskListFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-        navC = Navigation.findNavController(view);
 
-        // 🔹 Setup RecyclerView
+        navC = Navigation.findNavController(view);
+        db = FirebaseFirestore.getInstance();
+
+        taskList = new ArrayList<>();
+        docIds = new ArrayList<>();
         recyclerView = view.findViewById(R.id.recyclerViewTasks);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
 
-        // Example tasks (replace with real data later)
-        taskList = new ArrayList<>();
-        taskList.add(new Task("🌞", "Get out of bed", true));
-        taskList.add(new Task("🧴", "Do morning skincare routine", false));
-        taskList.add(new Task("🤸", "Do morning stretches", false));
-
-        adapter = new TaskAdapter(taskList, position -> showEditDialog(position));
+        adapter = new TaskAdapter(taskList, docIds);
         recyclerView.setAdapter(adapter);
 
-        // 🔹 Bottom navigation buttons
+        adapter.setOnItemClickListener((task, taskId) -> {
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("task", task);
+            bundle.putString("taskId", taskId);
+            navC.navigate(R.id.action_taskListFragment_to_editTaskFragment, bundle);
+        });
+
+        listenToFirebaseTasks();
+        resetTasksIfNeeded();
+
+        // Bottom nav buttons
         ImageButton homeButton = view.findViewById(R.id.HomeButton);
         ImageButton listButton = view.findViewById(R.id.CalendarButton);
         ImageButton profileButton = view.findViewById(R.id.SettingsButton);
+        ImageButton taskButton = view.findViewById(R.id.TaskButton);
 
         if (homeButton != null) homeButton.setOnClickListener(this);
-        else Log.e("TaskListFragment", "HomeButton not found!");
-
         if (listButton != null) listButton.setOnClickListener(this);
-        else Log.e("TaskListFragment", "ListButton not found!");
-
         if (profileButton != null) profileButton.setOnClickListener(this);
-        else Log.e("TaskListFragment", "ProfileButton not found!");
+        if (taskButton != null) taskButton.setOnClickListener(v ->
+                navC.navigate(R.id.action_taskListFragment_to_newTaskFragment));
     }
 
-    private void showEditDialog(int position) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(requireContext());
-        builder.setTitle("Edit Task");
+    private void listenToFirebaseTasks() {
+        db.collection("tasks").addSnapshotListener((value, error) -> {
+            if (error != null) {
+                Log.e("Firestore", "Listen failed.", error);
+                return;
+            }
+            if (value == null) return;
 
-        final EditText input = new EditText(requireContext());
-        input.setText(taskList.get(position).getName());
-        builder.setView(input);
+            taskList.clear();
+            docIds.clear();
 
-        builder.setPositiveButton("Save", (dialog, which) -> {
-            taskList.get(position).setName(input.getText().toString());
-            adapter.notifyItemChanged(position);
+            for (DocumentChange dc : value.getDocumentChanges()) {
+                Task task = dc.getDocument().toObject(Task.class);
+                String docId = dc.getDocument().getId();
+
+                switch (dc.getType()) {
+                    case ADDED:
+                        taskList.add(task);
+                        docIds.add(docId);
+                        break;
+                    case MODIFIED:
+                        int index = findTaskIndex(docId);
+                        if (index != -1) taskList.set(index, task);
+                        break;
+                    case REMOVED:
+                        index = findTaskIndex(docId);
+                        if (index != -1) {
+                            taskList.remove(index);
+                            docIds.remove(index);
+                        }
+                        break;
+                }
+            }
+            adapter.notifyDataSetChanged();
         });
+    }
 
-        builder.setNegativeButton("Cancel", null);
-        builder.show();
+    private int findTaskIndex(String docId) {
+        return docIds.indexOf(docId);
+    }
+
+    private void resetTasksIfNeeded() {
+        db.collection("tasks").get().addOnSuccessListener(querySnapshot -> {
+            Calendar today = Calendar.getInstance();
+
+            for (var doc : querySnapshot.getDocuments()) {
+                Task task = doc.toObject(Task.class);
+                if (task == null) continue;
+
+                boolean shouldReset = false;
+
+                switch (task.getRepeatType()) {
+                    case "Daily": shouldReset = true; break;
+                    case "Weekly":
+                        shouldReset = today.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY;
+                        break;
+                    case "Monthly":
+                        shouldReset = today.get(Calendar.DAY_OF_MONTH) == 1;
+                        break;
+                    case "Select Days":
+                        String[] weekdays = {"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
+                        Calendar yesterday = (Calendar) today.clone();
+                        yesterday.add(Calendar.DAY_OF_MONTH, -1);
+                        String yesterdayStr = weekdays[yesterday.get(Calendar.DAY_OF_WEEK)-1];
+                        if (task.getRepeatDays() != null && task.getRepeatDays().contains(yesterdayStr))
+                            shouldReset = true;
+                        break;
+                }
+
+                if (shouldReset && task.isCompleted()) {
+                    Map<String,Object> updates = new HashMap<>();
+                    updates.put("completed", false);
+                    db.collection("tasks").document(doc.getId()).update(updates);
+                }
+            }
+        });
     }
 
     @Override
     public void onClick(View v) {
-        if (navC != null) {
-            if (v.getId() == R.id.HomeButton) {
-                navC.navigate(R.id.action_taskListFragment_to_homePageFragment);
-            } else if (v.getId() == R.id.CalendarButton) {
-                navC.navigate(R.id.action_taskListFragment_to_eventFragment);
-            } else if (v.getId() == R.id.SettingsButton) {
-                navC.navigate(R.id.action_taskListFragment_to_settingsFragment);
-            }
-        }
+        if (navC == null) return;
+        int id = v.getId();
+        if (id == R.id.HomeButton) navC.navigate(R.id.action_taskListFragment_to_homePageFragment);
+        else if (id == R.id.CalendarButton) navC.navigate(R.id.action_taskListFragment_to_eventFragment);
+        else if (id == R.id.SettingsButton) navC.navigate(R.id.action_taskListFragment_to_settingsFragment);
     }
 }

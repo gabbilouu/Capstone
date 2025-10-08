@@ -8,5 +8,25 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 
+    <string-array name="repeat_options">
+        <item>None</item>
+        <item>Daily</item>
+        <item>Weekly</item>
+        <item>Monthly</item>
+        <item>Select Days</item>
+    </string-array>
+
+    <string-array name="task_type_options">
+        <item>Sleep 💤</item>
+        <item>Nutrition 🍎</item>
+        <item>Workout 🏋️</item>
+        <item>Self-Care 💅</item>
+        <item>Journaling ✍️</item>
+        <item>Academics 📚</item>
+        <item>Hygiene 🪥</item>
+        <item>Productivity 💻</item>
+        <item>Add New ➕</item>
+    </string-array>
+
 
 </resources>

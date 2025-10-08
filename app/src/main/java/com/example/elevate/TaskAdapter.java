@@ -12,35 +12,39 @@ import java.util.List;
 
 public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder> {
 
-    public interface OnTaskEditListener {
-        void onEdit(int position);
+    private final List<Task> taskList;
+    private final List<String> docIds;
+    private OnItemClickListener listener;
+
+    public TaskAdapter(List<Task> taskList, List<String> docIds) {
+        this.taskList = taskList;
+        this.docIds = docIds;
     }
 
-    private List<Task> taskList;
-    private OnTaskEditListener editListener;
+    public interface OnItemClickListener {
+        void onItemClick(Task task, String taskId);
+    }
 
-    public TaskAdapter(List<Task> taskList, OnTaskEditListener editListener) {
-        this.taskList = taskList;
-        this.editListener = editListener;
+    public void setOnItemClickListener(OnItemClickListener listener) {
+        this.listener = listener;
     }
 
     @NonNull
     @Override
     public TaskViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_task, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_task, parent, false);
         return new TaskViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull TaskViewHolder holder, int position) {
         Task task = taskList.get(position);
-        holder.tvIcon.setText(task.getIcon());
-        holder.tvTaskName.setText(task.getName());
-        holder.tvStatus.setText(task.isDone() ? "✔️" : "❌");
+        holder.tvEmoji.setText(task.getEmoji());
+        holder.tvName.setText(task.getName());
 
-        // Edit when clicking the task name
-        holder.itemView.setOnClickListener(v -> editListener.onEdit(position));
+        holder.itemView.setOnClickListener(v -> {
+            if (listener != null) listener.onItemClick(task, docIds.get(position));
+        });
     }
 
     @Override
@@ -49,13 +53,12 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
     }
 
     static class TaskViewHolder extends RecyclerView.ViewHolder {
-        TextView tvIcon, tvTaskName, tvStatus;
+        TextView tvEmoji, tvName;
 
-        TaskViewHolder(View itemView) {
+        public TaskViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvIcon = itemView.findViewById(R.id.tvIcon);
-            tvTaskName = itemView.findViewById(R.id.tvTaskName);
-            tvStatus = itemView.findViewById(R.id.tvStatus);
+            tvEmoji = itemView.findViewById(R.id.tvTaskEmoji);
+            tvName = itemView.findViewById(R.id.tvTaskName);
         }
     }
 }
