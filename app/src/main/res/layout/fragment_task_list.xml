@@ -13,8 +13,7 @@
         android:orientation="horizontal"
         android:gravity="center_vertical"
         android:padding="16dp"
-        android:layout_alignParentTop="true"
-        android:layout_above="@+id/bottomNav">
+        android:layout_alignParentTop="true">
 
         <TextView
             android:layout_width="0dp"
@@ -32,7 +31,6 @@
             android:text="⟳ calculating..."
             android:textSize="14sp"
             android:textColor="@android:color/darker_gray" />
-
     </LinearLayout>
 
     <!-- RecyclerView -->
@@ -41,7 +39,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/titleRow"
-        android:layout_above="@+id/addTaskBar"
+        android:layout_above="@id/addTaskBar"
         android:scrollbars="vertical" />
 
     <!-- Add Task Bar -->

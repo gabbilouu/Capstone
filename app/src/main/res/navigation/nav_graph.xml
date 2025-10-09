@@ -118,6 +118,9 @@
         <action
             android:id="@+id/action_LoginPageFragment_to_welcomeFragment"
             app:destination="@id/welcomeFragment" />
+        <action
+            android:id="@+id/action_LoginPageFragment_to_homePageFragment"
+            app:destination="@id/homePageFragment" />
     </fragment>
     <fragment
         android:id="@+id/SignUpFragment"

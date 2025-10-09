@@ -36,7 +36,7 @@ public class EditTaskFragment extends Fragment {
         etNotes = view.findViewById(R.id.etNotes);
         spinnerRepeat = view.findViewById(R.id.spinnerRepeat);
         spinnerTaskType = view.findViewById(R.id.spinnerTaskType);
-        btnSave = view.findViewById(R.id.btnSave);
+        btnSave = view.findViewById(R.id.btnAdd);
         btnCancel = view.findViewById(R.id.btnCancel);
 
         db = FirebaseFirestore.getInstance();

@@ -1,6 +1,7 @@
 package com.example.elevate;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.List;
 
 public class Task implements Serializable {
@@ -16,6 +17,9 @@ public class Task implements Serializable {
     private String taskType;      // Sleep, Exercise, etc.
     private String notes;
     private boolean completed;
+
+// + getters and setters
+
 
     public Task() {
         // Firestore requires empty constructor

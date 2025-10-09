@@ -62,7 +62,7 @@
 
 
             <EditText
-                android:id="@+id/editText"
+                android:id="@+id/etTaskName"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="Task Name"
@@ -214,7 +214,7 @@
 
             <!-- Notes -->
             <EditText
-                android:id="@+id/editTextNotes"
+                android:id="@+id/etNotes"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
                 android:hint="Notes"

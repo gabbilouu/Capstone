@@ -21,6 +21,10 @@ import androidx.navigation.Navigation;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Locale;
+
 public class LoginPageFragment extends Fragment {
 
     private FirebaseAuth mAuth;
@@ -102,14 +106,23 @@ public class LoginPageFragment extends Fragment {
     }
 
     private void handleFirstLoginNavigation(FirebaseUser user, SharedPreferences prefs) {
+        // Keys for first login
         String firstLoginKey = "firstLoginDone_" + user.getUid();
         boolean firstLoginDone = prefs.getBoolean(firstLoginKey, false);
+
+        // Key for today's assessment
+        String todayKey = new SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Calendar.getInstance().getTime());
+        boolean assessmentDoneToday = prefs.getBoolean("assessmentDone_" + user.getUid() + "_" + todayKey, false);
 
         if (!firstLoginDone) {
             prefs.edit().putBoolean(firstLoginKey, true).apply();
             navController.navigate(R.id.action_LoginPageFragment_to_welcomeFragment);
-        } else {
+        } else if (!assessmentDoneToday) {
             navController.navigate(R.id.action_LoginPageFragment_to_assessmentFragment);
+        } else {
+            navController.navigate(R.id.action_LoginPageFragment_to_homePageFragment);
         }
     }
+
+
 }

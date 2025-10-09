@@ -1,36 +1,40 @@
 package com.example.elevate;
 
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
-import android.os.Handler;
 import android.widget.TextView;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
-
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
-import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.navigation.fragment.NavHostFragment;
+import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.RecyclerView;
+import com.google.android.material.snackbar.Snackbar;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
+import androidx.core.content.ContextCompat;
 
-import com.google.firebase.firestore.DocumentChange;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class TaskListFragment extends Fragment implements View.OnClickListener {
 
@@ -44,7 +48,6 @@ public class TaskListFragment extends Fragment implements View.OnClickListener {
     private Handler timerHandler = new Handler();
     private Runnable timerRunnable;
 
-
     public TaskListFragment() {}
 
     @Override
@@ -57,31 +60,124 @@ public class TaskListFragment extends Fragment implements View.OnClickListener {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        navC = Navigation.findNavController(view);
+        navC = NavHostFragment.findNavController(this);
         db = FirebaseFirestore.getInstance();
 
+        // Timer setup
         tvTimer = view.findViewById(R.id.tvTimer);
         startMidnightCountdown();
 
+        // RecyclerView and adapter
         taskList = new ArrayList<>();
         docIds = new ArrayList<>();
         recyclerView = view.findViewById(R.id.recyclerViewTasks);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
-
         adapter = new TaskAdapter(taskList, docIds);
         recyclerView.setAdapter(adapter);
+
+        // Add task bar
         View addTaskBar = view.findViewById(R.id.addTaskBar);
         addTaskBar.setOnClickListener(v ->
                 navC.navigate(R.id.action_taskListFragment_to_newTaskFragment)
         );
 
+        // Item click listener
         adapter.setOnItemClickListener((task, taskId) -> {
             Bundle bundle = new Bundle();
             bundle.putSerializable("task", task);
             bundle.putString("taskId", taskId);
             navC.navigate(R.id.action_taskListFragment_to_editTaskFragment, bundle);
         });
+        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+            private final ColorDrawable background = new ColorDrawable(Color.RED);
+            private final Drawable deleteIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_delete); // add this icon to res/drawable
 
+            @Override
+            public boolean onMove(@NonNull RecyclerView recyclerView,
+                                  @NonNull RecyclerView.ViewHolder viewHolder,
+                                  @NonNull RecyclerView.ViewHolder target) {
+                return false;
+            }
+
+            @Override
+            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                int position = viewHolder.getAdapterPosition();
+                String docId = docIds.get(position);
+                Task deletedTask = taskList.get(position);
+
+                // Remove locally for instant UI feedback
+                taskList.remove(position);
+                docIds.remove(position);
+                adapter.notifyItemRemoved(position);
+
+                // Show Snackbar with Undo
+                Snackbar.make(recyclerView, "Task deleted", Snackbar.LENGTH_LONG)
+                        .setAction("Undo", v -> {
+                            // Reinsert locally
+                            taskList.add(position, deletedTask);
+                            docIds.add(position, docId);
+                            adapter.notifyItemInserted(position);
+                        })
+                        .addCallback(new Snackbar.Callback() {
+                            @Override
+                            public void onDismissed(Snackbar snackbar, int event) {
+                                if (event != Snackbar.Callback.DISMISS_EVENT_ACTION) {
+                                    // Delete from Firestore only if not undone
+                                    db.collection("tasks").document(docId).delete()
+                                            .addOnSuccessListener(aVoid ->
+                                                    Log.d("TaskListFragment", "Task deleted from Firestore"))
+                                            .addOnFailureListener(e ->
+                                                    Log.e("TaskListFragment", "Error deleting task", e));
+                                }
+                            }
+                        })
+                        .show();
+            }
+
+            @Override
+            public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView,
+                                    @NonNull RecyclerView.ViewHolder viewHolder,
+                                    float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
+
+                View itemView = viewHolder.itemView;
+                int backgroundCornerOffset = 20;
+
+                if (dX < 0) { // Swiping left
+                    background.setBounds(
+                            itemView.getRight() + (int) dX - backgroundCornerOffset,
+                            itemView.getTop(),
+                            itemView.getRight(),
+                            itemView.getBottom()
+                    );
+                    background.draw(c);
+
+                    // Draw trash icon
+                    if (deleteIcon != null) {
+                        int iconMargin = (itemView.getHeight() - deleteIcon.getIntrinsicHeight()) / 2;
+                        int iconTop = itemView.getTop() + (itemView.getHeight() - deleteIcon.getIntrinsicHeight()) / 2;
+                        int iconLeft = itemView.getRight() - iconMargin - deleteIcon.getIntrinsicWidth();
+                        int iconRight = itemView.getRight() - iconMargin;
+                        int iconBottom = iconTop + deleteIcon.getIntrinsicHeight();
+
+                        deleteIcon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
+                        deleteIcon.draw(c);
+                    }
+                }
+            }
+        };
+
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
+
+        // Listen for new task results (optional, snapshot listener handles updates)
+        getParentFragmentManager().setFragmentResultListener("newTask", this,
+                (requestKey, bundle) -> {
+                    boolean added = bundle.getBoolean("taskAdded", false);
+                    if (added) Log.d("TaskListFragment", "New task added, listener updates UI.");
+                });
+
+        // Load tasks and reset if needed
         listenToFirebaseTasks();
         resetTasksIfNeeded();
 
@@ -94,8 +190,11 @@ public class TaskListFragment extends Fragment implements View.OnClickListener {
         if (homeButton != null) homeButton.setOnClickListener(this);
         if (listButton != null) listButton.setOnClickListener(this);
         if (profileButton != null) profileButton.setOnClickListener(this);
-        if (taskButton != null) taskButton.setOnClickListener(v ->
-                navC.navigate(R.id.action_taskListFragment_to_newTaskFragment));
+
+        // Task button is inert
+        if (taskButton != null) taskButton.setOnClickListener(v -> {
+            // Do nothing
+        });
     }
 
     private void startMidnightCountdown() {
@@ -117,12 +216,9 @@ public class TaskListFragment extends Fragment implements View.OnClickListener {
                 String formatted = String.format(Locale.getDefault(), "⟳ %02d hrs %02d mins", hours, minutes);
                 tvTimer.setText(formatted);
 
-                // Update once per minute
                 timerHandler.postDelayed(this, 60 * 1000);
             }
         };
-
-        // Start immediately
         timerHandler.post(timerRunnable);
     }
 
@@ -133,8 +229,6 @@ public class TaskListFragment extends Fragment implements View.OnClickListener {
             timerHandler.removeCallbacks(timerRunnable);
         }
     }
-
-
 
     private void listenToFirebaseTasks() {
         db.collection("tasks").addSnapshotListener((value, error) -> {
@@ -147,56 +241,43 @@ public class TaskListFragment extends Fragment implements View.OnClickListener {
             taskList.clear();
             docIds.clear();
 
-            for (DocumentChange dc : value.getDocumentChanges()) {
-                Task task = dc.getDocument().toObject(Task.class);
-                String docId = dc.getDocument().getId();
+            for (var doc : value.getDocuments()) {
+                Task task = doc.toObject(Task.class);
+                if (task == null) continue;
 
-                switch (dc.getType()) {
-                    case ADDED:
-                        taskList.add(task);
-                        docIds.add(docId);
-                        break;
-                    case MODIFIED:
-                        int index = findTaskIndex(docId);
-                        if (index != -1) taskList.set(index, task);
-                        break;
-                    case REMOVED:
-                        index = findTaskIndex(docId);
-                        if (index != -1) {
-                            taskList.remove(index);
-                            docIds.remove(index);
-                        }
-                        break;
-                }
+                // Ensure no null fields
+                if (task.getStartDate() == null) task.setStartDate("");
+                if (task.getEndDate() == null) task.setEndDate("");
+                if (task.getStartTime() == null) task.setStartTime("");
+                if (task.getEndTime() == null) task.setEndTime("");
+                if (task.getEmoji() == null) task.setEmoji("📝");
+                if (task.getName() == null) task.setName("Unnamed Task");
+
+                taskList.add(task);
+                docIds.add(doc.getId());
             }
             adapter.notifyDataSetChanged();
         });
     }
 
-    private int findTaskIndex(String docId) {
-        return docIds.indexOf(docId);
-    }
-
     private void resetTasksIfNeeded() {
         db.collection("tasks").get().addOnSuccessListener(querySnapshot -> {
             Calendar today = Calendar.getInstance();
+            String[] weekdays = {"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
 
             for (var doc : querySnapshot.getDocuments()) {
                 Task task = doc.toObject(Task.class);
                 if (task == null) continue;
 
                 boolean shouldReset = false;
+                String repeatType = task.getRepeatType();
+                if (repeatType == null) continue;
 
-                switch (task.getRepeatType()) {
+                switch (repeatType) {
                     case "Daily": shouldReset = true; break;
-                    case "Weekly":
-                        shouldReset = today.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY;
-                        break;
-                    case "Monthly":
-                        shouldReset = today.get(Calendar.DAY_OF_MONTH) == 1;
-                        break;
+                    case "Weekly": shouldReset = today.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY; break;
+                    case "Monthly": shouldReset = today.get(Calendar.DAY_OF_MONTH) == 1; break;
                     case "Select Days":
-                        String[] weekdays = {"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
                         Calendar yesterday = (Calendar) today.clone();
                         yesterday.add(Calendar.DAY_OF_MONTH, -1);
                         String yesterdayStr = weekdays[yesterday.get(Calendar.DAY_OF_WEEK)-1];

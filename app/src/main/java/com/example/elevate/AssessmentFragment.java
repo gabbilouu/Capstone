@@ -1,5 +1,6 @@
 package com.example.elevate;
 
+import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,6 +15,8 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
+
+import com.google.firebase.auth.FirebaseAuth;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -76,9 +79,18 @@ public class AssessmentFragment extends Fragment {
             }
 
             // Save today's mood to SharedPreferences
-            SharedPreferences prefs = requireContext().getSharedPreferences("MoodPrefs", 0);
+            SharedPreferences prefs = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
+
             String todayKey = new SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Calendar.getInstance().getTime());
-            prefs.edit().putString(todayKey, mood).apply();
+
+            FirebaseAuth mAuth = FirebaseAuth.getInstance();
+            if (mAuth.getCurrentUser() != null) {
+                String userId = mAuth.getCurrentUser().getUid();
+                // Save the mood
+                prefs.edit().putString(todayKey + "_mood", mood).apply();
+                // Mark assessment done for today
+                prefs.edit().putBoolean("assessmentDone_" + userId + "_" + todayKey, true).apply();
+            }
 
             // Optional: show confirmation
             Toast.makeText(getContext(), "Mood saved: " + mood, Toast.LENGTH_SHORT).show();
@@ -88,5 +100,6 @@ public class AssessmentFragment extends Fragment {
             bundle.putString("selectedMood", mood);
             navController.navigate(R.id.action_assessmentFragment_to_loginStreakFragment, bundle);
         });
+
     }
 }
