@@ -52,7 +52,7 @@
             android:padding="24dp">
 
             <TextView
-                android:id="@+id/tvTaskEmoji"
+                android:id="@+id/ivTaskEmoji"
                 android:layout_width="64dp"
                 android:layout_height="64dp"
                 android:gravity="center"

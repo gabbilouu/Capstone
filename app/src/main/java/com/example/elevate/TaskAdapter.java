@@ -57,7 +57,7 @@ public class TaskAdapter extends RecyclerView.Adapter<TaskAdapter.TaskViewHolder
 
         public TaskViewHolder(@NonNull View itemView) {
             super(itemView);
-            tvEmoji = itemView.findViewById(R.id.tvTaskEmoji);
+            tvEmoji = itemView.findViewById(R.id.ivTaskEmoji);
             tvName = itemView.findViewById(R.id.tvTaskName);
         }
     }

@@ -57,14 +57,51 @@ public class NewTaskFragment extends Fragment {
         db = FirebaseFirestore.getInstance();
 
         // Update emoji automatically based on task name
+        AIEmojiGenerator aiEmoji = new AIEmojiGenerator(requireContext());
+
         etTaskName.addTextChangedListener(new SimpleTextWatcher() {
             @Override
             public void onTextChanged(String text) {
-                if (!text.isEmpty()) {
-                    ivTaskEmoji.setText(text.substring(0, 1) + "📝");
-                } else {
+                String selectedType = spinnerTaskType.getSelectedItem() != null
+                        ? spinnerTaskType.getSelectedItem().toString()
+                        : "";
+                if (text.isEmpty()) {
                     ivTaskEmoji.setText("📝");
+                    return;
                 }
+
+                aiEmoji.generateEmoji(text, selectedType, new AIEmojiGenerator.EmojiCallback() {
+                    @Override
+                    public void onEmojiGenerated(String emoji) {
+                        requireActivity().runOnUiThread(() -> ivTaskEmoji.setText(emoji));
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        requireActivity().runOnUiThread(() -> ivTaskEmoji.setText("📝"));
+                    }
+                });
+            }
+        });
+
+        // Also update emoji when task type changes
+        spinnerTaskType.setOnItemSelectedListener(new SimpleItemSelectedListener() {
+            @Override
+            public void onItemSelected(String selectedType) {
+                String taskName = etTaskName.getText().toString();
+                if (taskName.isEmpty()) return;
+
+                aiEmoji.generateEmoji(taskName, selectedType, new AIEmojiGenerator.EmojiCallback() {
+                    @Override
+                    public void onEmojiGenerated(String emoji) {
+                        requireActivity().runOnUiThread(() -> ivTaskEmoji.setText(emoji));
+                    }
+
+                    @Override
+                    public void onError(Exception e) {
+                        requireActivity().runOnUiThread(() -> ivTaskEmoji.setText("📝"));
+                    }
+                });
             }
         });
 
