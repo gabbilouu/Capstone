@@ -32,6 +32,8 @@ public class AIEmojiGenerator {
     }
 
     public void generateEmoji(String taskName, String taskType, @NonNull EmojiCallback callback) {
+        Log.d("AIEmojiGenerator", "Loaded key: " + BuildConfig.OPENAI_API_KEY);
+
         String combinedPrompt = taskName + " - " + taskType;
 
         if (combinedPrompt.trim().isEmpty()) {

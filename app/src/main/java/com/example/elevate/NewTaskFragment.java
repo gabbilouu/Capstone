@@ -3,6 +3,8 @@ package com.example.elevate;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.os.Bundle;
+import android.os.Handler;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -34,6 +36,10 @@ public class NewTaskFragment extends Fragment {
     private final Calendar startCalendar = Calendar.getInstance();
     private final Calendar endCalendar = Calendar.getInstance();
 
+    // Debounce handler for AI calls
+    private final Handler emojiHandler = new Handler();
+    private Runnable emojiRunnable;
+
     public NewTaskFragment() {}
 
     @Nullable
@@ -56,35 +62,44 @@ public class NewTaskFragment extends Fragment {
 
         db = FirebaseFirestore.getInstance();
 
-        // Update emoji automatically based on task name
         AIEmojiGenerator aiEmoji = new AIEmojiGenerator(requireContext());
 
+        // Debounced AI emoji update based on task name
         etTaskName.addTextChangedListener(new SimpleTextWatcher() {
             @Override
             public void onTextChanged(String text) {
-                String selectedType = spinnerTaskType.getSelectedItem() != null
-                        ? spinnerTaskType.getSelectedItem().toString()
-                        : "";
-                if (text.isEmpty()) {
-                    ivTaskEmoji.setText("📝");
-                    return;
-                }
+                if (emojiRunnable != null) emojiHandler.removeCallbacks(emojiRunnable);
 
-                aiEmoji.generateEmoji(text, selectedType, new AIEmojiGenerator.EmojiCallback() {
-                    @Override
-                    public void onEmojiGenerated(String emoji) {
-                        requireActivity().runOnUiThread(() -> ivTaskEmoji.setText(emoji));
+                emojiRunnable = () -> {
+                    if (text.isEmpty()) {
+                        ivTaskEmoji.setText("📝");
+                        return;
                     }
 
-                    @Override
-                    public void onError(Exception e) {
-                        requireActivity().runOnUiThread(() -> ivTaskEmoji.setText("📝"));
-                    }
-                });
+                    String type = spinnerTaskType.getSelectedItem() != null
+                            ? spinnerTaskType.getSelectedItem().toString()
+                            : "General";
+
+                    aiEmoji.generateEmoji(text, type, new AIEmojiGenerator.EmojiCallback() {
+                        @Override
+                        public void onEmojiGenerated(String emoji) {
+                            requireActivity().runOnUiThread(() -> ivTaskEmoji.setText(emoji));
+                        }
+
+                        @Override
+                        public void onError(Exception e) {
+                            requireActivity().runOnUiThread(() -> ivTaskEmoji.setText("📝"));
+                            Log.e("AIEmojiGenerator", "Error generating emoji (debounced)", e);
+                        }
+                    });
+                };
+
+                // Delay execution by 1 second after user stops typing
+                emojiHandler.postDelayed(emojiRunnable, 1000);
             }
         });
 
-        // Also update emoji when task type changes
+        // Update emoji when task type changes
         spinnerTaskType.setOnItemSelectedListener(new SimpleItemSelectedListener() {
             @Override
             public void onItemSelected(String selectedType) {
@@ -189,7 +204,7 @@ public class NewTaskFragment extends Fragment {
 
         db.collection("tasks").add(task)
                 .addOnSuccessListener(documentReference -> {
-                    task.setId(documentReference.getId()); // optional
+                    task.setId(documentReference.getId());
                     Toast.makeText(requireContext(), "Task added", Toast.LENGTH_SHORT).show();
 
                     Bundle result = new Bundle();
@@ -198,8 +213,7 @@ public class NewTaskFragment extends Fragment {
 
                     requireActivity().onBackPressed();
                 })
-                .addOnFailureListener(e -> {
-                    Toast.makeText(requireContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show();
-                });
+                .addOnFailureListener(e ->
+                        Toast.makeText(requireContext(), "Error: " + e.getMessage(), Toast.LENGTH_SHORT).show());
     }
 }
