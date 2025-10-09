@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <EditText
+        android:id="@+id/etCategoryName"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Enter category name"
+        android:inputType="textCapWords" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pick a color:"
+        android:layout_marginTop="12dp"
+        android:textStyle="bold" />
+
+    <LinearLayout
+        android:id="@+id/colorPickerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="12dp">
+
+        <!-- Simple color choices -->
+        <Button android:id="@+id/colorRed" android:layout_width="40dp" android:layout_height="40dp" android:backgroundTint="#F44336"/>
+        <Button android:id="@+id/colorGreen" android:layout_width="40dp" android:layout_height="40dp" android:backgroundTint="#4CAF50"/>
+        <Button android:id="@+id/colorBlue" android:layout_width="40dp" android:layout_height="40dp" android:backgroundTint="#2196F3"/>
+        <Button android:id="@+id/colorYellow" android:layout_width="40dp" android:layout_height="40dp" android:backgroundTint="#FFEB3B"/>
+        <Button android:id="@+id/colorPurple" android:layout_width="40dp" android:layout_height="40dp" android:backgroundTint="#9C27B0"/>
+    </LinearLayout>
+
+</LinearLayout>

@@ -13,6 +13,9 @@ import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ProgressBar;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 public class HomePageFragment extends Fragment implements View.OnClickListener {
 
     private NavController navC = null;
@@ -58,7 +61,12 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            navC.navigate(R.id.action_homePageFragment_to_LoginPageFragment);
+            return;
+        }
         // Find the ProgressBar by ID
         progressBar = view.findViewById(R.id.progressLevel);
 

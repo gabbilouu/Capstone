@@ -28,6 +28,9 @@
         <action
             android:id="@+id/action_homePageFragment_to_taskListFragment"
             app:destination="@id/taskListFragment" />
+        <action
+            android:id="@+id/action_homePageFragment_to_LoginPageFragment"
+            app:destination="@id/LoginPageFragment" />
     </fragment>
     <fragment
         android:id="@+id/taskListFragment"
@@ -73,6 +76,12 @@
         <action
             android:id="@+id/action_eventFragment_to_newEventFragment"
             app:destination="@id/newEventFragment" />
+        <action
+            android:id="@+id/action_eventFragment_to_LoginPageFragment"
+            app:destination="@id/LoginPageFragment" />
+        <action
+            android:id="@+id/action_eventFragment_to_editEventFragment"
+            app:destination="@id/editEventFragment" />
     </fragment>
     <fragment
         android:id="@+id/settingsFragment"
@@ -241,17 +250,28 @@
         <action
             android:id="@+id/action_aboutFragment_to_privacyFragment"
             app:destination="@id/privacyFragment" />
+        <action
+            android:id="@+id/action_aboutFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
     </fragment>
     <fragment
         android:id="@+id/privacyFragment"
         android:name="com.example.elevate.PrivacyFragment"
         android:label="fragment_privacy"
-        tools:layout="@layout/fragment_privacy" />
+        tools:layout="@layout/fragment_privacy" >
+        <action
+            android:id="@+id/action_privacyFragment_to_aboutFragment"
+            app:destination="@id/aboutFragment" />
+    </fragment>
     <fragment
         android:id="@+id/termsOfUseFragment"
         android:name="com.example.elevate.TermsOfUseFragment"
         android:label="fragment_terms_of_use"
-        tools:layout="@layout/fragment_terms_of_use" />
+        tools:layout="@layout/fragment_terms_of_use" >
+        <action
+            android:id="@+id/action_termsOfUseFragment_to_generalSettingsFragment"
+            app:destination="@id/generalSettingsFragment" />
+    </fragment>
     <fragment
         android:id="@+id/newTaskFragment"
         android:name="com.example.elevate.NewTaskFragment"
@@ -265,7 +285,11 @@
         android:id="@+id/newEventFragment"
         android:name="com.example.elevate.NewEventFragment"
         android:label="fragment_new_event"
-        tools:layout="@layout/fragment_new_event" />
+        tools:layout="@layout/fragment_new_event" >
+        <action
+            android:id="@+id/action_newEventFragment_to_eventFragment"
+            app:destination="@id/eventFragment" />
+    </fragment>
     <fragment
         android:id="@+id/editTaskFragment"
         android:name="com.example.elevate.EditTaskFragment"
@@ -291,20 +315,45 @@
         android:id="@+id/notificationsFragment"
         android:name="com.example.elevate.NotificationsFragment"
         android:label="fragment_notifications"
-        tools:layout="@layout/fragment_notifications" />
+        tools:layout="@layout/fragment_notifications" >
+        <action
+            android:id="@+id/action_notificationsFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+    </fragment>
     <fragment
         android:id="@+id/contactUsFragment"
         android:name="com.example.elevate.ContactUsFragment"
         android:label="fragment_contact_us"
-        tools:layout="@layout/fragment_contact_us" />
+        tools:layout="@layout/fragment_contact_us" >
+        <action
+            android:id="@+id/action_contactUsFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+    </fragment>
     <fragment
         android:id="@+id/FAQFragment"
         android:name="com.example.elevate.FAQFragment"
         android:label="fragment_f_a_q"
-        tools:layout="@layout/fragment_f_a_q" />
+        tools:layout="@layout/fragment_f_a_q" >
+        <action
+            android:id="@+id/action_FAQFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+    </fragment>
     <fragment
         android:id="@+id/generalSettingsFragment"
         android:name="com.example.elevate.GeneralSettingsFragment"
         android:label="fragment_general_settings"
-        tools:layout="@layout/fragment_general_settings" />
+        tools:layout="@layout/fragment_general_settings" >
+        <action
+            android:id="@+id/action_generalSettingsFragment_to_settingsFragment"
+            app:destination="@id/settingsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/editEventFragment"
+        android:name="com.example.elevate.EditEventFragment"
+        android:label="fragment_edit_event"
+        tools:layout="@layout/fragment_edit_event" >
+        <action
+            android:id="@+id/action_editEventFragment_to_eventFragment"
+            app:destination="@id/eventFragment" />
+    </fragment>
 </navigation>

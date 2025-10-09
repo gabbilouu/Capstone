@@ -1,50 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@android:color/white">
 
-    <!-- Scrollable content -->
     <ScrollView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/bottomNavBar"
+        android:id="@+id/scrollContainer"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
         android:paddingBottom="8dp"
-        android:fillViewport="true">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavBar"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Month Header + Add Event Button -->
+            <!-- Header Row -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
                 android:gravity="center_vertical"
-                android:padding="16dp">
+                android:padding="16dp"
+                android:layout_marginBottom="8dp">
 
                 <TextView
                     android:id="@+id/monthText"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="September 2025"
+                    android:text="October 2025"
                     android:textSize="20sp"
                     android:textStyle="bold"
                     android:textColor="@android:color/black" />
 
                 <Button
+                    android:id="@+id/todayButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Today"
+                    android:textSize="14sp"
+                    android:textColor="@android:color/white"
+                    android:backgroundTint="@android:color/holo_blue_light"
+                    android:layout_marginEnd="8dp" />
+
+                <ImageButton
                     android:id="@+id/addEventButton"
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:text="+"
-                    android:background="@android:color/holo_green_light"
-                    android:textColor="@android:color/white" />
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:backgroundTint="@android:color/holo_green_light"
+                    android:background="@drawable/rounded_button"
+                    android:src="@android:drawable/ic_input_add"
+                    android:contentDescription="Add Event"
+                    app:tint="@android:color/white" />
             </LinearLayout>
 
-            <!-- Category Filters -->
+            <!-- Category Buttons -->
             <HorizontalScrollView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -52,48 +70,91 @@
                 android:scrollbars="none">
 
                 <LinearLayout
+                    android:id="@+id/filterRow"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal">
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
 
                     <Button
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:minWidth="80dp"
+                        android:layout_marginEnd="8dp"
                         android:text="School"
                         android:backgroundTint="@android:color/holo_blue_light" />
 
                     <Button
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:minWidth="80dp"
+                        android:layout_marginEnd="8dp"
                         android:text="Personal"
                         android:backgroundTint="@android:color/holo_red_light" />
 
                     <Button
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:minWidth="80dp"
+                        android:layout_marginEnd="8dp"
                         android:text="Work"
                         android:backgroundTint="@android:color/holo_orange_light" />
 
                     <Button
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:minWidth="80dp"
+                        android:layout_marginEnd="8dp"
                         android:text="Orgs."
                         android:backgroundTint="@android:color/holo_green_light" />
 
                     <Button
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:minWidth="80dp"
+                        android:layout_marginEnd="8dp"
                         android:text="Events"
                         android:backgroundTint="@android:color/holo_purple" />
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:minWidth="80dp"
+                        android:layout_marginEnd="8dp"
+                        android:text="Birthdays"
+                        android:backgroundTint="#FF69B4" />
+
+                    <Button
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:minWidth="80dp"
+                        android:layout_marginEnd="8dp"
+                        android:text="Family"
+                        android:backgroundTint="#00BCD4" />
+
+                    <Button
+                        android:id="@+id/customCategoryButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:minWidth="80dp"
+                        android:text="Custom"
+                        android:backgroundTint="@android:color/darker_gray"
+                        android:textColor="@android:color/white" />
                 </LinearLayout>
             </HorizontalScrollView>
 
-            <!-- Interactable Calendar -->
-            <CalendarView
+
+
+            <!-- Calendar -->
+            <com.prolificinteractive.materialcalendarview.MaterialCalendarView
                 android:id="@+id/calendarView"
                 android:layout_width="match_parent"
-                android:layout_height="250dp"
-                android:layout_margin="8dp" />
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                app:mcv_showOtherDates="all"
+                app:mcv_selectionColor="@android:color/holo_blue_dark"
+                app:mcv_firstDayOfWeek="monday"
+                app:mcv_tileHeight="44dp" />
 
             <!-- Today's Schedule -->
             <LinearLayout
@@ -103,102 +164,62 @@
                 android:padding="16dp">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
                     android:text="Today's Schedule"
                     android:textSize="18sp"
                     android:textStyle="bold"
-                    android:textColor="@android:color/black" />
+                    android:textColor="@android:color/black"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
 
+                <!-- ✅ The dynamic date label -->
                 <TextView
+                    android:id="@+id/tvSelectedDate"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Monday - September 08, 2025"
+                    android:text="Thursday — October 9, 2025"
                     android:textSize="14sp"
                     android:textColor="@android:color/darker_gray"
-                    android:layout_marginBottom="8dp"/>
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="8dp" />
 
+                <!-- Shown when no events -->
+                <TextView
+                    android:id="@+id/tvNoEvents"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="No events for this day."
+                    android:textSize="14sp"
+                    android:textColor="@android:color/darker_gray"
+                    android:visibility="gone" />
+
+                <!-- Dynamic event list -->
                 <LinearLayout
+                    android:id="@+id/scheduleContainer"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:padding="8dp"
-                    android:background="@android:color/white">
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="2:00 - 4:50PM  Business Programming Class"
-                        android:textSize="16sp"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="NOTE: Doing Java assignment in class today"
-                        android:textSize="14sp"
-                        android:textColor="@android:color/darker_gray" />
-                </LinearLayout>
+                    android:orientation="vertical" />
             </LinearLayout>
-
         </LinearLayout>
     </ScrollView>
 
-    <!-- Bottom Navigation Bar -->
+    <!-- Bottom Navigation -->
     <LinearLayout
         android:id="@+id/bottomNavBar"
-        android:layout_width="match_parent"
+        android:layout_width="0dp"
         android:layout_height="56dp"
         android:orientation="horizontal"
         android:gravity="center"
         android:weightSum="4"
         android:padding="4dp"
-        android:layout_alignParentBottom="true"
-        android:background="@android:color/white">
+        android:background="@android:color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-        <ImageButton
-            android:id="@+id/HomeButton"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
-            android:contentDescription="Home"
-            android:scaleType="fitCenter"
-            android:adjustViewBounds="true"
-            android:src="@drawable/ic_home_active"/>
-
-        <ImageButton
-            android:id="@+id/TaskButton"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
-            android:contentDescription="Tasks"
-            android:scaleType="fitCenter"
-            android:adjustViewBounds="true"
-            android:src="@drawable/ic_tasks_active"/>
-
-        <ImageButton
-            android:id="@+id/CalendarButton"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
-            android:contentDescription="Calendar"
-            android:scaleType="fitCenter"
-            android:adjustViewBounds="true"
-            android:src="@drawable/ic_calendar_inactive"/>
-
-        <ImageButton
-            android:id="@+id/SettingsButton"
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:background="@null"
-            android:contentDescription="Settings"
-            android:scaleType="fitCenter"
-            android:adjustViewBounds="true"
-            android:src="@drawable/ic_settings_active"/>
+        <ImageButton android:id="@+id/HomeButton" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="@null" android:src="@drawable/ic_home_active" />
+        <ImageButton android:id="@+id/TaskButton" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="@null" android:src="@drawable/ic_tasks_active" />
+        <ImageButton android:id="@+id/CalendarButton" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="@null" android:src="@drawable/ic_calendar_inactive" />
+        <ImageButton android:id="@+id/SettingsButton" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="@null" android:src="@drawable/ic_settings_active" />
     </LinearLayout>
 
-</RelativeLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

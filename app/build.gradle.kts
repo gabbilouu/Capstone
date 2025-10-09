@@ -49,25 +49,37 @@ android {
 }
 
 dependencies {
+    // Calendar view
+    implementation("com.prolificinteractive:material-calendarview:1.4.3")
+
+
+
+    // Networking + JSON
     implementation("com.squareup.okhttp3:okhttp:4.10.0")
     implementation("org.json:json:20210307")
-    implementation("com.google.firebase:firebase-firestore:25.1.1")
-    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+
+    // Firebase (managed via BoM)
     implementation(platform("com.google.firebase:firebase-bom:34.3.0"))
     implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-auth")
+    implementation("com.google.firebase:firebase-firestore")
+
+    // Charts
+    implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
+
+    // AndroidX and Material
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
     implementation(libs.navigation.fragment)
     implementation(libs.navigation.ui)
-    implementation(libs.legacy.support.v4)
     implementation(libs.lifecycle.livedata.ktx)
     implementation(libs.lifecycle.viewmodel.ktx)
     implementation(libs.fragment)
     implementation(libs.work.runtime)
-    implementation(libs.firebase.auth)
-    implementation(libs.firebase.firestore)
+
+    // Tests
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

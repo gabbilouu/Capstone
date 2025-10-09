@@ -68,15 +68,23 @@ public class AssessmentFragment extends Fragment {
             }
 
             // Determine mood string
+            int id = selectedEmoji.getId();
             String mood;
-            switch (selectedEmoji.getId()) {
-                case R.id.emojiVeryHappy: mood = "Very Happy"; break;
-                case R.id.emojiHappy: mood = "Happy"; break;
-                case R.id.emojiNeutral: mood = "Neutral"; break;
-                case R.id.emojiSad: mood = "Sad"; break;
-                case R.id.emojiVerySad: mood = "Very Sad"; break;
-                default: mood = "Unknown";
+
+            if (id == R.id.emojiVeryHappy) {
+                mood = "Very Happy";
+            } else if (id == R.id.emojiHappy) {
+                mood = "Happy";
+            } else if (id == R.id.emojiNeutral) {
+                mood = "Neutral";
+            } else if (id == R.id.emojiSad) {
+                mood = "Sad";
+            } else if (id == R.id.emojiVerySad) {
+                mood = "Very Sad";
+            } else {
+                mood = "Unknown";
             }
+
 
             // Save today's mood to SharedPreferences
             SharedPreferences prefs = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
