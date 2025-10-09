@@ -111,7 +111,7 @@ public class SignUpFragment extends Fragment {
     private boolean isValidUniversityEmail(String email) {
         return !TextUtils.isEmpty(email) &&
                 Patterns.EMAIL_ADDRESS.matcher(email).matches() &&
-                email.endsWith(".edu");
+                email.endsWith(".com");
     }
 
     private boolean isValidPassword(String password) {

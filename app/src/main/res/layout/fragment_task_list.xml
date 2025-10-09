@@ -2,6 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:background="@android:color/white">
 
     <!-- Title Row -->
@@ -19,7 +20,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="Daily Tasks"
+            android:text="Tasks"
             android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="@android:color/black" />
@@ -28,9 +29,10 @@
             android:id="@+id/tvTimer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="⟳ 11 hrs 32 mins"
+            android:text="⟳ calculating..."
             android:textSize="14sp"
             android:textColor="@android:color/darker_gray" />
+
     </LinearLayout>
 
     <!-- RecyclerView -->
@@ -39,8 +41,38 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/titleRow"
-        android:layout_above="@+id/bottomNav"
+        android:layout_above="@+id/addTaskBar"
         android:scrollbars="vertical" />
+
+    <!-- Add Task Bar -->
+    <LinearLayout
+        android:id="@+id/addTaskBar"
+        android:layout_width="match_parent"
+        android:layout_height="64dp"
+        android:layout_above="@id/bottomNav"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="16dp"
+        android:background="@drawable/task_item_background"
+        android:clickable="true"
+        android:focusable="true">
+
+        <ImageView
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_add_circle"
+            android:contentDescription="Add Task"
+            app:tint="@android:color/darker_gray" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="  Create a new task"
+            android:textSize="16sp"
+            android:textColor="@android:color/darker_gray"
+            android:textStyle="italic" />
+    </LinearLayout>
+
 
     <!-- Bottom Navigation Bar (stuck to bottom) -->
     <LinearLayout

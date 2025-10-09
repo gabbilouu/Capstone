@@ -6,6 +6,11 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.os.Handler;
+import android.widget.TextView;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
+
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -35,6 +40,10 @@ public class TaskListFragment extends Fragment implements View.OnClickListener {
     private List<Task> taskList;
     private List<String> docIds;
     private FirebaseFirestore db;
+    private TextView tvTimer;
+    private Handler timerHandler = new Handler();
+    private Runnable timerRunnable;
+
 
     public TaskListFragment() {}
 
@@ -51,6 +60,9 @@ public class TaskListFragment extends Fragment implements View.OnClickListener {
         navC = Navigation.findNavController(view);
         db = FirebaseFirestore.getInstance();
 
+        tvTimer = view.findViewById(R.id.tvTimer);
+        startMidnightCountdown();
+
         taskList = new ArrayList<>();
         docIds = new ArrayList<>();
         recyclerView = view.findViewById(R.id.recyclerViewTasks);
@@ -58,6 +70,10 @@ public class TaskListFragment extends Fragment implements View.OnClickListener {
 
         adapter = new TaskAdapter(taskList, docIds);
         recyclerView.setAdapter(adapter);
+        View addTaskBar = view.findViewById(R.id.addTaskBar);
+        addTaskBar.setOnClickListener(v ->
+                navC.navigate(R.id.action_taskListFragment_to_newTaskFragment)
+        );
 
         adapter.setOnItemClickListener((task, taskId) -> {
             Bundle bundle = new Bundle();
@@ -81,6 +97,44 @@ public class TaskListFragment extends Fragment implements View.OnClickListener {
         if (taskButton != null) taskButton.setOnClickListener(v ->
                 navC.navigate(R.id.action_taskListFragment_to_newTaskFragment));
     }
+
+    private void startMidnightCountdown() {
+        timerRunnable = new Runnable() {
+            @Override
+            public void run() {
+                Calendar now = Calendar.getInstance();
+                Calendar midnight = Calendar.getInstance();
+                midnight.add(Calendar.DAY_OF_YEAR, 1);
+                midnight.set(Calendar.HOUR_OF_DAY, 0);
+                midnight.set(Calendar.MINUTE, 0);
+                midnight.set(Calendar.SECOND, 0);
+                midnight.set(Calendar.MILLISECOND, 0);
+
+                long diffMillis = midnight.getTimeInMillis() - now.getTimeInMillis();
+                long hours = TimeUnit.MILLISECONDS.toHours(diffMillis);
+                long minutes = TimeUnit.MILLISECONDS.toMinutes(diffMillis) % 60;
+
+                String formatted = String.format(Locale.getDefault(), "⟳ %02d hrs %02d mins", hours, minutes);
+                tvTimer.setText(formatted);
+
+                // Update once per minute
+                timerHandler.postDelayed(this, 60 * 1000);
+            }
+        };
+
+        // Start immediately
+        timerHandler.post(timerRunnable);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        if (timerHandler != null && timerRunnable != null) {
+            timerHandler.removeCallbacks(timerRunnable);
+        }
+    }
+
+
 
     private void listenToFirebaseTasks() {
         db.collection("tasks").addSnapshotListener((value, error) -> {
