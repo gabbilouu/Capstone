@@ -16,18 +16,15 @@ import androidx.navigation.Navigation;
 public class QuestionnaireFragment extends Fragment {
 
     private NavController navC;
-
     private Button option1, option2, option3, option4, option5, nextButton;
     private Button selectedOption = null;
 
     private static final String PREFS_NAME = "UserChoicesPrefs";
     private static final String KEY_GOAL = "userGoal";
-
-    // ✅ Argument key to determine flow
     private static final String ARG_FROM_WELCOME = "from_welcome";
     private boolean fromWelcome = false;
 
-    public QuestionnaireFragment() { }
+    public QuestionnaireFragment() {}
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -40,12 +37,10 @@ public class QuestionnaireFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         navC = Navigation.findNavController(view);
 
-        // ✅ Check if this fragment was opened from WelcomeFragment
         if (getArguments() != null) {
             fromWelcome = getArguments().getBoolean(ARG_FROM_WELCOME, false);
         }
 
-        // Initialize buttons
         option1 = view.findViewById(R.id.option1);
         option2 = view.findViewById(R.id.option2);
         option3 = view.findViewById(R.id.option3);
@@ -56,24 +51,26 @@ public class QuestionnaireFragment extends Fragment {
         SharedPreferences prefs = requireContext().getSharedPreferences(PREFS_NAME, 0);
         String savedGoal = prefs.getString(KEY_GOAL, null);
 
-        // Highlight previously selected option
+        // Restore previously selected option
         if (savedGoal != null) {
-            if (option1.getText().toString().equals(savedGoal)) selectedOption = option1;
-            else if (option2.getText().toString().equals(savedGoal)) selectedOption = option2;
-            else if (option3.getText().toString().equals(savedGoal)) selectedOption = option3;
-            else if (option4.getText().toString().equals(savedGoal)) selectedOption = option4;
-            else if (option5.getText().toString().equals(savedGoal)) selectedOption = option5;
-
-            if (selectedOption != null)
-                selectedOption.setBackgroundColor(getResources().getColor(android.R.color.holo_blue_light));
+            Button[] options = {option1, option2, option3, option4, option5};
+            for (Button btn : options) {
+                if (btn.getText().toString().equals(savedGoal)) {
+                    selectedOption = btn;
+                    btn.setBackgroundResource(R.drawable.btn_white_pill_selected);
+                }
+            }
         }
 
         View.OnClickListener optionClickListener = v -> {
+            // Reset previous selection
             if (selectedOption != null) {
-                selectedOption.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
+                selectedOption.setBackgroundResource(R.drawable.btn_white_pill);
             }
+
+            // Highlight new selection
             selectedOption = (Button) v;
-            selectedOption.setBackgroundColor(getResources().getColor(android.R.color.holo_blue_light));
+            selectedOption.setBackgroundResource(R.drawable.btn_white_pill_selected);
 
             prefs.edit().putString(KEY_GOAL, selectedOption.getText().toString()).apply();
         };
@@ -90,10 +87,8 @@ public class QuestionnaireFragment extends Fragment {
                 return;
             }
 
-            // Save selection
             prefs.edit().putString(KEY_GOAL, selectedOption.getText().toString()).apply();
 
-            // ✅ Conditional navigation
             if (fromWelcome) {
                 navC.navigate(R.id.action_questionnaireFragment_to_thanksFragment);
             } else {
@@ -102,7 +97,6 @@ public class QuestionnaireFragment extends Fragment {
         });
     }
 
-    // ✅ Helper method to create instance with argument
     public static QuestionnaireFragment newInstance(boolean fromWelcome) {
         QuestionnaireFragment fragment = new QuestionnaireFragment();
         Bundle args = new Bundle();

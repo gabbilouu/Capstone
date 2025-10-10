@@ -1,94 +1,125 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
-    android:gravity="center"
+    android:background="@drawable/bg_gradient2"
     android:padding="24dp"
-    android:background="@android:color/white">
+    android:clipChildren="false"
+    android:clipToPadding="false">
 
     <!-- Question -->
     <TextView
         android:id="@+id/assessmentQuestion"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/how_are_you_feeling_today"
+        android:text="How are you feeling today?"
         android:textSize="20sp"
         android:textStyle="bold"
         android:textColor="@android:color/black"
-        android:gravity="center"
-        android:layout_marginBottom="24dp"/>
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="48dp"/>
 
-    <!-- Emoji Options -->
-    <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center"
+    <!-- Emoji Group -->
+    <FrameLayout
+        android:id="@+id/emojiContainer"
+        android:layout_width="match_parent"
+        android:layout_height="480dp"
+        android:layout_below="@id/assessmentQuestion"
+        android:layout_marginTop="24dp"
         android:layout_marginBottom="32dp"
-        android:weightSum="5">
+        android:clipChildren="false"
+        android:clipToPadding="false">
 
         <!-- Very Happy -->
-        <ImageButton
+        <ImageView
             android:id="@+id/emojiVeryHappy"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:layout_weight="1"
+            android:layout_width="110dp"
+            android:layout_height="110dp"
+            android:layout_gravity="start|top"
+            android:translationX="30dp"
+            android:translationY="10dp"
+            android:rotation="-8"
             android:src="@drawable/emoji_very_happy"
-            android:background="@null"
             android:scaleType="fitCenter"
-            android:contentDescription="@string/very_happy"
-            android:adjustViewBounds="true"/>
+            android:adjustViewBounds="true"
+            android:background="@null"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/very_happy" />
 
         <!-- Happy -->
-        <ImageButton
+        <ImageView
             android:id="@+id/emojiHappy"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:layout_weight="1"
+            android:layout_width="90dp"
+            android:layout_height="90dp"
+            android:layout_gravity="end|top"
+            android:translationX="-50dp"
+            android:translationY="40dp"
+            android:rotation="5"
             android:src="@drawable/emoji_happy"
-            android:background="@null"
             android:scaleType="fitCenter"
-            android:contentDescription="@string/happy"
-            android:adjustViewBounds="true"/>
+            android:adjustViewBounds="true"
+            android:background="@null"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/happy" />
 
         <!-- Neutral -->
-        <ImageButton
+        <ImageView
             android:id="@+id/emojiNeutral"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:layout_weight="1"
+            android:layout_width="70dp"
+            android:layout_height="70dp"
+            android:layout_gravity="start|center_vertical"
+            android:translationX="90dp"
+            android:translationY="40dp"
+            android:rotation="-5"
             android:src="@drawable/emoji_neutral"
-            android:background="@null"
             android:scaleType="fitCenter"
-            android:contentDescription="@string/neutral"
-            android:adjustViewBounds="true"/>
+            android:adjustViewBounds="true"
+            android:background="@null"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/neutral" />
 
         <!-- Sad -->
-        <ImageButton
+        <ImageView
             android:id="@+id/emojiSad"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:layout_weight="1"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
+            android:layout_gravity="end|bottom"
+            android:translationX="-60dp"
+            android:translationY="-60dp"
+            android:rotation="8"
             android:src="@drawable/emoji_sad"
-            android:background="@null"
             android:scaleType="fitCenter"
-            android:contentDescription="@string/sad"
-            android:adjustViewBounds="true"/>
+            android:adjustViewBounds="true"
+            android:background="@null"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/sad" />
 
-        <!-- Very Sad -->
-        <ImageButton
+        <!-- Very Sad (fits fully inside now) -->
+        <ImageView
             android:id="@+id/emojiVerySad"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
-            android:layout_weight="1"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_gravity="start|bottom"
+            android:translationX="140dp"
+            android:translationY="-10dp"
+            android:rotation="-10"
             android:src="@drawable/emoji_very_sad"
-            android:background="@null"
             android:scaleType="fitCenter"
-            android:contentDescription="@string/very_sad"
-            android:adjustViewBounds="true"/>
-    </LinearLayout>
-
+            android:adjustViewBounds="true"
+            android:background="@null"
+            android:clickable="true"
+            android:focusable="true"
+            android:foreground="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="@string/very_sad" />
+    </FrameLayout>
 
     <!-- Next Button -->
     <Button
@@ -96,7 +127,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="Next"
-        android:background="@android:color/darker_gray"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="48dp"
+        android:backgroundTint="@android:color/black"
         android:textColor="@android:color/white"
         android:padding="12dp"/>
-</LinearLayout>
+</RelativeLayout>

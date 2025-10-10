@@ -1,15 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@android:color/white"
+    android:fillViewport="true"
+    android:background="@drawable/bg_gradient4"
     android:padding="24dp">
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:gravity="center_horizontal">
+        android:gravity="center"
+        android:padding="16dp">
 
         <!-- Title -->
         <TextView
@@ -18,8 +21,7 @@
             android:text="Help us understand"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:layout_marginTop="32dp"
-            android:layout_marginBottom="8dp"/>
+            android:layout_marginBottom="4dp"/>
 
         <!-- Subtitle -->
         <TextView
@@ -27,7 +29,7 @@
             android:layout_height="wrap_content"
             android:text="you."
             android:textSize="20sp"
-            android:textStyle="italic"
+            android:fontFamily="@font/bumbbled"
             android:layout_marginBottom="16dp"/>
 
         <TextView
@@ -38,60 +40,81 @@
             android:layout_marginBottom="24dp"/>
 
         <!-- Option Buttons -->
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/option1"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
             android:text="I'm looking for ways to manage my stress and anxiety"
-            android:background="@android:color/darker_gray"
+            android:textAllCaps="false"
             android:textColor="@android:color/black"
-            android:layout_marginBottom="12dp"/>
+            android:background="@drawable/btn_white_pill"
+            app:cornerRadius="100dp"
+            app:backgroundTint="@null"
+            app:rippleColor="#EEEEEE"
+            android:layout_marginBottom="12dp" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/option2"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
             android:text="I want to track my mood and emotions throughout a period of time"
-            android:background="@android:color/darker_gray"
+            android:textAllCaps="false"
             android:textColor="@android:color/black"
-            android:layout_marginBottom="12dp"/>
+            android:background="@drawable/btn_white_pill"
+            app:cornerRadius="100dp"
+            app:backgroundTint="@null"
+            app:rippleColor="#EEEEEE"
+            android:layout_marginBottom="12dp" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/option3"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
             android:text="I want to organize my lifestyles and habits"
-            android:background="@android:color/darker_gray"
+            android:textAllCaps="false"
             android:textColor="@android:color/black"
-            android:layout_marginBottom="12dp"/>
+            android:background="@drawable/btn_white_pill"
+            app:cornerRadius="100dp"
+            app:backgroundTint="@null"
+            app:rippleColor="#EEEEEE"
+            android:layout_marginBottom="12dp" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/option4"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
             android:text="I'm looking for a way to develop better habits"
-            android:background="@android:color/darker_gray"
+            android:textAllCaps="false"
             android:textColor="@android:color/black"
-            android:layout_marginBottom="12dp"/>
+            android:background="@drawable/btn_white_pill"
+            app:cornerRadius="100dp"
+            app:backgroundTint="@null"
+            app:rippleColor="#EEEEEE"
+            android:layout_marginBottom="12dp" />
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/option5"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
             android:text="Other"
-            android:background="@android:color/darker_gray"
+            android:textAllCaps="false"
             android:textColor="@android:color/black"
-            android:layout_marginBottom="32dp"/>
+            android:background="@drawable/btn_white_pill"
+            app:cornerRadius="100dp"
+            app:backgroundTint="@null"
+            app:rippleColor="#EEEEEE"
+            android:layout_marginBottom="32dp" />
 
         <!-- Next Button -->
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/nextButton"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="56dp"
             android:text="Next"
-            android:background="@android:color/darker_gray"
+            android:textAllCaps="false"
             android:textColor="@android:color/white"
-            android:padding="12dp"/>
-
+            app:cornerRadius="100dp"
+            app:backgroundTint="@android:color/black"
+            app:rippleColor="#333333" />
     </LinearLayout>
 </ScrollView>

@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:background="@android:color/white">
+    android:background="@drawable/bg_gradient1">
 
     <!-- App Title -->
     <TextView
@@ -12,10 +12,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Elevate"
-        android:textSize="28sp"
-        android:textStyle="bold|italic"
+        android:textSize="36sp"
+        android:textStyle="bold"
         android:textColor="@android:color/black"
-        android:layout_marginBottom="12dp"/>
+        android:fontFamily="@font/bumbbled"
+        android:layout_marginBottom="12dp" />
 
     <!-- Subtitle -->
     <TextView
@@ -24,6 +25,5 @@
         android:layout_height="wrap_content"
         android:text="Become a better you."
         android:textSize="16sp"
-        android:textColor="@android:color/darker_gray"/>
-
+        android:textColor="@android:color/black" />
 </LinearLayout>

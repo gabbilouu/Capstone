@@ -1,13 +1,15 @@
 package com.example.elevate;
 
+import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Color;
+import android.graphics.*;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +18,7 @@ import android.widget.TextView;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.Random;
 
 public class LoginStreakFragment extends Fragment {
 
@@ -23,6 +26,7 @@ public class LoginStreakFragment extends Fragment {
     private TextView streakNumber;
     private TextView[] daysOfWeek = new TextView[7];
     private SharedPreferences prefs;
+
     private static final String PREFS_NAME = "LoginStreakPrefs";
     private static final String KEY_STREAK = "streak";
     private static final String KEY_LAST_LOGIN = "lastLogin";
@@ -50,10 +54,8 @@ public class LoginStreakFragment extends Fragment {
 
         updateStreak();
 
-        // Use NavHostFragment to safely get NavController
-        navC = androidx.navigation.fragment.NavHostFragment.findNavController(this);
-
         // Navigate via Navigation Component
+        navC = androidx.navigation.fragment.NavHostFragment.findNavController(this);
         view.findViewById(R.id.startButton).setOnClickListener(v -> {
             if (navC != null) {
                 navC.navigate(R.id.action_loginStreakFragment_to_homePageFragment);
@@ -83,17 +85,15 @@ public class LoginStreakFragment extends Fragment {
         if (!lastLoginStr.isEmpty()) {
             long diff = today.getTimeInMillis() - lastLogin.getTimeInMillis();
             long diffDays = diff / (1000 * 60 * 60 * 24);
-            if (diffDays > 1) { // missed at least one day
-                streak = 1; // reset streak to 1
+            if (diffDays > 1) {
+                streak = 1; // reset streak
             } else if (diffDays == 1) {
                 streak++; // continue streak
             }
-            // if diffDays == 0, same day login → streak unchanged
         } else {
             streak = 1; // first login
         }
 
-        // Save updated streak and today's date
         prefs.edit()
                 .putInt(KEY_STREAK, streak)
                 .putString(KEY_LAST_LOGIN, new SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(today.getTime()))
@@ -105,20 +105,56 @@ public class LoginStreakFragment extends Fragment {
     }
 
     private void highlightDays(int streak, int todayWeekDay) {
-        // Reset all days to gray
+        // Pool of drawable images
+        int[] imagePool = {
+                R.drawable.circle1,
+                R.drawable.circle2,
+                R.drawable.circle3,
+                R.drawable.circle4,
+                R.drawable.circle5,
+                R.drawable.circle6,
+                R.drawable.circle7,
+                R.drawable.circle8,
+                R.drawable.circle9,
+                R.drawable.circle10
+        };
+
+        // Reset all days
         for (TextView day : daysOfWeek) {
-            day.setBackgroundColor(Color.LTGRAY);
+            day.setBackgroundResource(R.drawable.day_circle_inactive);
             day.setTextColor(Color.WHITE);
         }
 
-        // Only highlight last 7 days
+        // Highlight recent streak days
         int daysToHighlight = Math.min(streak, 7);
+        int index = todayWeekDay - 1;
+        Random random = new Random();
 
-        int index = todayWeekDay - 1; // Calendar.SUNDAY=1 → index=0
         for (int i = 0; i < daysToHighlight; i++) {
             int dayIndex = (index - i + 7) % 7;
-            daysOfWeek[dayIndex].setBackgroundColor(Color.GREEN);
-            daysOfWeek[dayIndex].setTextColor(Color.WHITE);
+            int randomDrawable = imagePool[random.nextInt(imagePool.length)];
+            Drawable circular = makeCircularDrawable(requireContext(), randomDrawable);
+            daysOfWeek[dayIndex].setBackground(circular);
         }
+    }
+
+    // ✅ Helper method to make any image circular
+    private Drawable makeCircularDrawable(Context context, int drawableId) {
+        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), drawableId);
+        Bitmap output = Bitmap.createBitmap(bitmap.getWidth(), bitmap.getHeight(), Bitmap.Config.ARGB_8888);
+
+        Canvas canvas = new Canvas(output);
+        final Paint paint = new Paint();
+        final Rect rect = new Rect(0, 0, bitmap.getWidth(), bitmap.getHeight());
+        float radius = Math.min(bitmap.getWidth(), bitmap.getHeight()) / 2f;
+
+        paint.setAntiAlias(true);
+        canvas.drawARGB(0, 0, 0, 0);
+        paint.setColor(Color.WHITE);
+        canvas.drawCircle(bitmap.getWidth() / 2f, bitmap.getHeight() / 2f, radius, paint);
+        paint.setXfermode(new PorterDuffXfermode(PorterDuff.Mode.SRC_IN));
+        canvas.drawBitmap(bitmap, rect, rect, paint);
+
+        return new BitmapDrawable(context.getResources(), output);
     }
 }

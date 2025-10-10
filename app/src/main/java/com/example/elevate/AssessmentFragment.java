@@ -1,32 +1,26 @@
 package com.example.elevate;
 
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
-import androidx.navigation.fragment.NavHostFragment;
-
-import com.google.firebase.auth.FirebaseAuth;
-
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Locale;
+import androidx.navigation.Navigation;
 
 public class AssessmentFragment extends Fragment {
 
-    private ImageButton selectedEmoji = null; // Track selected emoji
+    private ImageView emojiVeryHappy, emojiHappy, emojiNeutral, emojiSad, emojiVerySad;
+    private Button nextButton;
+    private int selectedMood = -1;
+    private NavController navC;
 
-    public AssessmentFragment() { }
+    public AssessmentFragment() {}
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -35,79 +29,65 @@ public class AssessmentFragment extends Fragment {
     }
 
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+    public void onViewCreated(@NonNull View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        NavController navController = NavHostFragment.findNavController(this);
+        navC = Navigation.findNavController(view);
 
-        // Emoji buttons
-        ImageButton emojiVeryHappy = view.findViewById(R.id.emojiVeryHappy);
-        ImageButton emojiHappy = view.findViewById(R.id.emojiHappy);
-        ImageButton emojiNeutral = view.findViewById(R.id.emojiNeutral);
-        ImageButton emojiSad = view.findViewById(R.id.emojiSad);
-        ImageButton emojiVerySad = view.findViewById(R.id.emojiVerySad);
+        // Initialize emoji views
+        emojiVeryHappy = view.findViewById(R.id.emojiVeryHappy);
+        emojiHappy = view.findViewById(R.id.emojiHappy);
+        emojiNeutral = view.findViewById(R.id.emojiNeutral);
+        emojiSad = view.findViewById(R.id.emojiSad);
+        emojiVerySad = view.findViewById(R.id.emojiVerySad);
+        nextButton = view.findViewById(R.id.nextButton);
 
-        final ImageButton[] emojis = {emojiVeryHappy, emojiHappy, emojiNeutral, emojiSad, emojiVerySad};
-
-        for (ImageButton emoji : emojis) {
-            emoji.setOnClickListener(v -> {
-                if (selectedEmoji != null) {
-                    selectedEmoji.setBackground(null); // remove previous highlight
-                }
-                selectedEmoji = emoji;
-                selectedEmoji.setBackgroundColor(getResources().getColor(android.R.color.holo_blue_light));
-            });
-        }
+        // Emoji click listeners
+        emojiVeryHappy.setOnClickListener(v -> selectMood(0));
+        emojiHappy.setOnClickListener(v -> selectMood(1));
+        emojiNeutral.setOnClickListener(v -> selectMood(2));
+        emojiSad.setOnClickListener(v -> selectMood(3));
+        emojiVerySad.setOnClickListener(v -> selectMood(4));
 
         // Next button
-        Button nextButton = view.findViewById(R.id.nextButton);
         nextButton.setOnClickListener(v -> {
-            if (selectedEmoji == null) {
-                Toast.makeText(getContext(), "Please select an emoji before proceeding", Toast.LENGTH_SHORT).show();
-                return;
-            }
-
-            // Determine mood string
-            int id = selectedEmoji.getId();
-            String mood;
-
-            if (id == R.id.emojiVeryHappy) {
-                mood = "Very Happy";
-            } else if (id == R.id.emojiHappy) {
-                mood = "Happy";
-            } else if (id == R.id.emojiNeutral) {
-                mood = "Neutral";
-            } else if (id == R.id.emojiSad) {
-                mood = "Sad";
-            } else if (id == R.id.emojiVerySad) {
-                mood = "Very Sad";
+            if (selectedMood == -1) {
+                Toast.makeText(requireContext(), "Please select a mood first.", Toast.LENGTH_SHORT).show();
             } else {
-                mood = "Unknown";
+                // Save mood to preferences or send to next screen
+                Toast.makeText(requireContext(), "Mood selected: " + selectedMood, Toast.LENGTH_SHORT).show();
+                // Example: navC.navigate(R.id.action_assessmentFragment_to_nextFragment);
             }
-
-
-            // Save today's mood to SharedPreferences
-            SharedPreferences prefs = requireContext().getSharedPreferences("UserPrefs", Context.MODE_PRIVATE);
-
-            String todayKey = new SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Calendar.getInstance().getTime());
-
-            FirebaseAuth mAuth = FirebaseAuth.getInstance();
-            if (mAuth.getCurrentUser() != null) {
-                String userId = mAuth.getCurrentUser().getUid();
-                // Save the mood
-                prefs.edit().putString(todayKey + "_mood", mood).apply();
-                // Mark assessment done for today
-                prefs.edit().putBoolean("assessmentDone_" + userId + "_" + todayKey, true).apply();
-            }
-
-            // Optional: show confirmation
-            Toast.makeText(getContext(), "Mood saved: " + mood, Toast.LENGTH_SHORT).show();
-
-            // Navigate to streak page or next fragment
-            Bundle bundle = new Bundle();
-            bundle.putString("selectedMood", mood);
-            navController.navigate(R.id.action_assessmentFragment_to_loginStreakFragment, bundle);
         });
+    }
 
+    private void selectMood(int mood) {
+        selectedMood = mood;
+
+        // Reset alpha for all
+        emojiVeryHappy.setAlpha(0.5f);
+        emojiHappy.setAlpha(0.5f);
+        emojiNeutral.setAlpha(0.5f);
+        emojiSad.setAlpha(0.5f);
+        emojiVerySad.setAlpha(0.5f);
+
+        // Highlight selected mood
+        switch (mood) {
+            case 0:
+                emojiVeryHappy.setAlpha(1f);
+                break;
+            case 1:
+                emojiHappy.setAlpha(1f);
+                break;
+            case 2:
+                emojiNeutral.setAlpha(1f);
+                break;
+            case 3:
+                emojiSad.setAlpha(1f);
+                break;
+            case 4:
+                emojiVerySad.setAlpha(1f);
+                break;
+        }
     }
 }

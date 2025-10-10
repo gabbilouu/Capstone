@@ -1,11 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
     android:padding="24dp"
-    android:background="@android:color/white">
+    android:background="@drawable/bg_gradient1">
 
     <!-- Title -->
     <TextView
@@ -13,11 +14,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Daily it is!"
-        android:textSize="20sp"
+        android:textSize="22sp"
         android:textStyle="bold"
         android:textColor="@android:color/black"
         android:gravity="center"
-        android:layout_marginBottom="12dp"/>
+        android:layout_marginBottom="8dp" />
 
     <!-- Subtitle -->
     <TextView
@@ -26,9 +27,9 @@
         android:layout_height="wrap_content"
         android:text="We’ll send you a weekly report based off of your response. Let’s jump right in!"
         android:textSize="16sp"
-        android:textColor="@android:color/darker_gray"
+        android:textColor="@android:color/black"
         android:gravity="center"
-        android:layout_marginBottom="8dp"/>
+        android:layout_marginBottom="8dp" />
 
     <!-- Extra info text -->
     <TextView
@@ -40,16 +41,18 @@
         android:textColor="@android:color/darker_gray"
         android:alpha="0.7"
         android:gravity="center"
-        android:layout_marginBottom="40dp"/>
+        android:layout_marginBottom="64dp" />
 
     <!-- Next Button -->
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/nextButton"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="56dp"
         android:text="Next"
-        android:background="@android:color/darker_gray"
+        android:textAllCaps="false"
         android:textColor="@android:color/white"
-        android:padding="12dp"/>
+        app:cornerRadius="100dp"
+        app:backgroundTint="@android:color/black"
+        app:rippleColor="#333333" />
 
 </LinearLayout>

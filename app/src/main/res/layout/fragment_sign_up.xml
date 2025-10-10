@@ -1,115 +1,116 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="16dp">
+    android:background="@drawable/bg_gradient3"
+    android:padding="24dp">
 
     <!-- Back Button -->
     <ImageButton
         android:id="@+id/back_button"
         android:layout_width="36dp"
         android:layout_height="36dp"
-        android:src="@android:drawable/ic_menu_revert"
+        android:src="@drawable/ic_back_arrow"
         android:contentDescription="Back"
+        android:background="@null"
+        app:tint="@android:color/black"
         android:layout_alignParentStart="true"
-        android:layout_marginTop="16dp"/>
+        android:layout_marginTop="30dp" />
 
-    <!-- Sign Up Title -->
-    <TextView
-        android:id="@+id/sign_up_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Sign Up"
-        android:textSize="24sp"
-        android:textStyle="bold"
-        android:layout_centerHorizontal="true"
-        android:layout_below="@id/back_button"
-        android:layout_marginTop="32dp"/>
-
-    <!-- Email Label -->
-    <TextView
-        android:id="@+id/email_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Email"
-        android:textSize="16sp"
-        android:layout_below="@id/sign_up_title"
-        android:layout_marginTop="32dp"
-        android:layout_alignParentStart="true"/>
-
-    <!-- Email Input Field -->
-    <EditText
-        android:id="@+id/email_input"
+    <!-- Centered Form -->
+    <LinearLayout
+        android:id="@+id/form_container"
         android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:hint="Sign up using your school email"
-        android:inputType="textEmailAddress"
-        android:layout_below="@id/email_label"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/input_background"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        android:layout_marginEnd="16dp"/>
-
-    <!-- Password Label -->
-    <TextView
-        android:id="@+id/password_label"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Password"
-        android:textSize="16sp"
-        android:layout_below="@id/email_input"
-        android:layout_marginTop="16dp"
-        android:layout_alignParentStart="true"/>
+        android:layout_centerInParent="true"
+        android:orientation="vertical"
+        android:gravity="center_horizontal"
+        android:layout_marginTop="80dp"
+        android:layout_marginBottom="80dp">
 
-    <!-- Password Input Field -->
-    <EditText
-        android:id="@+id/password_input"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:hint="Password must be at least 8 characters long, includes 1 capital letter, 1 number, and 1 special character."
-        android:inputType="textPassword"
-        android:layout_below="@id/password_label"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/input_background"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        android:layout_marginEnd="16dp"/>
 
-    <!-- Confirm Password Label -->
-    <TextView
-        android:id="@+id/confirm_password_label"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Confirm Password"
-        android:textSize="16sp"
-        android:layout_below="@id/password_input"
-        android:layout_marginTop="16dp"
-        android:layout_alignParentStart="true" />
+    <!-- Title -->
+        <TextView
+            android:id="@+id/sign_up_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sign Up"
+            android:textSize="26sp"
+            android:textStyle="bold"
+            android:textColor="@android:color/black"
+            android:layout_marginBottom="32dp" />
 
-    <!-- Confirm Password Input Field -->
-    <EditText
-        android:id="@+id/confirm_password_input"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:hint="Re-enter your password"
-        android:inputType="textPassword"
-        android:layout_below="@id/confirm_password_label"
-        android:layout_marginTop="8dp"
-        android:background="@drawable/input_background"
-        android:paddingStart="12dp"
-        android:paddingEnd="12dp"
-        android:layout_marginEnd="16dp" />
+        <!-- Email -->
+        <TextView
+            android:id="@+id/email_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Email"
+            android:textSize="16sp"
+            android:textColor="@android:color/black" />
 
-    <!-- Sign Up Button -->
-    <Button
-        android:id="@+id/sign_up_button"
-        android:layout_width="match_parent"
-        android:layout_height="48dp"
-        android:text="Sign Up"
-        android:layout_below="@id/confirm_password_input"
-        android:layout_marginTop="32dp"
-        android:layout_marginEnd="16dp"
-        android:layout_marginStart="16dp" />
+        <EditText
+            android:id="@+id/email_input"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:hint="Sign up using your school email"
+            android:inputType="textEmailAddress"
+            android:background="@drawable/input_background"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:layout_marginBottom="16dp" />
 
+        <!-- Password -->
+        <TextView
+            android:id="@+id/password_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Password"
+            android:textSize="16sp"
+            android:textColor="@android:color/black" />
+
+        <EditText
+            android:id="@+id/password_input"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:hint="At least 8 characters, 1 capital, 1 number, 1 symbol"
+            android:inputType="textPassword"
+            android:background="@drawable/input_background"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Confirm Password -->
+        <TextView
+            android:id="@+id/confirm_password_label"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Confirm Password"
+            android:textSize="16sp"
+            android:textColor="@android:color/black" />
+
+        <EditText
+            android:id="@+id/confirm_password_input"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:hint="Re-enter your password"
+            android:inputType="textPassword"
+            android:background="@drawable/input_background"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:layout_marginBottom="32dp" />
+
+        <!-- Sign Up Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/sign_up_button"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="Sign Up"
+            android:textAllCaps="false"
+            android:textColor="@android:color/white"
+            app:cornerRadius="100dp"
+            app:backgroundTint="@android:color/black"
+            app:rippleColor="#333333" />
+    </LinearLayout>
 </RelativeLayout>
