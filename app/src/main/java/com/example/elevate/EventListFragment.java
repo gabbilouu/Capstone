@@ -3,11 +3,20 @@ package com.example.elevate;
 import android.content.SharedPreferences;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.text.style.LineBackgroundSpan;
 import android.os.Bundle;
+import android.text.style.ForegroundColorSpan;
+import android.text.style.LineBackgroundSpan;
 import android.util.Log;
-import android.view.*;
-import android.widget.*;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
@@ -15,10 +24,8 @@ import androidx.navigation.Navigation;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-
 import com.prolificinteractive.materialcalendarview.CalendarDay;
 import com.prolificinteractive.materialcalendarview.DayViewDecorator;
 import com.prolificinteractive.materialcalendarview.DayViewFacade;
@@ -29,7 +36,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 public class EventListFragment extends Fragment implements View.OnClickListener {
 
@@ -39,12 +51,17 @@ public class EventListFragment extends Fragment implements View.OnClickListener 
     private NavController navC;
     private ImageButton homeButton, checkButton, profileButton, addEventButton;
     private Button todayButton, customCategoryButton;
+    private Button btnSchool, btnPersonal, btnWork, btnOrgs, btnEvents, btnBirthdays, btnFamily; // filters
     private TextView monthText, tvNoEvents, tvSelectedDate;
     private SharedPreferences prefs;
     private FirebaseFirestore db;
     private FirebaseAuth auth;
     private MaterialCalendarView calendarView;
 
+    private SelectedDayDecorator selectedDayDecorator;
+    private String activeFilterTag = null; // null = show all
+
+    // All events loaded, keyed by day
     private final Map<CalendarDay, List<Map<String, Object>>> eventsByDay = new HashMap<>();
 
     public EventListFragment() {}
@@ -63,45 +80,83 @@ public class EventListFragment extends Fragment implements View.OnClickListener 
         db = FirebaseFirestore.getInstance();
         navC = Navigation.findNavController(view);
 
+        // Bottom nav + header
         homeButton = view.findViewById(R.id.HomeButton);
         checkButton = view.findViewById(R.id.TaskButton);
         profileButton = view.findViewById(R.id.SettingsButton);
         addEventButton = view.findViewById(R.id.addEventButton);
-        customCategoryButton = view.findViewById(R.id.customCategoryButton);
-        todayButton = view.findViewById(R.id.todayButton);
+        customCategoryButton = view.findViewById(R.id.btnCustom);
         monthText = view.findViewById(R.id.monthText);
         tvNoEvents = view.findViewById(R.id.tvNoEvents);
         tvSelectedDate = view.findViewById(R.id.tvSelectedDate);
         calendarView = view.findViewById(R.id.calendarView);
 
-        loadSavedCategories();
-        loadEventsAndDecorate();
+        // Filter buttons (static)
+        btnSchool = view.findViewById(R.id.btnSchool);
+        btnPersonal = view.findViewById(R.id.btnPersonal);
+        btnWork = view.findViewById(R.id.btnWork);
+        btnOrgs = view.findViewById(R.id.btnOrgs);
+        btnEvents = view.findViewById(R.id.btnEvents);
+        btnBirthdays = view.findViewById(R.id.btnBirthdays);
+        btnFamily = view.findViewById(R.id.btnFamily);
 
+        // --- Selected-day decorator (white text on selected date) ---
+        selectedDayDecorator = new SelectedDayDecorator();
+        selectedDayDecorator.setDate(CalendarDay.today());
+        calendarView.addDecorator(selectedDayDecorator);
+
+        // Initial selection / headers
         calendarView.setSelectedDate(CalendarDay.today());
         updateMonthText(Calendar.getInstance());
         updateHeaderDate(CalendarDay.today());
         populateScheduleForDate(CalendarDay.today());
 
-        todayButton.setOnClickListener(v -> {
-            calendarView.setSelectedDate(CalendarDay.today());
-            updateMonthText(Calendar.getInstance());
-            updateHeaderDate(CalendarDay.today());
-            populateScheduleForDate(CalendarDay.today());
-        });
+        // Listeners: navigation
+        homeButton.setOnClickListener(this);
+        checkButton.setOnClickListener(this);
+        profileButton.setOnClickListener(this);
+        addEventButton.setOnClickListener(v -> navC.navigate(R.id.action_eventFragment_to_newEventFragment));
 
+        // Optional "Today" button
+        if (todayButton != null) {
+            todayButton.setOnClickListener(v -> {
+                CalendarDay today = CalendarDay.today();
+                calendarView.setSelectedDate(today);
+                updateMonthText(Calendar.getInstance());
+                updateHeaderDate(today);
+                populateScheduleForDate(today);
+                selectedDayDecorator.setDate(today);
+                calendarView.invalidateDecorators();
+            });
+        }
+
+        // Date change → update headers + list + keep white text on selected
         calendarView.setOnDateChangedListener((widget, date, selected) -> {
             Calendar c = Calendar.getInstance();
             c.set(date.getYear(), date.getMonth(), date.getDay());
             updateMonthText(c);
             updateHeaderDate(date);
             populateScheduleForDate(date);
+            selectedDayDecorator.setDate(date);
+            calendarView.invalidateDecorators();
         });
 
-        addEventButton.setOnClickListener(v -> navC.navigate(R.id.action_eventFragment_to_newEventFragment));
-        customCategoryButton.setOnClickListener(v -> showCustomCategoryDialog());
-        homeButton.setOnClickListener(this);
-        checkButton.setOnClickListener(this);
-        profileButton.setOnClickListener(this);
+        // Filter listeners (toggle on/off)
+        if (btnSchool != null) btnSchool.setOnClickListener(v -> toggleFilter("school"));
+        if (btnPersonal != null) btnPersonal.setOnClickListener(v -> toggleFilter("personal"));
+        if (btnWork != null) btnWork.setOnClickListener(v -> toggleFilter("work"));
+        if (btnOrgs != null) btnOrgs.setOnClickListener(v -> toggleFilter("orgs."));
+        if (btnEvents != null) btnEvents.setOnClickListener(v -> toggleFilter("events"));
+        if (btnBirthdays != null) btnBirthdays.setOnClickListener(v -> toggleFilter("birthdays"));
+        if (btnFamily != null) btnFamily.setOnClickListener(v -> toggleFilter("family"));
+
+        if (customCategoryButton != null) {
+            customCategoryButton.setOnClickListener(v -> showCustomCategoryDialog());
+        }
+
+        // Load data after decorators are set up
+        loadSavedCategories();
+        loadEventsAndDecorate();
     }
 
     // ---------- HEADER ----------
@@ -157,6 +212,20 @@ public class EventListFragment extends Fragment implements View.OnClickListener 
         newButton.setBackgroundTintList(android.content.res.ColorStateList.valueOf(color));
         newButton.setTextColor(getResources().getColor(android.R.color.white));
         newButton.setPadding(16, 8, 16, 8);
+        // Match your compact height (optional, feel free to remove if not needed):
+        newButton.setMinWidth(dp(80));
+        newButton.setMinHeight(0);
+        newButton.setHeight(dp(24));
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+                LinearLayout.LayoutParams.WRAP_CONTENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT
+        );
+        lp.setMargins(dp(8), 0, dp(8), 0);
+        newButton.setLayoutParams(lp);
+
+        // Tap to filter by this custom tag
+        newButton.setOnClickListener(v -> toggleFilter(name));
+
         filterRow.addView(newButton);
         saveCustomCategory(name, color);
     }
@@ -185,6 +254,7 @@ public class EventListFragment extends Fragment implements View.OnClickListener 
             Log.e("EventListFragment", "Error saving category", e);
         }
     }
+
     // ---------- LOAD SAVED CUSTOM CATEGORIES ----------
     private void loadSavedCategories() {
         LinearLayout filterRow = requireView().findViewById(R.id.filterRow);
@@ -199,7 +269,7 @@ public class EventListFragment extends Fragment implements View.OnClickListener 
         db.collection("users").document(user.getUid()).collection("customCategories")
                 .get()
                 .addOnSuccessListener(snap -> {
-                    filterRow.removeAllViews();
+                    // Keep the static buttons; just append customs
                     for (QueryDocumentSnapshot doc : snap) {
                         String name = doc.getString("name");
                         int color = doc.contains("color") ? doc.getLong("color").intValue() : 0xFF2196F3;
@@ -230,12 +300,19 @@ public class EventListFragment extends Fragment implements View.OnClickListener 
         newButton.setBackgroundTintList(android.content.res.ColorStateList.valueOf(color));
         newButton.setTextColor(getResources().getColor(android.R.color.white));
         newButton.setPadding(16, 8, 16, 8);
+        newButton.setMinWidth(dp(80));
+        newButton.setMinHeight(0);
+        newButton.setHeight(dp(24));
         LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.WRAP_CONTENT,
                 LinearLayout.LayoutParams.WRAP_CONTENT
         );
-        params.setMargins(8, 0, 8, 0);
+        params.setMargins(dp(8), 0, dp(8), 0);
         newButton.setLayoutParams(params);
+
+        // Tap to filter by this custom tag
+        newButton.setOnClickListener(v -> toggleFilter(name));
+
         container.addView(newButton);
     }
 
@@ -253,8 +330,8 @@ public class EventListFragment extends Fragment implements View.OnClickListener 
                         Map<String, Object> event = doc.getData();
                         event.put("id", doc.getId());
                         try {
-                            String dateStr = (String) event.get("startDate");
-                            Date date = new SimpleDateFormat("MMM d, yyyy", Locale.getDefault()).parse(dateStr);
+                            String dateStr = (String) event.get("startDate"); // e.g., "Oct 9, 2025"
+                            java.util.Date date = new SimpleDateFormat("MMM d, yyyy", Locale.getDefault()).parse(dateStr);
                             Calendar cal = Calendar.getInstance();
                             cal.setTime(date);
                             CalendarDay day = CalendarDay.from(cal);
@@ -264,24 +341,45 @@ public class EventListFragment extends Fragment implements View.OnClickListener 
                         }
                     }
 
-                    List<DayMultiDotDecorator> decorators = new ArrayList<>();
-                    for (Map.Entry<CalendarDay, List<Map<String, Object>>> entry : eventsByDay.entrySet()) {
-                        CalendarDay day = entry.getKey();
-                        List<Integer> colors = new ArrayList<>();
-                        for (Map<String, Object> ev : entry.getValue()) {
-                            String tag = (String) ev.getOrDefault("tag", "General");
-                            int color = colorForTag(tag);
-                            if (!colors.contains(color)) colors.add(color);
-                        }
-                        decorators.add(new DayMultiDotDecorator(day, colors));
-                    }
-
-                    calendarView.removeDecorators();
-                    for (DayMultiDotDecorator d : decorators) calendarView.addDecorator(d);
-                    calendarView.invalidateDecorators();
-                    populateScheduleForDate(CalendarDay.today());
+                    applyDecorators();               // draw dots (respecting current filter)
+                    populateScheduleForDate(getSelectedOrToday()); // refresh list for selected day
                 })
                 .addOnFailureListener(e -> Log.e("Firestore", "Error loading events", e));
+    }
+
+    // Build and apply dot decorators based on the active filter (if any)
+    private void applyDecorators() {
+        List<DayMultiDotDecorator> decorators = new ArrayList<>();
+
+        for (Map.Entry<CalendarDay, List<Map<String, Object>>> entry : eventsByDay.entrySet()) {
+            CalendarDay day = entry.getKey();
+            List<Map<String, Object>> dayEvents = entry.getValue();
+
+            List<Integer> colors = new ArrayList<>();
+
+            for (Map<String, Object> ev : dayEvents) {
+                String tag = (String) ev.getOrDefault("tag", "General");
+                if (activeFilterTag != null && !tagEquals(tag, activeFilterTag)) {
+                    continue; // skip non-matching tags when filtered
+                }
+                int color = colorForTag(tag);
+                if (!colors.contains(color)) colors.add(color);
+            }
+
+            // If filtering, only show a dot for days that have the filtered tag
+            if (!colors.isEmpty()) {
+                decorators.add(new DayMultiDotDecorator(day, colors));
+            }
+        }
+
+        calendarView.removeDecorators();
+        calendarView.addDecorator(selectedDayDecorator); // keep white-number decorator
+        for (DayMultiDotDecorator d : decorators) calendarView.addDecorator(d);
+        calendarView.invalidateDecorators();
+    }
+
+    private boolean tagEquals(String a, String b) {
+        return a != null && b != null && a.trim().equalsIgnoreCase(b.trim());
     }
 
     private int colorForTag(String tag) {
@@ -342,6 +440,24 @@ public class EventListFragment extends Fragment implements View.OnClickListener 
         }
     }
 
+    // ---------- SELECTED-DAY DECORATOR (white number on selected date) ----------
+    private static class SelectedDayDecorator implements DayViewDecorator {
+        private CalendarDay date;
+
+        void setDate(CalendarDay date) { this.date = date; }
+
+        @Override
+        public boolean shouldDecorate(CalendarDay day) {
+            return date != null && date.equals(day);
+        }
+
+        @Override
+        public void decorate(DayViewFacade view) {
+            // Background color is driven by XML selectionColor; we force text to white.
+            view.addSpan(new ForegroundColorSpan(0xFFFFFFFF));
+        }
+    }
+
     // ---------- DISPLAY EVENTS ----------
     private void populateScheduleForDate(CalendarDay day) {
         LinearLayout scheduleContainer = requireView().findViewById(R.id.scheduleContainer);
@@ -349,7 +465,20 @@ public class EventListFragment extends Fragment implements View.OnClickListener 
 
         List<Map<String, Object>> events = eventsByDay.get(day);
 
-        if (events == null || events.isEmpty()) {
+        // Filter by active tag if set
+        List<Map<String, Object>> listToShow = new ArrayList<>();
+        if (events != null) {
+            if (activeFilterTag == null) {
+                listToShow.addAll(events);
+            } else {
+                for (Map<String, Object> e : events) {
+                    String tag = (String) e.getOrDefault("tag", "");
+                    if (tagEquals(tag, activeFilterTag)) listToShow.add(e);
+                }
+            }
+        }
+
+        if (listToShow.isEmpty()) {
             scheduleContainer.setVisibility(View.GONE);
             tvNoEvents.setVisibility(View.VISIBLE);
             return;
@@ -358,7 +487,7 @@ public class EventListFragment extends Fragment implements View.OnClickListener 
         tvNoEvents.setVisibility(View.GONE);
         scheduleContainer.setVisibility(View.VISIBLE);
 
-        for (Map<String, Object> e : events) {
+        for (Map<String, Object> e : listToShow) {
             boolean allDay = (boolean) e.getOrDefault("allDay", false);
             String time = (String) e.getOrDefault("startTime", "");
             String name = (String) e.getOrDefault("name", "");
@@ -368,14 +497,14 @@ public class EventListFragment extends Fragment implements View.OnClickListener 
 
             LinearLayout card = new LinearLayout(requireContext());
             card.setOrientation(LinearLayout.VERTICAL);
-            card.setPadding(16, 12, 16, 12);
+            card.setPadding(dp(16), dp(12), dp(16), dp(12));
             card.setBackgroundResource(android.R.color.white);
             card.setElevation(3f);
             LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
             );
-            params.setMargins(0, 8, 0, 8);
+            params.setMargins(0, dp(8), 0, dp(8));
             card.setLayoutParams(params);
 
             TextView title = new TextView(requireContext());
@@ -392,13 +521,13 @@ public class EventListFragment extends Fragment implements View.OnClickListener 
             card.addView(title);
             card.addView(note);
 
-            // ✅ Long press = Edit/Delete
+            // Long press = Edit/Delete
             card.setOnLongClickListener(v -> {
                 new androidx.appcompat.app.AlertDialog.Builder(requireContext())
                         .setTitle("Edit or Delete Event")
                         .setItems(new CharSequence[]{"Edit", "Delete"}, (dialog, which) -> {
                             if (which == 0) {
-                                // Navigate to edit fragment (future)
+                                // Navigate to edit fragment with id
                                 Bundle bundle = new Bundle();
                                 bundle.putString("eventId", (String) e.get("id"));
                                 navC.navigate(R.id.action_eventFragment_to_editEventFragment, bundle);
@@ -421,6 +550,27 @@ public class EventListFragment extends Fragment implements View.OnClickListener 
 
             scheduleContainer.addView(card);
         }
+    }
+
+    // Toggle the active tag filter and refresh UI
+    private void toggleFilter(String tag) {
+        if (activeFilterTag != null && tagEquals(activeFilterTag, tag)) {
+            activeFilterTag = null; // clear filter
+        } else {
+            activeFilterTag = tag;
+        }
+        applyDecorators();
+        populateScheduleForDate(getSelectedOrToday());
+    }
+
+    private CalendarDay getSelectedOrToday() {
+        CalendarDay sel = calendarView.getSelectedDate();
+        return sel != null ? sel : CalendarDay.today();
+    }
+
+    private int dp(int v) {
+        float d = getResources().getDisplayMetrics().density;
+        return Math.round(v * d);
     }
 
     @Override

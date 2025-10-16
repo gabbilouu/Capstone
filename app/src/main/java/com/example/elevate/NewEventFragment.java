@@ -58,7 +58,7 @@ public class NewEventFragment extends Fragment {
         etLocation = view.findViewById(R.id.etLocation);
         etNotes = view.findViewById(R.id.etNotes);
         spinnerTag = view.findViewById(R.id.etTag);
-        cbAllDay = view.findViewById(R.id.cbAllDay);
+        cbAllDay = view.findViewById(R.id.swAllDay);
         btnStartDate = view.findViewById(R.id.btnStartDate);
         btnStartTime = view.findViewById(R.id.btnStartTime);
         btnEndDate = view.findViewById(R.id.btnEndDate);

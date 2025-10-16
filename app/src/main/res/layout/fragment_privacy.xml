@@ -3,11 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center"
-    android:background="@android:color/white"
-    android:padding="24dp">
+    android:background="@android:color/white">
 
-    <!-- Header / Toolbar -->
+    <!-- Header / Toolbar (anchored at top) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="56dp"
@@ -33,15 +31,31 @@
             android:layout_marginStart="16dp"/>
     </LinearLayout>
 
-    <!-- Center Message -->
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="OPENS WEB BROWSER\nTO DISPLAY PRIVACY NOTICE"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:textColor="@android:color/black"
-        android:layout_marginTop="48dp" />
+    <!-- Content area -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true"
+        android:background="@android:color/white">
 
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="24dp"
+            android:gravity="top|center_horizontal">
+
+            <!-- Centered horizontally, sits under the toolbar -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="OPENS WEB BROWSER\nTO DISPLAY PRIVACY NOTICE"
+                android:gravity="center"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/black"
+                android:layout_marginTop="24dp" />
+        </LinearLayout>
+    </ScrollView>
 </LinearLayout>

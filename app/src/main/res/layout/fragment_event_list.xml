@@ -7,13 +7,12 @@
     android:background="@android:color/white">
 
     <ScrollView
-        android:id="@+id/scrollContainer"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:fillViewport="true"
         android:paddingBottom="8dp"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toTopOf="@id/bottomNavBar"
+        app:layout_constraintBottom_toTopOf="@id/bottomNav"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
@@ -41,21 +40,11 @@
                     android:textStyle="bold"
                     android:textColor="@android:color/black" />
 
-                <Button
-                    android:id="@+id/todayButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Today"
-                    android:textSize="14sp"
-                    android:textColor="@android:color/white"
-                    android:backgroundTint="@android:color/holo_blue_light"
-                    android:layout_marginEnd="8dp" />
-
                 <ImageButton
                     android:id="@+id/addEventButton"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:backgroundTint="@android:color/holo_green_light"
+                    android:backgroundTint="#47675E"
                     android:background="@drawable/rounded_button"
                     android:src="@android:drawable/ic_input_add"
                     android:contentDescription="Add Event"
@@ -76,70 +65,101 @@
                     android:orientation="horizontal"
                     android:gravity="center_vertical">
 
-                    <Button
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnSchool"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="24dp"
                         android:minWidth="80dp"
                         android:layout_marginEnd="8dp"
                         android:text="School"
-                        android:backgroundTint="@android:color/holo_blue_light" />
+                        android:textColor="@android:color/white"
+                        android:background="@drawable/btn_pill_blue"
+                        app:backgroundTint="@null"
+                        android:backgroundTint="@null" />
 
-                    <Button
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnPersonal"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="24dp"
                         android:minWidth="80dp"
                         android:layout_marginEnd="8dp"
                         android:text="Personal"
-                        android:backgroundTint="@android:color/holo_red_light" />
+                        android:textColor="@android:color/white"
+                        android:background="@drawable/btn_pill_red"
+                        app:backgroundTint="@null"
+                        android:backgroundTint="@null" />
 
-                    <Button
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnWork"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="24dp"
                         android:minWidth="80dp"
                         android:layout_marginEnd="8dp"
                         android:text="Work"
-                        android:backgroundTint="@android:color/holo_orange_light" />
+                        android:textColor="@android:color/white"
+                        android:background="@drawable/btn_pill_brown"
+                        app:backgroundTint="@null"
+                        android:backgroundTint="@null" />
 
-                    <Button
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnOrgs"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="24dp"
                         android:minWidth="80dp"
                         android:layout_marginEnd="8dp"
                         android:text="Orgs."
-                        android:backgroundTint="@android:color/holo_green_light" />
+                        android:textColor="@android:color/white"
+                        android:background="@drawable/btn_pill_lime"
+                        app:backgroundTint="@null"
+                        android:backgroundTint="@null" />
 
-                    <Button
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnEvents"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="24dp"
                         android:minWidth="80dp"
                         android:layout_marginEnd="8dp"
                         android:text="Events"
-                        android:backgroundTint="@android:color/holo_purple" />
+                        android:textColor="@android:color/white"
+                        android:background="@drawable/btn_pill_yellow"
+                        app:backgroundTint="@null"
+                        android:backgroundTint="@null" />
 
-                    <Button
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnBirthdays"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="24dp"
                         android:minWidth="80dp"
                         android:layout_marginEnd="8dp"
                         android:text="Birthdays"
-                        android:backgroundTint="#FF69B4" />
+                        android:textColor="@android:color/white"
+                        android:background="@drawable/btn_pill_pink"
+                        app:backgroundTint="@null"
+                        android:backgroundTint="@null" />
 
-                    <Button
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnFamily"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="24dp"
                         android:minWidth="80dp"
                         android:layout_marginEnd="8dp"
                         android:text="Family"
-                        android:backgroundTint="#00BCD4" />
+                        android:textColor="@android:color/white"
+                        android:background="@drawable/btn_pill_indigo"
+                        app:backgroundTint="@null"
+                        android:backgroundTint="@null" />
 
-                    <Button
-                        android:id="@+id/customCategoryButton"
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnCustom"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_height="24dp"
                         android:minWidth="80dp"
+                        android:layout_marginEnd="8dp"
                         android:text="Custom"
-                        android:backgroundTint="@android:color/darker_gray"
-                        android:textColor="@android:color/white" />
+                        android:textColor="@android:color/white"
+                        android:background="@drawable/btn_pill_gray"
+                        app:backgroundTint="@null"
+                        android:backgroundTint="@null" />
                 </LinearLayout>
             </HorizontalScrollView>
 
@@ -152,7 +172,7 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
                 app:mcv_showOtherDates="all"
-                app:mcv_selectionColor="@android:color/holo_blue_dark"
+                app:mcv_selectionColor="@color/pill_green"
                 app:mcv_firstDayOfWeek="monday"
                 app:mcv_tileHeight="44dp" />
 
@@ -204,22 +224,60 @@
 
     <!-- Bottom Navigation -->
     <LinearLayout
-        android:id="@+id/bottomNavBar"
+        android:id="@+id/bottomNav"
         android:layout_width="0dp"
-        android:layout_height="56dp"
+        android:layout_height="64dp"
         android:orientation="horizontal"
         android:gravity="center"
         android:weightSum="4"
-        android:padding="4dp"
+        android:padding="8dp"
         android:background="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <ImageButton android:id="@+id/HomeButton" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="@null" android:src="@drawable/ic_home_active" />
-        <ImageButton android:id="@+id/TaskButton" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="@null" android:src="@drawable/ic_tasks_active" />
-        <ImageButton android:id="@+id/CalendarButton" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="@null" android:src="@drawable/ic_calendar_inactive" />
-        <ImageButton android:id="@+id/SettingsButton" android:layout_width="0dp" android:layout_height="match_parent" android:layout_weight="1" android:background="@null" android:src="@drawable/ic_settings_active" />
-    </LinearLayout>
+        <ImageButton
+            android:id="@+id/HomeButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:src="@drawable/ic_home_active"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:contentDescription="Home" />
 
+        <ImageButton
+            android:id="@+id/TaskButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:src="@drawable/ic_tasks_active"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:contentDescription="Tasks" />
+
+        <ImageButton
+            android:id="@+id/CalendarButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:src="@drawable/ic_calendar_inactive"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:contentDescription="Calendar" />
+
+        <ImageButton
+            android:id="@+id/SettingsButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:src="@drawable/ic_settings_active"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:contentDescription="Settings" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

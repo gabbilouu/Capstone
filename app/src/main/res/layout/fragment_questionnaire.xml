@@ -12,7 +12,8 @@
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:gravity="center"
-        android:padding="16dp">
+        android:padding="16dp"
+        android:background="@null">
 
         <!-- Title -->
         <TextView
@@ -21,7 +22,8 @@
             android:text="Help us understand"
             android:textSize="20sp"
             android:textStyle="bold"
-            android:layout_marginBottom="4dp"/>
+            android:layout_marginBottom="4dp"
+            android:background="@null"/>
 
         <!-- Subtitle -->
         <TextView
@@ -30,14 +32,16 @@
             android:text="you."
             android:textSize="20sp"
             android:fontFamily="@font/bumbbled"
-            android:layout_marginBottom="16dp"/>
+            android:layout_marginBottom="16dp"
+            android:background="@null"/>
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="What brings you here?"
             android:textSize="16sp"
-            android:layout_marginBottom="24dp"/>
+            android:layout_marginBottom="24dp"
+            android:background="@null"/>
 
         <!-- Option Buttons -->
         <com.google.android.material.button.MaterialButton

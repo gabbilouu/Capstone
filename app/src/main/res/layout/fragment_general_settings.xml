@@ -64,7 +64,6 @@
                     android:paddingVertical="6dp">
 
                     <TextView
-                        android:id="@+id/tv_login_streaks"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -75,9 +74,13 @@
                         android:id="@+id/switch_login_streaks"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:checked="true"
-                        android:thumb="@drawable/switch_thumb_custom"
-                        android:track="@drawable/switch_track_custom" />
+                        app:track="@drawable/switch_track_events"
+                        app:thumbTint="@null"
+                        app:trackTint="@null"
+                        app:showText="false"
+                        app:switchMinWidth="60dp"
+                        android:minWidth="60dp"
+                        app:splitTrack="false" />
                 </LinearLayout>
 
                 <View
@@ -94,7 +97,6 @@
                     android:paddingVertical="6dp">
 
                     <TextView
-                        android:id="@+id/tv_daily_mood"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -105,9 +107,13 @@
                         android:id="@+id/switch_daily_mood"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:checked="true"
-                        android:thumb="@drawable/switch_thumb_custom"
-                        android:track="@drawable/switch_track_custom" />
+                        app:track="@drawable/switch_track_events"
+                        app:thumbTint="@null"
+                        app:trackTint="@null"
+                        app:showText="false"
+                        app:switchMinWidth="60dp"
+                        android:minWidth="60dp"
+                        app:splitTrack="false" />
                 </LinearLayout>
 
                 <View
@@ -124,7 +130,6 @@
                     android:paddingVertical="6dp">
 
                     <TextView
-                        android:id="@+id/tv_weekly_mood"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -135,9 +140,13 @@
                         android:id="@+id/switch_weekly_mood"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:checked="false"
-                        android:thumb="@drawable/switch_thumb_custom"
-                        android:track="@drawable/switch_track_custom" />
+                        app:track="@drawable/switch_track_events"
+                        app:thumbTint="@null"
+                        app:trackTint="@null"
+                        app:showText="false"
+                        app:switchMinWidth="60dp"
+                        android:minWidth="60dp"
+                        app:splitTrack="false" />
                 </LinearLayout>
 
                 <View
@@ -154,7 +163,6 @@
                     android:paddingVertical="6dp">
 
                     <TextView
-                        android:id="@+id/tv_affirmations"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -165,9 +173,13 @@
                         android:id="@+id/switch_affirmations"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:checked="false"
-                        android:thumb="@drawable/switch_thumb_custom"
-                        android:track="@drawable/switch_track_custom" />
+                        app:track="@drawable/switch_track_events"
+                        app:thumbTint="@null"
+                        app:trackTint="@null"
+                        app:showText="false"
+                        app:switchMinWidth="60dp"
+                        android:minWidth="60dp"
+                        app:splitTrack="false"  />
                 </LinearLayout>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
@@ -179,7 +191,8 @@
             android:layout_height="wrap_content"
             android:text="App Settings"
             android:textSize="14sp"
-            android:layout_marginBottom="8dp" />
+            android:layout_marginBottom="8dp"
+            />
 
         <androidx.cardview.widget.CardView
             android:id="@+id/card_settings"
@@ -204,7 +217,6 @@
                     android:paddingVertical="6dp">
 
                     <TextView
-                        android:id="@+id/tv_sound_effects"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -215,9 +227,13 @@
                         android:id="@+id/switch_sound_effects"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:checked="true"
-                        android:thumb="@drawable/switch_thumb_custom"
-                        android:track="@drawable/switch_track_custom" />
+                        app:track="@drawable/switch_track_events"
+                        app:thumbTint="@null"
+                        app:trackTint="@null"
+                        app:showText="false"
+                        app:switchMinWidth="60dp"
+                        android:minWidth="60dp"
+                        app:splitTrack="false" />
                 </LinearLayout>
 
                 <View
@@ -234,7 +250,6 @@
                     android:paddingVertical="6dp">
 
                     <TextView
-                        android:id="@+id/tv_haptic"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -245,9 +260,13 @@
                         android:id="@+id/switch_haptic"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:checked="true"
-                        android:thumb="@drawable/switch_thumb_custom"
-                        android:track="@drawable/switch_track_custom" />
+                        app:track="@drawable/switch_track_events"
+                        app:thumbTint="@null"
+                        app:trackTint="@null"
+                        app:showText="false"
+                        app:switchMinWidth="60dp"
+                        android:minWidth="60dp"
+                        app:splitTrack="false" />
                 </LinearLayout>
 
                 <View
@@ -264,7 +283,6 @@
                     android:paddingVertical="6dp">
 
                     <TextView
-                        android:id="@+id/tv_launch_lock"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
@@ -275,9 +293,13 @@
                         android:id="@+id/switch_launch_lock"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:checked="false"
-                        android:thumb="@drawable/switch_thumb_custom"
-                        android:track="@drawable/switch_track_custom" />
+                        app:track="@drawable/switch_track_events"
+                        app:thumbTint="@null"
+                        app:trackTint="@null"
+                        app:showText="false"
+                        app:switchMinWidth="60dp"
+                        android:minWidth="60dp"
+                        app:splitTrack="false" />
                 </LinearLayout>
             </LinearLayout>
         </androidx.cardview.widget.CardView>

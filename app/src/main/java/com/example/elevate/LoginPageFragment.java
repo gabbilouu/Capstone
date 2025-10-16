@@ -42,7 +42,7 @@ public class LoginPageFragment extends Fragment {
         EditText loginEmail = view.findViewById(R.id.email);
         EditText loginPassword = view.findViewById(R.id.password);
         Button loginButton = view.findViewById(R.id.loginButton);
-        ImageView backArrow = view.findViewById(R.id.backArrow);
+        ImageView backArrow = view.findViewById(R.id.back_button);
 
         SharedPreferences prefs = requireContext().getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE);
 

@@ -17,7 +17,8 @@
         android:textStyle="bold"
         android:textColor="@android:color/black"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="48dp"/>
+        android:layout_marginTop="48dp"
+        android:background="@null"/>
 
     <!-- Emoji Group -->
     <FrameLayout
@@ -28,7 +29,8 @@
         android:layout_marginTop="24dp"
         android:layout_marginBottom="32dp"
         android:clipChildren="false"
-        android:clipToPadding="false">
+        android:clipToPadding="false"
+        android:background="@null">
 
         <!-- Very Happy -->
         <ImageView

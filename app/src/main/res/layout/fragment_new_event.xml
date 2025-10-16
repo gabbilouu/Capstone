@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fillViewport="true"
@@ -19,14 +20,19 @@
             android:gravity="center_vertical"
             android:weightSum="3">
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnCancel"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Cancel"
                 android:textColor="@android:color/white"
-                android:background="#47675E" />
+                android:background="@drawable/btn_pill_green"
+                android:minHeight="0dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp" />
 
             <TextView
                 android:id="@+id/tvTitle"
@@ -38,14 +44,19 @@
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnAdd"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:text="Add"
                 android:textColor="@android:color/white"
-                android:background="#47675E" />
+                android:background="@drawable/btn_pill_green"
+                android:minHeight="0dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp" />
         </LinearLayout>
 
         <!-- GENERAL -->
@@ -53,91 +64,260 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
+            android:layout_marginStart="20dp"
             android:text="GENERAL"
             android:textAllCaps="true"
             android:textSize="12sp"
             android:textStyle="bold"
             android:textColor="#888" />
 
-        <EditText
-            android:id="@+id/etEventName"
+        <!-- Rounded box: Event Name + Location (with divider) -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Event Name" />
+            android:background="@drawable/bg_group"
+            android:orientation="vertical"
+            android:padding="0dp"
+            android:layout_marginTop="8dp"
+            android:showDividers="middle"
+            android:divider="@drawable/divider_line">
 
-        <EditText
-            android:id="@+id/etLocation"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Location" />
+            <EditText
+                android:id="@+id/etEventName"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:hint="Event Name"
+                android:textSize="16sp"
+                android:textColor="@android:color/black"
+                android:background="@android:color/transparent"
+                android:padding="8dp" />
+
+            <EditText
+                android:id="@+id/etLocation"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:hint="Location"
+                android:textSize="16sp"
+                android:textColor="@android:color/black"
+                android:background="@android:color/transparent"
+                android:padding="8dp"/>
+        </LinearLayout>
 
         <!-- DURATION -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
+            android:layout_marginStart="20dp"
             android:text="DURATION"
             android:textAllCaps="true"
             android:textSize="12sp"
             android:textStyle="bold"
             android:textColor="#888" />
 
-        <CheckBox
-            android:id="@+id/cbAllDay"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="All-day" />
-
-        <!-- Start/End -->
+        <!-- Rounded box: All-day + Start + End + Repeat (with dividers, equal row heights) -->
         <LinearLayout
+            android:id="@+id/boxDuration"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="2">
+            android:background="@drawable/bg_group"
+            android:orientation="vertical"
+            android:padding="0dp"
+            android:layout_marginTop="8dp"
+            android:showDividers="middle"
+            android:divider="@drawable/divider_line">
 
-            <Button
-                android:id="@+id/btnStartDate"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Start Date"
-                android:textColor="@android:color/white"
-                android:background="#47675E" />
+            <!-- All-day row (exact same height as others) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
 
-            <Button
-                android:id="@+id/btnStartTime"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Start Time"
-                android:textColor="@android:color/white"
-                android:background="#47675E" />
-        </LinearLayout>
+                <!-- All-day -->
+                <TextView
+                    android:id="@+id/labelAllDay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="All-day"
+                    android:textSize="16sp"
+                    android:textColor="?android:attr/textColorHint" />
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="2"
-            android:layout_marginTop="8dp">
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
 
-            <Button
-                android:id="@+id/btnEndDate"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="End Date"
-                android:textColor="@android:color/white"
-                android:background="#47675E" />
+                <androidx.appcompat.widget.SwitchCompat
+                    android:id="@+id/swAllDay"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:track="@drawable/switch_track_events"
+                    app:thumbTint="@null"
+                    app:trackTint="@null"
+                    app:showText="false"
+                    app:switchMinWidth="60dp"
+                    android:minWidth="60dp"
+                    app:splitTrack="false" />
 
-            <Button
-                android:id="@+id/btnEndTime"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="End Time"
-                android:textColor="@android:color/white"
-                android:background="#47675E" />
+
+            </LinearLayout>
+
+            <!-- Start row (exact same height) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="0dp"
+                android:orientation="horizontal"
+                android:weightSum="3"
+                android:gravity="center_vertical">
+
+                <!-- Start -->
+                <TextView
+                    android:id="@+id/labelStart"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:text="Start"
+                    android:textSize="16sp"
+                    android:textColor="?android:attr/textColorHint"
+                    android:gravity="start|center_vertical" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:orientation="horizontal">
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnStartDate"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Start Date"
+                        android:textColor="@android:color/white"
+                        android:background="@drawable/btn_pill_green"
+                        android:minHeight="0dp"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:paddingTop="5dp"
+                        android:paddingBottom="5dp" />
+
+                    <Space
+                        android:layout_width="8dp"
+                        android:layout_height="wrap_content" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnStartTime"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Start Time"
+                        android:textColor="@android:color/white"
+                        android:background="@drawable/btn_pill_green"
+                        android:minHeight="0dp"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:paddingTop="5dp"
+                        android:paddingBottom="5dp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- End row (exact same height) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="0dp"
+                android:orientation="horizontal"
+                android:weightSum="3"
+                android:gravity="center_vertical">
+
+                <!-- End -->
+                <TextView
+                    android:id="@+id/labelEnd"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:layout_marginStart="8dp"
+                    android:text="End"
+                    android:textSize="16sp"
+                    android:textColor="?android:attr/textColorHint"
+                    android:gravity="start|center_vertical" />
+
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="2"
+                    android:orientation="horizontal">
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnEndDate"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="End Date"
+                        android:textColor="@android:color/white"
+                        android:background="@drawable/btn_pill_green"
+                        android:minHeight="0dp"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:paddingTop="5dp"
+                        android:paddingBottom="5dp" />
+
+                    <Space
+                        android:layout_width="8dp"
+                        android:layout_height="wrap_content" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnEndTime"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="End Time"
+                        android:textColor="@android:color/white"
+                        android:background="@drawable/btn_pill_green"
+                        android:minHeight="0dp"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:paddingTop="5dp"
+                        android:paddingBottom="5dp" />
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- Repeat row (exact same height) -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="0dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
+
+                <!-- Repeat -->
+                <TextView
+                    android:id="@+id/labelRepeat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="Repeat"
+                    android:textSize="16sp"
+                    android:textColor="?android:attr/textColorHint" />
+
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <Spinner
+                    android:id="@+id/spRepeat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:spinnerMode="dropdown"
+                    android:entries="@array/repeat_options" />
+            </LinearLayout>
         </LinearLayout>
 
         <!-- MISC -->
@@ -145,27 +325,69 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="24dp"
+            android:layout_marginStart="20dp"
             android:text="MISC."
             android:textAllCaps="true"
             android:textSize="12sp"
             android:textStyle="bold"
             android:textColor="#888" />
 
-        <!-- Category Spinner -->
-        <Spinner
-            android:id="@+id/etTag"
+        <!-- Rounded box: Tag + Notes (with divider) -->
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:spinnerMode="dropdown" />
+            android:background="@drawable/bg_group"
+            android:orientation="vertical"
+            android:padding="0dp"
+            android:layout_marginTop="8dp"
+            android:showDividers="middle"
+            android:divider="@drawable/divider_line">
 
-        <EditText
-            android:id="@+id/etNotes"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Notes"
-            android:inputType="textMultiLine"
-            android:lines="3"
-            android:gravity="top" />
+            <!-- Tag row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:orientation="horizontal"
+                android:gravity="center_vertical">
 
+                <!-- Tag -->
+                <TextView
+                    android:id="@+id/labelTag"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="Tag"
+                    android:textSize="16sp"
+                    android:textColor="?android:attr/textColorHint" />
+
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
+
+                <Spinner
+                    android:id="@+id/etTag"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:spinnerMode="dropdown"
+                    android:entries="@array/tags" />
+            </LinearLayout>
+
+            <!-- Notes -->
+            <EditText
+                android:id="@+id/etNotes"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:hint="Notes"
+                android:inputType="textMultiLine"
+                android:lines="3"
+                android:gravity="top"
+                android:textSize="16sp"
+                android:textColor="@android:color/black"
+                android:background="@android:color/transparent"
+                android:padding="8dp" />
+        </LinearLayout>
     </LinearLayout>
 </ScrollView>

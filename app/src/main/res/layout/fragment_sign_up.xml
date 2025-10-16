@@ -27,7 +27,8 @@
         android:orientation="vertical"
         android:gravity="center_horizontal"
         android:layout_marginTop="80dp"
-        android:layout_marginBottom="80dp">
+        android:layout_marginBottom="80dp"
+        android:background="@null">
 
 
     <!-- Title -->
@@ -39,7 +40,8 @@
             android:textSize="26sp"
             android:textStyle="bold"
             android:textColor="@android:color/black"
-            android:layout_marginBottom="32dp" />
+            android:layout_marginBottom="32dp"
+            android:background="@null"/>
 
         <!-- Email -->
         <TextView
@@ -48,7 +50,8 @@
             android:layout_height="wrap_content"
             android:text="Email"
             android:textSize="16sp"
-            android:textColor="@android:color/black" />
+            android:textColor="@android:color/black"
+            android:background="@null"/>
 
         <EditText
             android:id="@+id/email_input"
@@ -68,7 +71,8 @@
             android:layout_height="wrap_content"
             android:text="Password"
             android:textSize="16sp"
-            android:textColor="@android:color/black" />
+            android:textColor="@android:color/black"
+            android:background="@null"/>
 
         <EditText
             android:id="@+id/password_input"
@@ -88,7 +92,8 @@
             android:layout_height="wrap_content"
             android:text="Confirm Password"
             android:textSize="16sp"
-            android:textColor="@android:color/black" />
+            android:textColor="@android:color/black"
+            android:background="@null"/>
 
         <EditText
             android:id="@+id/confirm_password_input"

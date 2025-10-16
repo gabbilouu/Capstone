@@ -10,20 +10,27 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Header with Cancel and Add -->
+        <!-- Header with Cancel and Save (pill blue) -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:gravity="center_vertical"
+            android:weightSum="3">
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnCancel"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="Cancel"
-                android:background="@android:color/darker_gray"
-                android:textColor="@android:color/white"/>
+                android:textColor="@android:color/white"
+                android:background="@drawable/btn_pill_blue"
+                android:minHeight="0dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp" />
 
             <TextView
                 android:layout_width="0dp"
@@ -32,18 +39,24 @@
                 android:gravity="center"
                 android:text="New Task"
                 android:textSize="20sp"
-                android:textStyle="bold"/>
+                android:textStyle="bold" />
 
-            <Button
+            <androidx.appcompat.widget.AppCompatButton
                 android:id="@+id/btnAdd"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:layout_weight="1"
                 android:text="Add"
-                android:background="@android:color/holo_green_dark"
-                android:textColor="@android:color/white"/>
+                android:textColor="@android:color/white"
+                android:background="@drawable/btn_pill_blue"
+                android:minHeight="0dp"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp" />
         </LinearLayout>
 
-        <!-- Task Icon + Input -->
+        <!-- Task Icon + Task Name -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -60,7 +73,6 @@
                 android:text="📝"
                 android:contentDescription="Task Emoji" />
 
-
             <EditText
                 android:id="@+id/etTaskName"
                 android:layout_width="match_parent"
@@ -68,157 +80,217 @@
                 android:hint="Task Name"
                 android:gravity="center"
                 android:textSize="16sp"
-                android:background="@android:color/transparent"/>
+                android:background="@android:color/transparent" />
         </LinearLayout>
 
-        <!-- Duration Section -->
+        <!-- DURATION -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="DURATION"
             android:textStyle="bold"
             android:textSize="14sp"
-            android:layout_marginTop="8dp"/>
+            android:layout_marginTop="8dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="@android:color/white"
-            android:elevation="2dp"
             android:padding="8dp">
 
-            <!-- Start Row -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Start" />
-
+            <!-- Start row (label + date/time pills in same row) -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:orientation="horizontal"
-                android:weightSum="2"
-                android:layout_marginTop="4dp">
+                android:weightSum="3"
+                android:gravity="center_vertical">
 
-                <Button
-                    android:id="@+id/btnStartDate"
+                <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Sep 8, 2025"
-                    android:textColor="@android:color/white"
-                    android:background="#47675E"/>
+                    android:text="Start"
+                    android:textSize="16sp"
+                    android:gravity="start|center_vertical" />
 
-                <Button
-                    android:id="@+id/btnStartTime"
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="00:00AM"
-                    android:textColor="@android:color/white"
-                    android:background="#47675E"/>
+                    android:layout_weight="2"
+                    android:orientation="horizontal">
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnStartDate"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Start Date"
+                        android:textColor="@android:color/white"
+                        android:background="@drawable/btn_pill_blue"
+                        android:minHeight="0dp"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:paddingTop="5dp"
+                        android:paddingBottom="5dp" />
+
+                    <Space
+                        android:layout_width="8dp"
+                        android:layout_height="wrap_content" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnStartTime"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Start Time"
+                        android:textColor="@android:color/white"
+                        android:background="@drawable/btn_pill_blue"
+                        android:minHeight="0dp"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:paddingTop="5dp"
+                        android:paddingBottom="5dp" />
+                </LinearLayout>
             </LinearLayout>
 
-            <!-- End Row -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="End"
-                android:layout_marginTop="8dp"/>
-
+            <!-- End row (label + date/time pills in same row) -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:orientation="horizontal"
-                android:weightSum="2"
-                android:layout_marginTop="4dp">
+                android:weightSum="3"
+                android:gravity="center_vertical">
 
-                <Button
-                    android:id="@+id/btnEndDate"
+                <TextView
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:text="Sep 8, 2025"
-                    android:textColor="@android:color/white"
-                    android:background="#47675E"/>
+                    android:text="End"
+                    android:textSize="16sp"
+                    android:gravity="start|center_vertical" />
 
-                <Button
-                    android:id="@+id/btnEndTime"
+                <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="00:00AM"
-                    android:textColor="@android:color/white"
-                    android:background="#47675E"/>
+                    android:layout_weight="2"
+                    android:orientation="horizontal">
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnEndDate"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="End Date"
+                        android:textColor="@android:color/white"
+                        android:background="@drawable/btn_pill_blue"
+                        android:minHeight="0dp"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:paddingTop="5dp"
+                        android:paddingBottom="5dp" />
+
+                    <Space
+                        android:layout_width="8dp"
+                        android:layout_height="wrap_content" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnEndTime"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="End Time"
+                        android:textColor="@android:color/white"
+                        android:background="@drawable/btn_pill_blue"
+                        android:minHeight="0dp"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:paddingTop="5dp"
+                        android:paddingBottom="5dp" />
+                </LinearLayout>
             </LinearLayout>
 
-            <!-- Repeat Row -->
+            <!-- Repeat row -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:orientation="horizontal"
-                android:layout_marginTop="8dp">
+                android:gravity="center_vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Repeat"
-                    android:layout_gravity="center_vertical"/>
+                    android:text="Repeat" />
+
+                <Space
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_weight="1" />
 
                 <Spinner
                     android:id="@+id/spinnerRepeat"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:entries="@array/repeat_options"/>
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
             </LinearLayout>
         </LinearLayout>
 
-        <!-- Misc Section -->
+        <!-- MISC. -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="MISC."
             android:textStyle="bold"
             android:textSize="14sp"
-            android:layout_marginTop="16dp"/>
+            android:layout_marginTop="16dp" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:background="@android:color/white"
-            android:elevation="2dp"
             android:padding="8dp">
 
-            <!-- Task Type -->
+            <!-- Task Type (label left, pill spinner right) -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:orientation="horizontal"
-                android:layout_marginTop="8dp"
-                android:gravity="center_vertical">
+                android:gravity="center_vertical"
+                android:weightSum="3">
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Task Type"
-                    android:layout_gravity="center_vertical"/>
+                    android:layout_weight="2"
+                    android:text="Task Type" />
 
-                <Spinner
-                    android:id="@+id/spinnerTaskType"
-                    android:layout_width="match_parent"
+                <!-- Right-side container so spinner doesn't stretch -->
+                <LinearLayout
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:entries="@array/task_type_options" />
+                    android:layout_weight="1"
+                    android:gravity="end|center_vertical">
+
+                    <androidx.appcompat.widget.AppCompatSpinner
+                        android:id="@+id/spinnerTaskType"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:spinnerMode="dropdown"
+                        android:background="@drawable/btn_pill_blue"
+                        android:minHeight="0dp"
+                        android:paddingStart="16dp"
+                        android:paddingEnd="16dp"
+                        android:paddingTop="5dp"
+                        android:paddingBottom="5dp" />
+                </LinearLayout>
             </LinearLayout>
 
-            <!-- Notes -->
+            <!-- Notes (unchanged) -->
             <EditText
                 android:id="@+id/etNotes"
                 android:layout_width="match_parent"
                 android:layout_height="100dp"
                 android:hint="Notes"
-                android:gravity="top|start"/>
+                android:gravity="top|start" />
         </LinearLayout>
     </LinearLayout>
 </ScrollView>

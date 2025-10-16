@@ -20,60 +20,84 @@
             android:padding="16dp">
 
             <!-- Profile Card -->
-            <LinearLayout
+            <FrameLayout
+                android:id="@+id/profileCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@android:color/white"
-                android:orientation="horizontal"
-                android:padding="12dp"
                 android:layout_marginBottom="16dp"
-                android:elevation="2dp"
-                android:clipToPadding="false">
+                android:elevation="2dp">
 
-                <ImageView
-                    android:id="@+id/profileImage"
-                    android:layout_width="80dp"
-                    android:layout_height="80dp"
-                    android:src="@mipmap/ic_launcher"
-                    android:background="@android:color/darker_gray"
-                    android:scaleType="centerCrop" />
-
+                <!-- Card content -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:layout_marginStart="12dp">
+                    android:background="@android:color/white"
+                    android:orientation="horizontal"
+                    android:padding="12dp"
+                    android:clipToPadding="false">
 
-                    <TextView
-                        android:id="@+id/profileName"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="John Doe ✏️ He/Him"
-                        android:textSize="18sp"
-                        android:textStyle="bold"/>
-
-                    <TextView
-                        android:id="@+id/profileDetails"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="University of North Texas '27\nComputer Science"
-                        android:textSize="14sp"
-                        android:layout_marginTop="4dp"/>
-
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
+                    <ImageView
+                        android:id="@+id/profileImage"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:src="@mipmap/ic_launcher"
                         android:background="@android:color/darker_gray"
-                        android:layout_marginVertical="8dp"/>
+                        android:scaleType="centerCrop" />
 
-                    <TextView
-                        android:id="@+id/userSince"
-                        android:layout_width="wrap_content"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="User Since: --"
-                        android:textSize="12sp"/>
+                        android:orientation="vertical"
+                        android:layout_marginStart="12dp">
+
+                        <!-- Name + (optional) pronouns appended in code -->
+                        <TextView
+                            android:id="@+id/profileName"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="18sp"
+                            android:textStyle="bold"
+                            android:textColor="@android:color/black"
+                            android:text="" />
+
+                        <!-- University / Major go here (each can be blank) -->
+                        <TextView
+                            android:id="@+id/profileDetails"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="14sp"
+                            android:layout_marginTop="4dp"
+                            android:textColor="@android:color/black"
+                            android:text="" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1dp"
+                            android:background="@android:color/darker_gray"
+                            android:layout_marginVertical="8dp" />
+
+                        <TextView
+                            android:id="@+id/userSince"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="User Since: --"
+                            android:textSize="12sp"/>
+                    </LinearLayout>
                 </LinearLayout>
-            </LinearLayout>
+
+                <!-- Pencil (edit) in top-right -->
+                <ImageButton
+                    android:id="@+id/btnEditProfile"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_gravity="end|top"
+                    android:layout_margin="6dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="4dp"
+                    android:contentDescription="Edit profile"
+                    android:src="@drawable/ic_edit" />
+            </FrameLayout>
+
 
             <!-- Stats Row -->
             <LinearLayout
@@ -139,30 +163,43 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="24dp">
 
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/myGoalsButton"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="56dp"
                     android:text="My Goals"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/black"
+                    app:backgroundTint="@android:color/white"
+                    app:strokeColor="#E0E0E0"
+                    app:strokeWidth="1dp"
+                    app:cornerRadius="14dp"
+                    app:rippleColor="#1F000000"
                     app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/moodReportButton"
                     app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/moodReportButton"
                     android:layout_marginEnd="8dp"
                     android:gravity="center"/>
 
-                <Button
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/moodReportButton"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="56dp"
                     android:text="In-Depth Mood Report"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/black"
+                    app:backgroundTint="@android:color/white"
+                    app:strokeColor="#E0E0E0"
+                    app:strokeWidth="1dp"
+                    app:cornerRadius="14dp"
+                    app:rippleColor="#1F000000"
                     app:layout_constraintStart_toEndOf="@id/myGoalsButton"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="@id/myGoalsButton"
                     app:layout_constraintBottom_toBottomOf="@id/myGoalsButton"
-                    app:layout_constraintEnd_toEndOf="parent"
                     android:layout_marginStart="8dp"
                     android:gravity="center"/>
-
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <!-- General Section -->
@@ -173,25 +210,67 @@
                 android:textStyle="bold"
                 android:layout_marginBottom="8dp"/>
 
-            <Button
-                android:id="@+id/generalButton"
+            <LinearLayout
+                android:id="@+id/generalCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="General" />
+                android:background="@drawable/bg_card_white"
+                android:orientation="vertical"
+                android:elevation="2dp"
+                android:padding="12dp"
+                android:layout_marginBottom="16dp">
 
-            <Button
-                android:id="@+id/aboutButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="About"
-                android:layout_marginTop="4dp"/>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/generalButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="General"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/black"
+                    app:backgroundTint="@android:color/white"
+                    app:cornerRadius="14dp"
+                    app:rippleColor="#1F000000"
+                    android:gravity="center"/>
 
-            <Button
-                android:id="@+id/notificationsButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Notifications"
-                android:layout_marginTop="4dp"/>
+                <!-- divider -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="8dp"
+                    android:background="#E0E0E0"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/aboutButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="About"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/black"
+                    app:backgroundTint="@android:color/white"
+                    app:cornerRadius="14dp"
+                    app:rippleColor="#1F000000"
+                    android:gravity="center"/>
+
+                <!-- divider -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="8dp"
+                    android:background="#E0E0E0"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/notificationsButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="Notifications"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/black"
+                    app:backgroundTint="@android:color/white"
+                    app:cornerRadius="14dp"
+                    app:rippleColor="#1F000000"
+                    android:gravity="center"/>
+
+            </LinearLayout>
 
             <!-- Misc Section -->
             <TextView
@@ -199,21 +278,50 @@
                 android:layout_height="wrap_content"
                 android:text="MISC."
                 android:textStyle="bold"
-                android:layout_marginTop="24dp"
                 android:layout_marginBottom="8dp"/>
 
-            <Button
-                android:id="@+id/faqButton"
+            <LinearLayout
+                android:id="@+id/miscCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="FAQ" />
+                android:background="@drawable/bg_card_white"
+                android:orientation="vertical"
+                android:elevation="2dp"
+                android:padding="12dp"
+                android:layout_marginBottom="16dp">
 
-            <Button
-                android:id="@+id/contactUsButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Contact Us"
-                android:layout_marginTop="4dp"/>
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/faqButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="FAQ"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/black"
+                    app:backgroundTint="@android:color/white"
+                    app:cornerRadius="14dp"
+                    app:rippleColor="#1F000000"
+                    android:gravity="center"/>
+
+                <!-- divider -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="8dp"
+                    android:background="#E0E0E0"/>
+
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/contactUsButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:text="Contact Us"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/black"
+                    app:backgroundTint="@android:color/white"
+                    app:cornerRadius="14dp"
+                    app:rippleColor="#1F000000"
+                    android:gravity="center"/>
+
+            </LinearLayout>
         </LinearLayout>
     </ScrollView>
 
@@ -226,7 +334,8 @@
         android:orientation="horizontal"
         android:gravity="center"
         android:weightSum="4"
-        android:background="@android:color/white">
+        android:background="@android:color/white"
+        android:padding="8dp">
 
         <ImageButton
             android:id="@+id/HomeButton"
@@ -272,5 +381,4 @@
             android:adjustViewBounds="true"
             android:contentDescription="Settings" />
     </LinearLayout>
-
 </RelativeLayout>

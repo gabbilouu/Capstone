@@ -18,7 +18,8 @@
         android:textStyle="bold"
         android:textColor="@android:color/black"
         android:gravity="center"
-        android:layout_marginBottom="8dp" />
+        android:layout_marginBottom="8dp"
+        android:background="@null"/>
 
     <!-- Subtitle -->
     <TextView
@@ -29,7 +30,8 @@
         android:textSize="16sp"
         android:textColor="@android:color/black"
         android:gravity="center"
-        android:layout_marginBottom="8dp" />
+        android:layout_marginBottom="8dp"
+        android:background="@null"/>
 
     <!-- Extra info text -->
     <TextView
@@ -38,10 +40,11 @@
         android:layout_height="wrap_content"
         android:text="You can also check your report in your user profile!"
         android:textSize="14sp"
-        android:textColor="@android:color/darker_gray"
+        android:textColor="@android:color/black"
         android:alpha="0.7"
         android:gravity="center"
-        android:layout_marginBottom="64dp" />
+        android:layout_marginBottom="64dp"
+        android:background="@null"/>
 
     <!-- Next Button -->
     <com.google.android.material.button.MaterialButton

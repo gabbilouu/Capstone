@@ -1,19 +1,17 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- When ON -->
+    <!-- ON state -->
     <item android:state_checked="true">
         <shape android:shape="rectangle">
-            <size android:height="24dp" />
-            <solid android:color="#77DD89" />
-            <corners android:radius="12dp" />
+            <solid android:color="#77DD89"/> <!-- green background -->
+            <corners android:radius="20dp"/>
         </shape>
     </item>
 
-    <!-- When OFF -->
+    <!-- OFF state -->
     <item>
         <shape android:shape="rectangle">
-            <size android:height="24dp" />
-            <solid android:color="#F2F2F2" />
-            <corners android:radius="12dp" />
+            <solid android:color="#999999"/> <!-- light gray background -->
+            <corners android:radius="20dp"/>
         </shape>
     </item>
 </selector>

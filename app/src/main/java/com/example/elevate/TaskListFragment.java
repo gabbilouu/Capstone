@@ -74,6 +74,17 @@ public class TaskListFragment extends Fragment implements View.OnClickListener {
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         adapter = new TaskAdapter(taskList, docIds);
         recyclerView.setAdapter(adapter);
+        adapter.setOnCompletionToggleListener((taskId, task, completed) -> {
+            db.collection("tasks").document(taskId).update("completed", completed)
+                    .addOnSuccessListener(x -> {
+                        if (completed) {
+                            HomeStats.applyNewCompletion(requireContext());
+                        } else {
+                            HomeStats.revertCompletion(requireContext());
+                        }
+                    });
+        });
+
 
         // Add task bar
         View addTaskBar = view.findViewById(R.id.addTaskBar);

@@ -54,9 +54,8 @@ public class AssessmentFragment extends Fragment {
             if (selectedMood == -1) {
                 Toast.makeText(requireContext(), "Please select a mood first.", Toast.LENGTH_SHORT).show();
             } else {
-                // Save mood to preferences or send to next screen
-                Toast.makeText(requireContext(), "Mood selected: " + selectedMood, Toast.LENGTH_SHORT).show();
-                // Example: navC.navigate(R.id.action_assessmentFragment_to_nextFragment);
+                // Navigate to LoginStreakFragment
+                navC.navigate(R.id.action_assessmentFragment_to_loginStreakFragment);
             }
         });
     }

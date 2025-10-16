@@ -66,7 +66,13 @@ dependencies {
 
     // Charts
     implementation("com.github.PhilJay:MPAndroidChart:v3.1.0")
-
+    // WorkManager
+    implementation("androidx.work:work-runtime-ktx:2.9.0")
+    // EncryptedSharedPreferences for PIN
+    implementation("androidx.security:security-crypto:1.1.0-alpha06")
+    // Biometric prompt
+    implementation("androidx.biometric:biometric:1.2.0-alpha05")
+    implementation("androidx.recyclerview:recyclerview:1.3.2")
     // AndroidX and Material
     implementation(libs.appcompat)
     implementation(libs.material)
@@ -78,6 +84,10 @@ dependencies {
     implementation(libs.lifecycle.viewmodel.ktx)
     implementation(libs.fragment)
     implementation(libs.work.runtime)
+    implementation("androidx.appcompat:appcompat:1.7.0")
+    implementation("com.google.android.material:material:1.12.0")
+    implementation("com.github.mhiew:android-pdf-viewer:3.2.0-beta.1")
+    implementation("com.google.android.material:material:1.12.0")
 
     // Tests
     testImplementation(libs.junit)

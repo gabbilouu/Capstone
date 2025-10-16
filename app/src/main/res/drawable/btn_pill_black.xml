@@ -1,4 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
 <shape xmlns:android="http://schemas.android.com/apk/res/android">
-    <solid android:color="@android:color/black" />
-    <corners android:radius="50dp" />
+    <solid android:color="#000000" />
+    <!-- Big radius => pill regardless of height -->
+    <corners android:radius="999dp" />
 </shape>
