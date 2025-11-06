@@ -13,6 +13,12 @@
         <action
             android:id="@+id/action_splashFragment_to_startingFragment"
             app:destination="@id/startingFragment" />
+        <action
+            android:id="@+id/action_splashFragment_to_assessmentFragment"
+            app:destination="@id/assessmentFragment" />
+        <action
+            android:id="@+id/action_splashFragment_to_homePageFragment"
+            app:destination="@id/homePageFragment" />
     </fragment>
     <fragment
         android:id="@+id/homePageFragment"
@@ -115,6 +121,12 @@
         <action
             android:id="@+id/action_settingsFragment_to_questionnaireFragment"
             app:destination="@id/questionnaireFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_startingFragment"
+            app:destination="@id/startingFragment" />
+        <action
+            android:id="@+id/action_settingsFragment_to_splashFragment"
+            app:destination="@id/splashFragment" />
     </fragment>
     <fragment
         android:id="@+id/LoginPageFragment"

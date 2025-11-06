@@ -7,7 +7,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -16,24 +15,32 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
+
 import java.util.Calendar;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
 
 public class WelcomeFragment extends Fragment {
 
-    private EditText inputName, inputBirthday, inputOther;
+    private EditText inputName, inputBirthday;
     private Button nextButton;
     private NavController navC;
 
-    public WelcomeFragment() { }
+    // Local prefs
+    private static final String PREFS_USER = "UserPrefs";
+    private static final String KEY_USER_NAME = "user_name";
+    private static final String KEY_USER_BIRTHDAY = "user_birthday";
 
-    public static WelcomeFragment newInstance(String param1, String param2) {
-        WelcomeFragment fragment = new WelcomeFragment();
-        Bundle args = new Bundle();
-        args.putString("param1", param1);
-        args.putString("param2", param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
+    // Firestore fields
+    private static final String FS_FIELD_NAME = "name";
+    private static final String FS_FIELD_BDAY = "birthday";
+
+    public WelcomeFragment() {}
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, ViewGroup container,
@@ -47,76 +54,83 @@ public class WelcomeFragment extends Fragment {
 
         navC = Navigation.findNavController(view);
 
-        inputName = view.findViewById(R.id.inputName);
+        inputName     = view.findViewById(R.id.inputName);
         inputBirthday = view.findViewById(R.id.inputBirthday);
-        inputOther = view.findViewById(R.id.inputOther);
-        nextButton = view.findViewById(R.id.nextButton);
+        nextButton    = view.findViewById(R.id.nextButton);
 
-        // Make birthday EditText open a DatePickerDialog
+        // Birthday opens a DatePickerDialog
         inputBirthday.setFocusable(false);
         inputBirthday.setClickable(true);
         inputBirthday.setOnClickListener(v -> showDatePickerDialog());
 
         nextButton.setOnClickListener(v -> {
-            String name = inputName.getText().toString().trim();
-            String birthday = inputBirthday.getText().toString().trim();
-            String other = inputOther.getText().toString().trim();
+            String name = textOf(inputName);
+            String birthday = textOf(inputBirthday);
 
-            // Require first and last name
-            if (TextUtils.isEmpty(name) || !name.contains(" ")) {
+            // Require first + last name
+            if (TextUtils.isEmpty(name) || !name.trim().contains(" ")) {
                 inputName.setError("Please enter both first and last name");
                 inputName.requestFocus();
                 return;
             }
 
-            // Capitalize first letters of first and last name
-            String[] nameParts = name.split("\\s+");
-            StringBuilder formattedName = new StringBuilder();
-            for (String part : nameParts) {
-                if (part.length() > 0) {
-                    formattedName.append(Character.toUpperCase(part.charAt(0)))
-                            .append(part.substring(1).toLowerCase())
+            // Capitalize each part
+            String[] parts = name.trim().split("\\s+");
+            StringBuilder sb = new StringBuilder();
+            for (String p : parts) {
+                if (!p.isEmpty()) {
+                    sb.append(Character.toUpperCase(p.charAt(0)))
+                            .append(p.length() > 1 ? p.substring(1).toLowerCase() : "")
                             .append(" ");
                 }
             }
-            String finalName = formattedName.toString().trim();
+            String finalName = sb.toString().trim();
 
-            // Optional: format birthday if needed
-            String formattedBirthday = birthday; // you can format this differently if you want
+            // Persist locally (nice immediate UX and fallback)
+            requireContext().getSharedPreferences(PREFS_USER, 0).edit()
+                    .putString(KEY_USER_NAME, finalName)
+                    .putString(KEY_USER_BIRTHDAY, birthday)
+                    .apply();
 
-            // Create a bundle to pass to the next fragment
+            // Persist to Firestore so it survives logout/login on any device
+            FirebaseUser fu = FirebaseAuth.getInstance().getCurrentUser();
+            if (fu != null) {
+                Map<String, Object> data = new HashMap<>();
+                data.put(FS_FIELD_NAME, finalName);
+                data.put(FS_FIELD_BDAY, birthday); // format MM/dd/yyyy as entered
+
+                FirebaseFirestore.getInstance()
+                        .collection("users")
+                        .document(fu.getUid())
+                        .set(data, SetOptions.merge()) // don't clobber other fields (e.g., plantName)
+                        .addOnFailureListener(e ->
+                                Toast.makeText(requireContext(),
+                                        "Saved locally; cloud sync pending: " + e.getMessage(),
+                                        Toast.LENGTH_SHORT).show());
+            }
+
+            // Pass along to next screen (optional)
             Bundle bundle = new Bundle();
-            bundle.putString("user_name", finalName);
-            bundle.putString("user_birthday", formattedBirthday);
-            bundle.putString("user_other", other);
-
-            // ✅ Add flag to indicate coming from WelcomeFragment
+            bundle.putString(KEY_USER_NAME, finalName);
+            bundle.putString(KEY_USER_BIRTHDAY, birthday);
             bundle.putBoolean("from_welcome", true);
 
-            // Navigate to next fragment with the bundle
             navC.navigate(R.id.action_welcomeFragment_to_questionnaireFragment, bundle);
-
-            // Optional toast
             Toast.makeText(getContext(), "Welcome, " + finalName + "!", Toast.LENGTH_SHORT).show();
         });
+    }
 
-
+    private String textOf(EditText et) {
+        return et != null && et.getText() != null ? et.getText().toString().trim() : "";
     }
 
     private void showDatePickerDialog() {
-        Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        int day = calendar.get(Calendar.DAY_OF_MONTH);
-
-        DatePickerDialog datePickerDialog = new DatePickerDialog(requireContext(),
-                (view, selectedYear, selectedMonth, selectedDay) -> {
-                    // Month is zero-based
-                    String formattedDate = String.format("%02d/%02d/%04d",
-                            selectedMonth + 1, selectedDay, selectedYear);
-                    inputBirthday.setText(formattedDate);
-                }, year, month, day);
-
-        datePickerDialog.show();
+        Calendar c = Calendar.getInstance();
+        int y = c.get(Calendar.YEAR), m = c.get(Calendar.MONTH), d = c.get(Calendar.DAY_OF_MONTH);
+        new DatePickerDialog(requireContext(),
+                (view, yy, mm, dd) ->
+                        inputBirthday.setText(String.format(Locale.getDefault(),
+                                "%02d/%02d/%04d", mm + 1, dd, yy)),
+                y, m, d).show();
     }
 }

@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.work.Data;
 import androidx.work.ExistingPeriodicWorkPolicy;
@@ -36,18 +37,18 @@ public class NotificationsFragment extends Fragment {
     private static final String KEY_MOOD           = "notif_mood";
 
     // unique work names (match your GeneralSettings ones where applicable!)
-    private static final String WTAG_AFFIRMATIONS   = "wt_affirmations";     // matches your existing tag
+    private static final String WTAG_AFFIRMATIONS   = "wt_affirmations";
     private static final String WTAG_PLANT_MESSAGES = "wt_plant_messages";
     private static final String WTAG_TASKS          = "wt_tasks_daily";
     private static final String WTAG_CALENDAR       = "wt_calendar_daily";
-    private static final String WTAG_MOOD_WEEKLY    = "wt_weekly_mood";      // matches your existing weekly mood if you want
+    private static final String WTAG_MOOD_WEEKLY    = "wt_weekly_mood";
 
     // channels (make sure these exist in ElevateApp)
     private static final String CH_PLANT_MESSAGES = "plant_messages";
     private static final String CH_TASKS          = "tasks";
     private static final String CH_CALENDAR       = "calendar";
-    private static final String CH_AFFIRMATIONS   = ElevateApp.CH_AFFIRMATIONS; // already defined
-    private static final String CH_WEEKLY_MOOD    = ElevateApp.CH_WEEKLY_MOOD;  // already defined
+    private static final String CH_AFFIRMATIONS   = ElevateApp.CH_AFFIRMATIONS;
+    private static final String CH_WEEKLY_MOOD    = ElevateApp.CH_WEEKLY_MOOD;
 
     private SharedPreferences prefs;
 
@@ -80,10 +81,20 @@ public class NotificationsFragment extends Fragment {
         swCalendar = v.findViewById(R.id.switch_calendar);
         swMood     = v.findViewById(R.id.switch_mood);
 
-        back.setOnClickListener(x ->
-                Navigation.findNavController(v)
-                        .navigate(R.id.action_notificationsFragment_to_settingsFragment)
-        );
+        // Back to Settings
+        if (back != null) {
+            back.setOnClickListener(btn -> {
+                NavController nav = Navigation.findNavController(btn);
+                boolean popped = nav.popBackStack(R.id.settingsFragment, false);
+                if (!popped) {
+                    try {
+                        nav.navigate(R.id.action_notificationsFragment_to_settingsFragment);
+                    } catch (Exception e) {
+                        nav.navigate(R.id.settingsFragment);
+                    }
+                }
+            });
+        }
 
         // restore state
         boolean master = prefs.getBoolean(KEY_PUSH_MASTER, false);
@@ -103,13 +114,11 @@ public class NotificationsFragment extends Fragment {
                     optionsContainer.setVisibility(View.VISIBLE);
                     prefs.edit().putBoolean(KEY_PUSH_MASTER, true).apply();
                 } else {
-                    // permission requested; we'll flip back off for now
                     swMaster.setChecked(false);
                 }
             } else {
                 optionsContainer.setVisibility(View.GONE);
                 prefs.edit().putBoolean(KEY_PUSH_MASTER, false).apply();
-                // also cancel all works and turn child switches off
                 setChildSwitches(false);
                 cancelAllWorks();
             }

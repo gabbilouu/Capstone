@@ -18,6 +18,7 @@
         android:textStyle="bold"
         android:textColor="@android:color/black"
         android:gravity="center"
+        android:background="@null"
         android:layout_marginBottom="8dp" />
 
     <!-- Subtitle -->
@@ -27,8 +28,9 @@
         android:layout_height="wrap_content"
         android:text="We'll try our best to cater to your needs!"
         android:textSize="16sp"
-        android:textColor="@android:color/darker_gray"
+        android:textColor="@android:color/black"
         android:gravity="center"
+        android:background="@null"
         android:layout_marginBottom="48dp" />
 
     <!-- Next Button -->

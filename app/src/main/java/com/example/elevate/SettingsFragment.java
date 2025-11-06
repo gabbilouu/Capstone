@@ -1,17 +1,23 @@
 package com.example.elevate;
 
 import android.content.ActivityNotFoundException;
+import android.content.ContentResolver;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.UriPermission;
 import android.net.Uri;
 import android.os.Bundle;
-import android.provider.OpenableColumns;
+import android.os.Environment;
+import android.text.Editable;
+import android.text.InputType;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -19,8 +25,10 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
+import androidx.navigation.NavOptions;
 import androidx.navigation.Navigation;
 
 import com.github.mikephil.charting.charts.RadarChart;
@@ -31,16 +39,23 @@ import com.github.mikephil.charting.data.RadarDataSet;
 import com.github.mikephil.charting.data.RadarEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.SetOptions;
+import com.google.firebase.firestore.WriteBatch;
 
-import android.widget.EditText;
-import android.database.Cursor;
-
+import java.io.File;
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
+import java.util.HashMap;
+import java.util.Map;
 
 public class SettingsFragment extends Fragment {
 
@@ -51,25 +66,41 @@ public class SettingsFragment extends Fragment {
     private static final String KEY_STREAK = "streak";
     private static final String KEY_LAST_LOGIN = "lastLogin";
 
-    // Profile/user prefs
+    // Profile/user prefs (local)
     private static final String PREFS_USER = "UserPrefs";
     private static final String KEY_USER_NAME = "user_name";
     private static final String KEY_USER_PRONOUN = "user_pronoun";
     private static final String KEY_USER_UNI = "user_university";
     private static final String KEY_USER_MAJOR = "user_major";
     private static final String KEY_USER_PHOTO_URI = "user_photo_uri";
+    private static final String KEY_USER_BIRTHDAY = "user_birthday";
 
-    // Goals
-    private static final String PREFS_GOAL = "LoginStreakPrefs";
+    // Goal prefs (local) — unify name with questionnaire
+    private static final String PREFS_GOAL = "UserChoicesPrefs";
     private static final String KEY_GOAL = "userGoal";
+
+    // Firestore fields
+    private static final String FS_FIELD_NAME  = "name";
+    private static final String FS_FIELD_BDAY  = "birthday";
+    private static final String FS_FIELD_GOAL  = "userGoal";
+
+    // Daily gate key (assessment)
+    private static final String GATE_KEY_ASSESSMENT = "assessment_done";
 
     private ImageView profileImage;
     private TextView profileName, profileDetails, userSince;
 
+    // Media pickers
     private ActivityResultLauncher<String[]> pickImageLauncher;
-
+    private ActivityResultLauncher<Uri> takePhotoLauncher;
     private Uri pendingPhotoUri = null;
+    private Uri capturedPhotoUri = null;
+
     private AlertDialog editDialog = null;
+
+    private FirebaseAuth auth;
+    private FirebaseUser firebaseUser;
+    private FirebaseFirestore db;
 
     public SettingsFragment() {}
 
@@ -83,7 +114,7 @@ public class SettingsFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Persistable image picker
+        // Pick from gallery
         pickImageLauncher = registerForActivityResult(
                 new ActivityResultContracts.OpenDocument(),
                 uri -> {
@@ -93,11 +124,28 @@ public class SettingsFragment extends Fragment {
                                 .takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     } catch (Exception ignored) {}
                     pendingPhotoUri = uri;
-                    // If dialog is open, reflect preview immediately
                     if (editDialog != null && editDialog.isShowing()) {
                         ImageView iv = editDialog.findViewById(R.id.ivProfilePreview);
                         if (iv != null) iv.setImageURI(pendingPhotoUri);
                     }
+                }
+        );
+
+        // Take a photo with camera
+        takePhotoLauncher = registerForActivityResult(
+                new ActivityResultContracts.TakePicture(),
+                success -> {
+                    if (success && capturedPhotoUri != null) {
+                        pendingPhotoUri = capturedPhotoUri;
+                        if (editDialog != null && editDialog.isShowing()) {
+                            ImageView iv = editDialog.findViewById(R.id.ivProfilePreview);
+                            if (iv != null) iv.setImageURI(pendingPhotoUri);
+                        }
+                        Toast.makeText(requireContext(), "Photo captured", Toast.LENGTH_SHORT).show();
+                    } else if (capturedPhotoUri != null) {
+                        try { requireContext().getContentResolver().delete(capturedPhotoUri, null, null); } catch (Exception ignored) {}
+                    }
+                    capturedPhotoUri = null;
                 }
         );
     }
@@ -107,36 +155,34 @@ public class SettingsFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         navC = Navigation.findNavController(view);
 
-        profileImage = view.findViewById(R.id.profileImage);
-        profileName  = view.findViewById(R.id.profileName);
+        auth = FirebaseAuth.getInstance();
+        firebaseUser = auth.getCurrentUser();
+        db = FirebaseFirestore.getInstance();
+
+        profileImage   = view.findViewById(R.id.profileImage);
+        profileName    = view.findViewById(R.id.profileName);
         profileDetails = view.findViewById(R.id.profileDetails);
-        userSince   = view.findViewById(R.id.userSince);
+        userSince      = view.findViewById(R.id.userSince);
 
-        // Default name setup (only if not stored)
         ensureDefaultNameOnce();
-
-        // Apply UI from prefs
         applyProfileFromPrefs();
+        fetchProfileFromCloudThenApply();   // name / birthday
+        fetchGoalFromCloudThenCache();      // userGoal
 
-        // User since
-        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
-        if (user != null && user.getMetadata() != null) {
+        if (firebaseUser != null && firebaseUser.getMetadata() != null) {
             String signupDate = new SimpleDateFormat("MMMM d, yyyy", Locale.getDefault())
-                    .format(new Date(user.getMetadata().getCreationTimestamp()));
+                    .format(new Date(firebaseUser.getMetadata().getCreationTimestamp()));
             userSince.setText("User Since: " + signupDate);
         } else {
             userSince.setText("User Since: Unknown");
         }
 
-        // Pencil → edit dialog
         ImageButton editBtn = view.findViewById(R.id.btnEditProfile);
         editBtn.setOnClickListener(v -> openEditProfileDialog());
 
-        // Streak + radar
         updateAndDisplayStreak();
         setupPersonalityRadarChart();
 
-        // Bottom nav
         ImageButton taskButton = view.findViewById(R.id.TaskButton);
         ImageButton calendarButton = view.findViewById(R.id.CalendarButton);
         ImageButton homeButton = view.findViewById(R.id.HomeButton);
@@ -144,16 +190,17 @@ public class SettingsFragment extends Fragment {
         calendarButton.setOnClickListener(v -> navC.navigate(R.id.action_settingsFragment_to_eventFragment));
         homeButton.setOnClickListener(v -> navC.navigate(R.id.action_settingsFragment_to_homePageFragment));
 
-        // Settings buttons
         Button myGoalsButton = view.findViewById(R.id.myGoalsButton);
-        Button moodReportButton = view.findViewById(R.id.moodReportButton);
         Button generalButton = view.findViewById(R.id.generalButton);
         Button aboutButton = view.findViewById(R.id.aboutButton);
         Button notificationsButton = view.findViewById(R.id.notificationsButton);
         Button faqButton = view.findViewById(R.id.faqButton);
         Button contactUsButton = view.findViewById(R.id.contactUsButton);
+        Button logoutButton = view.findViewById(R.id.logoutButton);
+        Button deleteAccountButton = view.findViewById(R.id.deleteAccountButton);
 
         myGoalsButton.setOnClickListener(v -> {
+            // Always show the freshest value we cached (we also refresh on screen open)
             SharedPreferences goalPrefs = requireContext().getSharedPreferences(PREFS_GOAL, 0);
             String currentGoal = goalPrefs.getString(KEY_GOAL, "No goal set");
 
@@ -172,7 +219,7 @@ public class SettingsFragment extends Fragment {
         generalButton.setOnClickListener(v -> navC.navigate(R.id.action_settingsFragment_to_generalSettingsFragment));
         aboutButton.setOnClickListener(v -> navC.navigate(R.id.action_settingsFragment_to_aboutFragment));
         notificationsButton.setOnClickListener(v -> navC.navigate(R.id.action_settingsFragment_to_notificationsFragment));
-        faqButton.setOnClickListener(v -> navC.navigate(R.id.action_settingsFragment_to_FAQFragment));
+        faqButton.setOnClickListener(v -> Toast.makeText(requireContext(), "FAQ coming soon", Toast.LENGTH_SHORT).show());
         contactUsButton.setOnClickListener(v -> {
             Intent email = new Intent(Intent.ACTION_SENDTO);
             email.setData(Uri.parse("mailto:elevatehealthapp6@gmail.com"));
@@ -184,6 +231,261 @@ public class SettingsFragment extends Fragment {
                 Toast.makeText(requireContext(), "No email app found on this device.", Toast.LENGTH_SHORT).show();
             }
         });
+
+        logoutButton.setOnClickListener(v -> {
+            new AlertDialog.Builder(requireContext())
+                    .setTitle("Log out?")
+                    .setMessage("You'll need to sign in again to access your data.")
+                    .setNegativeButton("Cancel", null)
+                    .setPositiveButton("Log out", (dialog, which) -> {
+                        FirebaseAuth.getInstance().signOut();
+                        clearLocalData();
+                        DailyGate.clearKey(requireContext(), GATE_KEY_ASSESSMENT);
+                        navigateToSplashClearBackStack();
+                        Toast.makeText(requireContext(), "Signed out", Toast.LENGTH_SHORT).show();
+                    })
+                    .show();
+        });
+
+        deleteAccountButton.setOnClickListener(v -> showDeleteAccountDialog());
+    }
+
+    /* ---------- Firestore helpers ---------- */
+
+    private com.google.firebase.firestore.DocumentReference userDoc() {
+        if (firebaseUser == null) return null;
+        return db.collection("users").document(firebaseUser.getUid());
+    }
+
+    private void fetchProfileFromCloudThenApply() {
+        if (firebaseUser == null) return;
+        var doc = userDoc();
+        if (doc == null) return;
+
+        doc.get().addOnSuccessListener(snap -> {
+            if (snap != null && snap.exists()) {
+                String cloudName = snap.getString(FS_FIELD_NAME);
+                String cloudBday = snap.getString(FS_FIELD_BDAY);
+
+                SharedPreferences sp = requireContext().getSharedPreferences(PREFS_USER, 0);
+                SharedPreferences.Editor ed = sp.edit();
+
+                if (cloudName != null && !cloudName.trim().isEmpty()) ed.putString(KEY_USER_NAME, cloudName);
+                if (cloudBday != null && !cloudBday.trim().isEmpty()) ed.putString(KEY_USER_BIRTHDAY, cloudBday);
+                ed.apply();
+
+                applyProfileFromPrefs();
+            }
+        });
+    }
+
+    private void fetchGoalFromCloudThenCache() {
+        if (firebaseUser == null) return;
+        var doc = userDoc();
+        if (doc == null) return;
+
+        doc.get().addOnSuccessListener(snap -> {
+            if (snap != null && snap.exists()) {
+                String cloudGoal = snap.getString(FS_FIELD_GOAL);
+                if (cloudGoal != null && !cloudGoal.trim().isEmpty()) {
+                    SharedPreferences gp = requireContext().getSharedPreferences(PREFS_GOAL, 0);
+                    gp.edit().putString(KEY_GOAL, cloudGoal).apply();
+                }
+            }
+        });
+    }
+
+    private void saveProfileToCloud(String name, String birthday) {
+        if (firebaseUser == null) return;
+        var doc = userDoc();
+        if (doc == null) return;
+
+        Map<String, Object> data = new HashMap<>();
+        if (name != null)     data.put(FS_FIELD_NAME, name);
+        if (birthday != null) data.put(FS_FIELD_BDAY, birthday);
+
+        doc.set(data, SetOptions.merge())
+                .addOnFailureListener(e -> Toast.makeText(requireContext(),
+                        "Couldn't update cloud profile: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+
+    /* ---------------- Delete Account flow ---------------- */
+
+    private void showDeleteAccountDialog() {
+        final EditText input = new EditText(requireContext());
+        input.setHint("Type DELETE to confirm");
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        input.setSingleLine(true);
+
+        AlertDialog dlg = new AlertDialog.Builder(requireContext())
+                .setTitle("Delete account?")
+                .setMessage("This will permanently delete your account and remove your data. This cannot be undone.\n\nConfirmation required:")
+                .setView(input)
+                .setNegativeButton("Cancel", null)
+                .setPositiveButton("Delete", (d, w) -> performFullAccountDeletion())
+                .create();
+
+        dlg.setOnShowListener(di -> {
+            final Button positive = dlg.getButton(AlertDialog.BUTTON_POSITIVE);
+            positive.setEnabled(false);
+            input.addTextChangedListener(new TextWatcher() {
+                @Override public void beforeTextChanged(CharSequence s, int st, int c, int a) {}
+                @Override public void onTextChanged(CharSequence s, int st, int b, int c) {
+                    positive.setEnabled(s != null && "delete".equalsIgnoreCase(s.toString().trim()));
+                }
+                @Override public void afterTextChanged(Editable s) {}
+            });
+        });
+
+        dlg.show();
+    }
+
+    private void performFullAccountDeletion() {
+        FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+        if (user == null) {
+            Toast.makeText(requireContext(), "No signed-in user.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        AlertDialog progress = new AlertDialog.Builder(requireContext())
+                .setCancelable(false)
+                .setView(new android.widget.ProgressBar(requireContext()))
+                .setMessage("Deleting account…")
+                .create();
+        progress.show();
+
+        String uid = user.getUid();
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+        deleteAllUserData(db, uid, () -> {
+            user.delete()
+                    .addOnSuccessListener(aVoid -> {
+                        FirebaseAuth.getInstance().signOut();
+                        clearLocalData();
+                        DailyGate.clearKey(requireContext(), GATE_KEY_ASSESSMENT);
+                        progress.dismiss();
+                        navigateToSplashClearBackStack();
+                        Toast.makeText(requireContext(), "Account deleted", Toast.LENGTH_LONG).show();
+                    })
+                    .addOnFailureListener(e -> {
+                        progress.dismiss();
+                        if (e instanceof FirebaseAuthRecentLoginRequiredException) {
+                            Toast.makeText(requireContext(),
+                                    "Deletion requires recent login. Please sign in again and retry.",
+                                    Toast.LENGTH_LONG).show();
+                        } else {
+                            Toast.makeText(requireContext(),
+                                    "Couldn't delete account: " + e.getMessage(),
+                                    Toast.LENGTH_LONG).show();
+                        }
+                    });
+        }, e -> {
+            progress.dismiss();
+            Toast.makeText(requireContext(),
+                    "Couldn't remove cloud data: " + (e != null ? e.getMessage() : "Unknown error"),
+                    Toast.LENGTH_LONG).show();
+        });
+    }
+
+    private void deleteAllUserData(FirebaseFirestore db, String uid, Runnable onDone, OnError onError) {
+        Query tasksQ  = db.collection("tasks").whereEqualTo("userId", uid);
+        Query eventsQ = db.collection("events").whereEqualTo("userId", uid);
+
+        deleteQueryInBatches(db, tasksQ, () ->
+                        deleteQueryInBatches(db, eventsQ, () ->
+                                        deleteSubcollectionInBatches(db, uid, "tasks", () ->
+                                                        deleteSubcollectionInBatches(db, uid, "events", () ->
+                                                                        db.collection("users").document(uid).delete()
+                                                                                .addOnSuccessListener(v -> onDone.run())
+                                                                                .addOnFailureListener(onError::onError)
+                                                                , onError)
+                                                , onError)
+                                , onError)
+                , onError);
+    }
+
+    private void deleteQueryInBatches(FirebaseFirestore db, Query query, Runnable onDone, OnError onError) {
+        query.limit(500).get()
+                .addOnSuccessListener(snap -> {
+                    if (snap.isEmpty()) {
+                        onDone.run();
+                        return;
+                    }
+                    WriteBatch batch = db.batch();
+                    for (DocumentSnapshot doc : snap.getDocuments()) {
+                        batch.delete(doc.getReference());
+                    }
+                    batch.commit()
+                            .addOnSuccessListener(v -> deleteQueryInBatches(db, query, onDone, onError))
+                            .addOnFailureListener(onError::onError);
+                })
+                .addOnFailureListener(onError::onError);
+    }
+
+    private void deleteSubcollectionInBatches(FirebaseFirestore db, String uid, String subcol,
+                                              Runnable onDone, OnError onError) {
+        Query q = db.collection("users").document(uid).collection(subcol).limit(500);
+        q.get().addOnSuccessListener(snap -> {
+            if (snap.isEmpty()) {
+                onDone.run();
+                return;
+            }
+            WriteBatch batch = db.batch();
+            for (DocumentSnapshot doc : snap) {
+                batch.delete(doc.getReference());
+            }
+            batch.commit()
+                    .addOnSuccessListener(v -> deleteSubcollectionInBatches(db, uid, subcol, onDone, onError))
+                    .addOnFailureListener(onError::onError);
+        }).addOnFailureListener(onError::onError);
+    }
+
+    private interface OnError { void onError(Exception e); }
+
+    /* ---------------- Navigation helpers ---------------- */
+
+    private void navigateToSplashClearBackStack() {
+        if (navC == null) return;
+        NavOptions opts = new NavOptions.Builder()
+                .setPopUpTo(navC.getGraph().getStartDestinationId(), true)
+                .build();
+        try {
+            navC.navigate(R.id.splashFragment, null, opts);
+        } catch (Exception e) {
+            try { navC.navigate(R.id.splashFragment); } catch (Exception ignored) {}
+        }
+    }
+
+    /* ---------------- Local cleanup ---------------- */
+
+    private void clearLocalData() {
+        try {
+            requireContext().getSharedPreferences(PREFS_USER, 0).edit().clear().apply();
+            requireContext().getSharedPreferences(PREFS_STREAK, 0).edit().clear().apply();
+            requireContext().getSharedPreferences("MoodPrefs", 0).edit().clear().apply();
+            requireContext().getSharedPreferences(PREFS_GOAL, 0).edit().clear().apply();
+            requireContext().getSharedPreferences("AppGates", 0).edit().clear().apply();
+
+            ContentResolver resolver = requireContext().getContentResolver();
+            for (UriPermission perm : resolver.getPersistedUriPermissions()) {
+                int flags = 0;
+                if (perm.isReadPermission())  flags |= Intent.FLAG_GRANT_READ_URI_PERMISSION;
+                if (perm.isWritePermission()) flags |= Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
+                try { resolver.releasePersistableUriPermission(perm.getUri(), flags); } catch (Exception ignored) {}
+            }
+
+            deleteRecursive(requireContext().getCacheDir());
+        } catch (Exception ignored) {}
+    }
+
+    private void deleteRecursive(File f) {
+        if (f == null || !f.exists()) return;
+        if (f.isDirectory()) {
+            File[] kids = f.listFiles();
+            if (kids != null) for (File k : kids) deleteRecursive(k);
+        }
+        //noinspection ResultOfMethodCallIgnored
+        f.delete();
     }
 
     /* ---------------- Profile helpers ---------------- */
@@ -210,22 +512,27 @@ public class SettingsFragment extends Fragment {
     private void applyProfileFromPrefs() {
         SharedPreferences sp = requireContext().getSharedPreferences(PREFS_USER, 0);
 
-        String name = sp.getString(KEY_USER_NAME, "");
-        String pronoun = sp.getString(KEY_USER_PRONOUN, "");
-        String uni = sp.getString(KEY_USER_UNI, "");
-        String major = sp.getString(KEY_USER_MAJOR, "");
-        String photo = sp.getString(KEY_USER_PHOTO_URI, null);
+        String name   = sp.getString(KEY_USER_NAME, "");
+        String pronoun= sp.getString(KEY_USER_PRONOUN, "");
+        String uni    = sp.getString(KEY_USER_UNI, "");
+        String major  = sp.getString(KEY_USER_MAJOR, "");
+        String photo  = sp.getString(KEY_USER_PHOTO_URI, null);
+        String bday   = sp.getString(KEY_USER_BIRTHDAY, "");
 
-        // Title line: "Name • Pronouns" (pronouns optional)
         String title = name == null ? "" : name;
         if (pronoun != null && !pronoun.trim().isEmpty()) {
             title += " • " + pronoun.trim();
         }
         profileName.setText(title);
 
-        // Details lines: show whichever exist
         StringBuilder details = new StringBuilder();
-        if (uni != null && !uni.trim().isEmpty()) details.append(uni.trim());
+        if (bday != null && !bday.trim().isEmpty()) {
+            details.append("🎂 ").append(bday.trim());
+        }
+        if (uni != null && !uni.trim().isEmpty()) {
+            if (details.length() > 0) details.append("\n");
+            details.append(uni.trim());
+        }
         if (major != null && !major.trim().isEmpty()) {
             if (details.length() > 0) details.append("\n");
             details.append(major.trim());
@@ -233,9 +540,7 @@ public class SettingsFragment extends Fragment {
         profileDetails.setText(details.toString());
 
         if (photo != null) {
-            try {
-                profileImage.setImageURI(Uri.parse(photo));
-            } catch (Exception ignored) {}
+            try { profileImage.setImageURI(Uri.parse(photo)); } catch (Exception ignored) {}
         }
     }
 
@@ -247,7 +552,9 @@ public class SettingsFragment extends Fragment {
         EditText etPronouns = dialogView.findViewById(R.id.etPronouns);
         EditText etUniversity = dialogView.findViewById(R.id.etUniversity);
         EditText etMajor = dialogView.findViewById(R.id.etMajor);
+        EditText etBirthday = dialogView.findViewById(R.id.etBirthday);
         Button btnChangePhoto = dialogView.findViewById(R.id.btnChangePhoto);
+        Button btnTakePhoto   = dialogView.findViewById(R.id.btnTakePhoto);
         Button btnCancel = dialogView.findViewById(R.id.btnCancel);
         Button btnSave = dialogView.findViewById(R.id.btnSave);
 
@@ -257,46 +564,100 @@ public class SettingsFragment extends Fragment {
         String uni = sp.getString(KEY_USER_UNI, "");
         String major = sp.getString(KEY_USER_MAJOR, "");
         String photo = sp.getString(KEY_USER_PHOTO_URI, null);
+        String bday = sp.getString(KEY_USER_BIRTHDAY, "");
 
         etName.setText(name);
         etPronouns.setText(pronoun);
         etUniversity.setText(uni);
         etMajor.setText(major);
+
+        if (etBirthday != null) {
+            etBirthday.setText(bday);
+            etBirthday.setFocusable(false);
+            etBirthday.setClickable(true);
+            etBirthday.setOnClickListener(v ->
+                    new android.app.DatePickerDialog(requireContext(),
+                            (view, yy, mm, dd) ->
+                                    etBirthday.setText(String.format(Locale.getDefault(),
+                                            "%02d/%02d/%04d", mm + 1, dd, yy)),
+                            Calendar.getInstance().get(Calendar.YEAR),
+                            Calendar.getInstance().get(Calendar.MONTH),
+                            Calendar.getInstance().get(Calendar.DAY_OF_MONTH))
+                            .show()
+            );
+        }
+
         if (photo != null) {
             try { iv.setImageURI(Uri.parse(photo)); } catch (Exception ignored) {}
         }
 
-        btnChangePhoto.setOnClickListener(v ->
-                pickImageLauncher.launch(new String[]{"image/*"})
-        );
+        if (btnChangePhoto != null) {
+            btnChangePhoto.setOnClickListener(v -> pickImageLauncher.launch(new String[]{"image/*"}));
+        }
+
+        if (btnTakePhoto != null) {
+            btnTakePhoto.setOnClickListener(v -> {
+                try {
+                    capturedPhotoUri = createImageCaptureUri();
+                    if (capturedPhotoUri != null) takePhotoLauncher.launch(capturedPhotoUri);
+                    else Toast.makeText(requireContext(), "Couldn't create camera file", Toast.LENGTH_SHORT).show();
+                } catch (Exception e) {
+                    Toast.makeText(requireContext(), "Camera unavailable: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    capturedPhotoUri = null;
+                }
+            });
+        }
 
         AlertDialog.Builder b = new AlertDialog.Builder(requireContext());
         b.setView(dialogView);
         editDialog = b.create();
         editDialog.show();
 
-        btnCancel.setOnClickListener(v -> editDialog.dismiss());
+        btnCancel.setOnClickListener(v -> {
+            if (capturedPhotoUri != null && (pendingPhotoUri == null || !capturedPhotoUri.equals(pendingPhotoUri))) {
+                try { requireContext().getContentResolver().delete(capturedPhotoUri, null, null); } catch (Exception ignored) {}
+            }
+            capturedPhotoUri = null;
+            editDialog.dismiss();
+        });
+
         btnSave.setOnClickListener(v -> {
             String newName = etName.getText().toString().trim();
             String newPronoun = etPronouns.getText().toString().trim();
             String newUni = etUniversity.getText().toString().trim();
             String newMajor = etMajor.getText().toString().trim();
+            String newBday = (etBirthday != null && etBirthday.getText() != null)
+                    ? etBirthday.getText().toString().trim() : bday;
 
             SharedPreferences.Editor ed = sp.edit();
             ed.putString(KEY_USER_NAME, newName);
             ed.putString(KEY_USER_PRONOUN, newPronoun);
             ed.putString(KEY_USER_UNI, newUni);
             ed.putString(KEY_USER_MAJOR, newMajor);
-            if (pendingPhotoUri != null) {
-                ed.putString(KEY_USER_PHOTO_URI, pendingPhotoUri.toString());
-            }
+            ed.putString(KEY_USER_BIRTHDAY, newBday);
+            if (pendingPhotoUri != null) ed.putString(KEY_USER_PHOTO_URI, pendingPhotoUri.toString());
             ed.apply();
 
-            // Reflect immediately
+            // Push to Firestore
+            saveProfileToCloud(newName, newBday);
+
             applyProfileFromPrefs();
             pendingPhotoUri = null;
+            capturedPhotoUri = null;
             editDialog.dismiss();
         });
+    }
+
+    private Uri createImageCaptureUri() throws IOException {
+        File picturesDir = requireContext().getExternalFilesDir(Environment.DIRECTORY_PICTURES);
+        if (picturesDir == null) throw new IOException("No external files dir");
+        String time = new SimpleDateFormat("yyyyMMdd_HHmmss", Locale.US).format(new Date());
+        File image = new File(picturesDir, "profile_" + time + ".jpg");
+        return FileProvider.getUriForFile(
+                requireContext(),
+                requireContext().getPackageName() + ".fileprovider",
+                image
+        );
     }
 
     /* ---------------- Streak + Chart ---------------- */
@@ -334,40 +695,63 @@ public class SettingsFragment extends Fragment {
         RadarChart radarChart = requireView().findViewById(R.id.personalityRadarChart);
         SharedPreferences prefs = requireContext().getSharedPreferences("MoodPrefs", 0);
 
-        String[] moods = {"Very Happy", "Happy", "Neutral", "Sad", "Very Sad"};
-        int[] counts = new int[moods.length];
+        String[] moodNames  = {"Very Happy", "Happy", "Neutral", "Sad", "Very Sad"};
+        String[] moodEmojis = {"😄", "😊", "😐", "☹️", "😞"};
+        int[] counts = new int[moodNames.length];
 
         Calendar cal = Calendar.getInstance();
         for (int i = 0; i < 30; i++) {
             String dayKey = new SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(cal.getTime());
             String mood = prefs.getString(dayKey, null);
             if (mood != null) {
-                for (int j = 0; j < moods.length; j++) {
-                    if (mood.equals(moods[j])) counts[j]++;
+                for (int j = 0; j < moodNames.length; j++) {
+                    if (mood.equals(moodNames[j])) counts[j]++;
                 }
             }
             cal.add(Calendar.DAY_OF_YEAR, -1);
         }
 
         ArrayList<RadarEntry> entries = new ArrayList<>();
-        for (int c : counts) entries.add(new RadarEntry(c));
+        int maxCount = 0;
+        for (int cVal : counts) {
+            entries.add(new RadarEntry(cVal));
+            if (cVal > maxCount) maxCount = cVal;
+        }
 
-        RadarDataSet dataSet = new RadarDataSet(entries, "Past 30 Days Mood");
-        dataSet.setColor(getResources().getColor(android.R.color.holo_blue_light));
-        dataSet.setFillColor(getResources().getColor(android.R.color.holo_blue_light));
+        RadarDataSet dataSet = new RadarDataSet(entries, null);
         dataSet.setDrawFilled(true);
         dataSet.setFillAlpha(180);
         dataSet.setLineWidth(2f);
+        dataSet.setColor(getResources().getColor(android.R.color.holo_blue_light));
+        dataSet.setFillColor(getResources().getColor(android.R.color.holo_blue_light));
+        dataSet.setDrawValues(false);
+        dataSet.setDrawHighlightCircleEnabled(false);
 
         RadarData data = new RadarData(dataSet);
         radarChart.setData(data);
 
         XAxis xAxis = radarChart.getXAxis();
-        xAxis.setValueFormatter(new IndexAxisValueFormatter(moods));
+        xAxis.setValueFormatter(new IndexAxisValueFormatter(moodEmojis));
+        xAxis.setTextSize(11f);
+        xAxis.setXOffset(0f);
+        xAxis.setYOffset(0f);
+
         YAxis yAxis = radarChart.getYAxis();
         yAxis.setAxisMinimum(0f);
+        yAxis.setAxisMaximum(Math.max(5f, maxCount));
+        yAxis.setLabelCount(5, true);
+        yAxis.setDrawLabels(false);
 
+        radarChart.getLegend().setEnabled(false);
         radarChart.getDescription().setEnabled(false);
+        radarChart.setRotationEnabled(false);
+        radarChart.setExtraOffsets(0f, 0f, 0f, 0f);
+        radarChart.setMinOffset(0f);
+        radarChart.setPadding(0, 0, 0, 0);
+        radarChart.setWebLineWidth(1f);
+        radarChart.setWebColor(getResources().getColor(android.R.color.darker_gray));
+        radarChart.setWebAlpha(180);
+
         radarChart.invalidate();
     }
 }

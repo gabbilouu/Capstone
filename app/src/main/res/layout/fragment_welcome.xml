@@ -55,18 +55,6 @@
         android:background="@drawable/input_background"
         android:layout_marginBottom="16dp"/>
 
-    <!-- N/A -->
-    <EditText
-        android:id="@+id/inputOther"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:hint="N/A"
-        android:inputType="text"
-        android:paddingHorizontal="16dp"
-        android:paddingVertical="12dp"
-        android:background="@drawable/input_background"
-        android:layout_marginBottom="32dp"/>
-
     <!-- Button -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/nextButton"

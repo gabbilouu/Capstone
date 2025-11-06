@@ -20,6 +20,8 @@ import androidx.navigation.Navigation;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -29,7 +31,12 @@ public class LoginPageFragment extends Fragment {
 
     private FirebaseAuth mAuth;
     private NavController navController;
+
     private static final String PREFS_NAME = "UserPrefs";
+    private static final String KEY_ONBOARDING_COMPLETE_PREFIX = "onboarding_complete_"; // + uid
+    private static final String KEY_ASSESSMENT_DONE_PREFIX     = "assessmentDone_";      // + uid + "_" + yyyyMMdd
+
+    private final SimpleDateFormat YMD = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
 
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
@@ -49,7 +56,7 @@ public class LoginPageFragment extends Fragment {
         // Auto-login for verified users
         FirebaseUser currentUser = mAuth.getCurrentUser();
         if (currentUser != null && currentUser.isEmailVerified()) {
-            handleFirstLoginNavigation(currentUser, prefs);
+            checkOnboardingAndNavigate(currentUser, prefs);
         }
 
         loginButton.setOnClickListener(v -> {
@@ -71,7 +78,7 @@ public class LoginPageFragment extends Fragment {
                             FirebaseUser user = mAuth.getCurrentUser();
                             if (user != null) {
                                 if (user.isEmailVerified()) {
-                                    handleFirstLoginNavigation(user, prefs);
+                                    checkOnboardingAndNavigate(user, prefs);
                                 } else {
                                     Toast.makeText(getActivity(),
                                             "Email not verified. Check your inbox.",
@@ -84,7 +91,7 @@ public class LoginPageFragment extends Fragment {
                                                     Toast.LENGTH_LONG).show();
                                         } else {
                                             Toast.makeText(getActivity(),
-                                                    "Failed to resend verification email: " + emailTask.getException().getMessage(),
+                                                    "Failed to resend verification email: " + (emailTask.getException() != null ? emailTask.getException().getMessage() : "unknown error"),
                                                     Toast.LENGTH_LONG).show();
                                         }
                                     });
@@ -94,7 +101,7 @@ public class LoginPageFragment extends Fragment {
                             }
                         } else {
                             Toast.makeText(getActivity(),
-                                    "Login failed: " + task.getException().getMessage(),
+                                    "Login failed: " + (task.getException() != null ? task.getException().getMessage() : "unknown error"),
                                     Toast.LENGTH_SHORT).show();
                         }
                     });
@@ -105,24 +112,46 @@ public class LoginPageFragment extends Fragment {
         return view;
     }
 
-    private void handleFirstLoginNavigation(FirebaseUser user, SharedPreferences prefs) {
-        // Keys for first login
-        String firstLoginKey = "firstLoginDone_" + user.getUid();
-        boolean firstLoginDone = prefs.getBoolean(firstLoginKey, false);
+    /** Central gate:
+     *  If onboardingComplete == false/missing  -> Welcome
+     *  Else if today’s assessment not done     -> Assessment
+     *  Else                                    -> Home
+     */
+    private void checkOnboardingAndNavigate(@NonNull FirebaseUser user,
+                                            @NonNull SharedPreferences prefs) {
+        String uid = user.getUid();
+        String todayKey = YMD.format(Calendar.getInstance().getTime());
+        boolean assessmentDoneToday = prefs.getBoolean(KEY_ASSESSMENT_DONE_PREFIX + uid + "_" + todayKey, false);
 
-        // Key for today's assessment
-        String todayKey = new SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(Calendar.getInstance().getTime());
-        boolean assessmentDoneToday = prefs.getBoolean("assessmentDone_" + user.getUid() + "_" + todayKey, false);
+        FirebaseFirestore.getInstance()
+                .collection("users")
+                .document(uid)
+                .get()
+                .addOnSuccessListener((DocumentSnapshot snap) -> {
+                    boolean onboardingComplete = snap != null && snap.exists()
+                            && Boolean.TRUE.equals(snap.getBoolean("onboardingComplete"));
 
-        if (!firstLoginDone) {
-            prefs.edit().putBoolean(firstLoginKey, true).apply();
-            navController.navigate(R.id.action_LoginPageFragment_to_welcomeFragment);
-        } else if (!assessmentDoneToday) {
-            navController.navigate(R.id.action_LoginPageFragment_to_assessmentFragment);
-        } else {
-            navController.navigate(R.id.action_LoginPageFragment_to_homePageFragment);
-        }
+                    // Cache for offline fallback
+                    prefs.edit().putBoolean(KEY_ONBOARDING_COMPLETE_PREFIX + uid, onboardingComplete).apply();
+
+                    if (!onboardingComplete) {
+                        navController.navigate(R.id.action_LoginPageFragment_to_welcomeFragment);
+                    } else if (!assessmentDoneToday) {
+                        navController.navigate(R.id.action_LoginPageFragment_to_assessmentFragment);
+                    } else {
+                        navController.navigate(R.id.action_LoginPageFragment_to_homePageFragment);
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    // Offline / error -> fallback to cached value (default false)
+                    boolean onboardingComplete = prefs.getBoolean(KEY_ONBOARDING_COMPLETE_PREFIX + uid, false);
+                    if (!onboardingComplete) {
+                        navController.navigate(R.id.action_LoginPageFragment_to_welcomeFragment);
+                    } else if (!assessmentDoneToday) {
+                        navController.navigate(R.id.action_LoginPageFragment_to_assessmentFragment);
+                    } else {
+                        navController.navigate(R.id.action_LoginPageFragment_to_homePageFragment);
+                    }
+                });
     }
-
-
 }

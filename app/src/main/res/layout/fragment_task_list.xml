@@ -60,7 +60,7 @@
             android:layout_height="24dp"
             android:src="@drawable/ic_add_circle"
             android:contentDescription="Add Task"
-            app:tint="@android:color/darker_gray" />
+            android:background="@null"/>
 
         <TextView
             android:layout_width="wrap_content"
@@ -68,7 +68,8 @@
             android:text="  Create a new task"
             android:textSize="16sp"
             android:textColor="@android:color/darker_gray"
-            android:textStyle="italic" />
+            android:textStyle="italic"
+            android:background="@null"/>
     </LinearLayout>
 
 

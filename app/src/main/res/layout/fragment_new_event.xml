@@ -134,7 +134,6 @@
                 android:orientation="horizontal"
                 android:gravity="center_vertical">
 
-                <!-- All-day -->
                 <TextView
                     android:id="@+id/labelAllDay"
                     android:layout_width="wrap_content"
@@ -160,8 +159,6 @@
                     app:switchMinWidth="60dp"
                     android:minWidth="60dp"
                     app:splitTrack="false" />
-
-
             </LinearLayout>
 
             <!-- Start row (exact same height) -->
@@ -173,7 +170,6 @@
                 android:weightSum="3"
                 android:gravity="center_vertical">
 
-                <!-- Start -->
                 <TextView
                     android:id="@+id/labelStart"
                     android:layout_width="0dp"
@@ -234,7 +230,6 @@
                 android:weightSum="3"
                 android:gravity="center_vertical">
 
-                <!-- End -->
                 <TextView
                     android:id="@+id/labelEnd"
                     android:layout_width="0dp"
@@ -245,7 +240,6 @@
                     android:textSize="16sp"
                     android:textColor="?android:attr/textColorHint"
                     android:gravity="start|center_vertical" />
-
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -295,7 +289,6 @@
                 android:orientation="horizontal"
                 android:gravity="center_vertical">
 
-                <!-- Repeat -->
                 <TextView
                     android:id="@+id/labelRepeat"
                     android:layout_width="wrap_content"
@@ -305,17 +298,19 @@
                     android:textSize="16sp"
                     android:textColor="?android:attr/textColorHint" />
 
-
                 <Space
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_weight="1" />
 
-                <Spinner
+                <androidx.appcompat.widget.AppCompatSpinner
                     android:id="@+id/spRepeat"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:spinnerMode="dropdown"
+                    android:background="@drawable/btn_pill_green"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
                     android:entries="@array/repeat_options" />
             </LinearLayout>
         </LinearLayout>
@@ -350,7 +345,6 @@
                 android:orientation="horizontal"
                 android:gravity="center_vertical">
 
-                <!-- Tag -->
                 <TextView
                     android:id="@+id/labelTag"
                     android:layout_width="wrap_content"
@@ -360,17 +354,19 @@
                     android:textSize="16sp"
                     android:textColor="?android:attr/textColorHint" />
 
-
                 <Space
                     android:layout_width="0dp"
                     android:layout_height="0dp"
                     android:layout_weight="1" />
 
-                <Spinner
+                <androidx.appcompat.widget.AppCompatSpinner
                     android:id="@+id/etTag"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:spinnerMode="dropdown"
+                    android:background="@drawable/btn_pill_green"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
                     android:entries="@array/tags" />
             </LinearLayout>
 

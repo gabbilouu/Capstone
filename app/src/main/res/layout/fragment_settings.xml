@@ -6,11 +6,14 @@
     android:background="@android:color/white">
 
     <!-- Scrollable content -->
+
+    <!-- Bottom Navigation Bar -->
     <ScrollView
         android:id="@+id/scrollContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/bottomNav"
+        android:layout_marginBottom="16dp"
         android:fillViewport="true">
 
         <LinearLayout
@@ -32,56 +35,64 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@android:color/white"
+                    android:clipToPadding="false"
                     android:orientation="horizontal"
-                    android:padding="12dp"
-                    android:clipToPadding="false">
+                    android:padding="12dp">
 
                     <ImageView
                         android:id="@+id/profileImage"
                         android:layout_width="80dp"
                         android:layout_height="80dp"
-                        android:src="@mipmap/ic_launcher"
                         android:background="@android:color/darker_gray"
-                        android:scaleType="centerCrop" />
+                        android:scaleType="centerCrop"
+                        android:src="@mipmap/ic_launcher" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:layout_marginStart="12dp">
+                        android:layout_marginStart="12dp"
+                        android:orientation="vertical">
 
                         <!-- Name + (optional) pronouns appended in code -->
                         <TextView
                             android:id="@+id/profileName"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textSize="18sp"
-                            android:textStyle="bold"
+                            android:text=""
                             android:textColor="@android:color/black"
-                            android:text="" />
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+                        <TextView
+                            android:id="@+id/profileBirthday"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text=""
+                            android:textColor="@android:color/black"
+                            android:textSize="14sp" />
 
                         <!-- University / Major go here (each can be blank) -->
                         <TextView
                             android:id="@+id/profileDetails"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:textSize="14sp"
                             android:layout_marginTop="4dp"
+                            android:text=""
                             android:textColor="@android:color/black"
-                            android:text="" />
+                            android:textSize="14sp" />
 
                         <View
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
-                            android:background="@android:color/darker_gray"
-                            android:layout_marginVertical="8dp" />
+                            android:layout_marginVertical="8dp"
+                            android:background="@android:color/darker_gray" />
 
                         <TextView
                             android:id="@+id/userSince"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="User Since: --"
-                            android:textSize="12sp"/>
+                            android:textSize="12sp" />
                     </LinearLayout>
                 </LinearLayout>
 
@@ -93,67 +104,66 @@
                     android:layout_gravity="end|top"
                     android:layout_margin="6dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:padding="4dp"
                     android:contentDescription="Edit profile"
+                    android:padding="4dp"
                     android:src="@drawable/ic_edit" />
             </FrameLayout>
-
 
             <!-- Stats Row -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
                 android:orientation="horizontal"
-                android:weightSum="2"
-                android:layout_marginBottom="16dp">
+                android:weightSum="2">
 
                 <!-- Streak -->
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
                     android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center"
                     android:background="@android:color/white"
                     android:elevation="2dp"
-                    android:layout_marginEnd="8dp"
+                    android:gravity="center"
+                    android:orientation="vertical"
                     android:padding="8dp">
 
                     <TextView
                         android:id="@+id/streakText"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
+                        android:gravity="center"
                         android:text="🌱 -- day streak!"
-                        android:textSize="16sp"
-                        android:gravity="center"/>
+                        android:textSize="16sp" />
                 </LinearLayout>
 
                 <!-- Personality Report -->
                 <LinearLayout
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
                     android:layout_weight="1"
-                    android:orientation="vertical"
-                    android:gravity="center"
                     android:background="@android:color/white"
                     android:elevation="2dp"
-                    android:layout_marginStart="8dp"
+                    android:gravity="center"
+                    android:orientation="vertical"
                     android:padding="8dp">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Personality Report"
-                        android:textSize="16sp"
                         android:layout_marginBottom="8dp"
-                        android:gravity="center"
                         android:ellipsize="none"
-                        android:singleLine="false"/>
+                        android:gravity="center"
+                        android:singleLine="false"
+                        android:text="Personality Report"
+                        android:textSize="16sp" />
 
                     <com.github.mikephil.charting.charts.RadarChart
                         android:id="@+id/personalityRadarChart"
                         android:layout_width="match_parent"
-                        android:layout_height="150dp"/>
+                        android:layout_height="150dp" />
                 </LinearLayout>
             </LinearLayout>
 
@@ -167,108 +177,108 @@
                     android:id="@+id/myGoalsButton"
                     android:layout_width="0dp"
                     android:layout_height="56dp"
+                    android:layout_marginEnd="8dp"
+                    android:gravity="center"
                     android:text="My Goals"
                     android:textAllCaps="false"
                     android:textColor="@android:color/black"
                     app:backgroundTint="@android:color/white"
-                    app:strokeColor="#E0E0E0"
-                    app:strokeWidth="1dp"
                     app:cornerRadius="14dp"
-                    app:rippleColor="#1F000000"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/moodReportButton"
-                    app:layout_constraintTop_toTopOf="parent"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    android:layout_marginEnd="8dp"
-                    android:gravity="center"/>
+                    app:layout_constraintEnd_toStartOf="@+id/moodReportButton"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:rippleColor="#1F000000"
+                    app:strokeColor="#E0E0E0"
+                    app:strokeWidth="1dp" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/moodReportButton"
                     android:layout_width="0dp"
                     android:layout_height="56dp"
+                    android:layout_marginStart="8dp"
+                    android:gravity="center"
                     android:text="In-Depth Mood Report"
                     android:textAllCaps="false"
                     android:textColor="@android:color/black"
                     app:backgroundTint="@android:color/white"
-                    app:strokeColor="#E0E0E0"
-                    app:strokeWidth="1dp"
                     app:cornerRadius="14dp"
-                    app:rippleColor="#1F000000"
-                    app:layout_constraintStart_toEndOf="@id/myGoalsButton"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="@id/myGoalsButton"
                     app:layout_constraintBottom_toBottomOf="@id/myGoalsButton"
-                    android:layout_marginStart="8dp"
-                    android:gravity="center"/>
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/myGoalsButton"
+                    app:layout_constraintTop_toTopOf="@id/myGoalsButton"
+                    app:rippleColor="#1F000000"
+                    app:strokeColor="#E0E0E0"
+                    app:strokeWidth="1dp" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <!-- General Section -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
                 android:text="GENERAL"
-                android:textStyle="bold"
-                android:layout_marginBottom="8dp"/>
+                android:textStyle="bold" />
 
             <LinearLayout
                 android:id="@+id/generalCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
                 android:background="@drawable/bg_card_white"
-                android:orientation="vertical"
                 android:elevation="2dp"
-                android:padding="12dp"
-                android:layout_marginBottom="16dp">
+                android:orientation="vertical"
+                android:padding="12dp">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/generalButton"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
+                    android:gravity="center"
                     android:text="General"
                     android:textAllCaps="false"
                     android:textColor="@android:color/black"
                     app:backgroundTint="@android:color/white"
                     app:cornerRadius="14dp"
-                    app:rippleColor="#1F000000"
-                    android:gravity="center"/>
+                    app:rippleColor="#1F000000" />
 
                 <!-- divider -->
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginVertical="8dp"
-                    android:background="#E0E0E0"/>
+                    android:background="#E0E0E0" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/aboutButton"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
+                    android:gravity="center"
                     android:text="About"
                     android:textAllCaps="false"
                     android:textColor="@android:color/black"
                     app:backgroundTint="@android:color/white"
                     app:cornerRadius="14dp"
-                    app:rippleColor="#1F000000"
-                    android:gravity="center"/>
+                    app:rippleColor="#1F000000" />
 
                 <!-- divider -->
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginVertical="8dp"
-                    android:background="#E0E0E0"/>
+                    android:background="#E0E0E0" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/notificationsButton"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
+                    android:gravity="center"
                     android:text="Notifications"
                     android:textAllCaps="false"
                     android:textColor="@android:color/black"
                     app:backgroundTint="@android:color/white"
                     app:cornerRadius="14dp"
-                    app:rippleColor="#1F000000"
-                    android:gravity="center"/>
+                    app:rippleColor="#1F000000" />
 
             </LinearLayout>
 
@@ -276,56 +286,98 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
                 android:text="MISC."
-                android:textStyle="bold"
-                android:layout_marginBottom="8dp"/>
+                android:textStyle="bold" />
 
             <LinearLayout
                 android:id="@+id/miscCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
                 android:background="@drawable/bg_card_white"
-                android:orientation="vertical"
                 android:elevation="2dp"
-                android:padding="12dp"
-                android:layout_marginBottom="16dp">
+                android:orientation="vertical"
+                android:padding="12dp">
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/faqButton"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
+                    android:gravity="center"
                     android:text="FAQ"
                     android:textAllCaps="false"
                     android:textColor="@android:color/black"
                     app:backgroundTint="@android:color/white"
                     app:cornerRadius="14dp"
-                    app:rippleColor="#1F000000"
-                    android:gravity="center"/>
+                    app:rippleColor="#1F000000" />
 
                 <!-- divider -->
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginVertical="8dp"
-                    android:background="#E0E0E0"/>
+                    android:background="#E0E0E0" />
 
                 <com.google.android.material.button.MaterialButton
                     android:id="@+id/contactUsButton"
                     android:layout_width="match_parent"
                     android:layout_height="48dp"
+                    android:gravity="center"
                     android:text="Contact Us"
                     android:textAllCaps="false"
                     android:textColor="@android:color/black"
                     app:backgroundTint="@android:color/white"
                     app:cornerRadius="14dp"
+                    app:rippleColor="#1F000000" />
+
+                <!-- divider -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="8dp"
+                    android:background="#E0E0E0" />
+
+                <!-- NEW: Logout -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/logoutButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:gravity="center"
+                    android:text="Log Out"
+                    android:textAllCaps="false"
+                    android:textColor="#B00020"
+                    app:backgroundTint="@android:color/white"
+                    app:cornerRadius="14dp"
                     app:rippleColor="#1F000000"
-                    android:gravity="center"/>
+                    app:strokeColor="@null"
+                    app:strokeWidth="0dp" />
+                <!-- divider -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="8dp"
+                    android:background="#E0E0E0" />
+
+                <!-- NEW: Delete Account -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/deleteAccountButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:gravity="center"
+                    android:text="Delete Account"
+                    android:textAllCaps="false"
+                    android:textColor="#B00020"
+                    app:backgroundTint="@android:color/white"
+                    app:cornerRadius="14dp"
+                    app:rippleColor="#1F000000"
+                    app:strokeColor="@null"
+                    app:strokeWidth="0dp" />
 
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
 
-    <!-- Bottom Navigation Bar -->
     <LinearLayout
         android:id="@+id/bottomNav"
         android:layout_width="match_parent"

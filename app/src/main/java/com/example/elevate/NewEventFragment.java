@@ -12,6 +12,7 @@ import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
+import androidx.appcompat.widget.SwitchCompat;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -26,7 +27,7 @@ public class NewEventFragment extends Fragment {
 
     private EditText etEventName, etLocation, etNotes;
     private Spinner spinnerTag;
-    private CheckBox cbAllDay;
+    private SwitchCompat swAllDay; // ✅ use SwitchCompat, not CheckBox
     private Button btnStartDate, btnStartTime, btnEndDate, btnEndTime, btnAdd, btnCancel;
     private TextView tvTitle;
 
@@ -57,8 +58,8 @@ public class NewEventFragment extends Fragment {
         etEventName = view.findViewById(R.id.etEventName);
         etLocation = view.findViewById(R.id.etLocation);
         etNotes = view.findViewById(R.id.etNotes);
-        spinnerTag = view.findViewById(R.id.etTag);
-        cbAllDay = view.findViewById(R.id.swAllDay);
+        spinnerTag = view.findViewById(R.id.etTag); // ⚠️ Ensure this ID points to a <Spinner> in XML
+        swAllDay = view.findViewById(R.id.swAllDay); // ✅ matches SwitchCompat in XML
         btnStartDate = view.findViewById(R.id.btnStartDate);
         btnStartTime = view.findViewById(R.id.btnStartTime);
         btnEndDate = view.findViewById(R.id.btnEndDate);
@@ -70,11 +71,11 @@ public class NewEventFragment extends Fragment {
         setupTagSpinner();
         updateButtonLabels();
 
-        // Disable time pickers if "All Day" is checked
-        cbAllDay.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            btnStartTime.setEnabled(!isChecked);
-            btnEndTime.setEnabled(!isChecked);
-        });
+        // Reflect current switch state on first render
+        setAllDayUI(swAllDay.isChecked());
+
+        // Toggle enable/disable for time pickers
+        swAllDay.setOnCheckedChangeListener((buttonView, isChecked) -> setAllDayUI(isChecked));
 
         btnStartDate.setOnClickListener(v -> pickDate(startCal, btnStartDate));
         btnStartTime.setOnClickListener(v -> pickTime(startCal, btnStartTime));
@@ -87,7 +88,6 @@ public class NewEventFragment extends Fragment {
     }
 
     private void setupTagSpinner() {
-        // You can replace this with dynamic category loading later
         String[] categories = {"School", "Personal", "Work", "Orgs.", "Events", "Family", "Birthdays", "Custom"};
         ArrayAdapter<String> adapter = new ArrayAdapter<>(requireContext(),
                 android.R.layout.simple_spinner_dropdown_item, categories);
@@ -131,19 +131,27 @@ public class NewEventFragment extends Fragment {
         btnEndTime.setText(timeFormat.format(endCal.getTime()));
     }
 
+    // Enable/disable time buttons + visual feedback
+    private void setAllDayUI(boolean allDay) {
+        btnStartTime.setEnabled(!allDay);
+        btnEndTime.setEnabled(!allDay);
+        btnStartTime.setAlpha(allDay ? 0.5f : 1f);
+        btnEndTime.setAlpha(allDay ? 0.5f : 1f);
+    }
+
     private void saveEvent() {
         String name = etEventName.getText().toString().trim();
         String location = etLocation.getText().toString().trim();
         String notes = etNotes.getText().toString().trim();
         String tag = spinnerTag.getSelectedItem() != null ? spinnerTag.getSelectedItem().toString() : "General";
-        boolean allDay = cbAllDay.isChecked();
+        boolean allDay = swAllDay.isChecked();
 
         if (name.isEmpty()) {
             Toast.makeText(requireContext(), "Enter an event name", Toast.LENGTH_SHORT).show();
             return;
         }
 
-        // Validate time order
+        // Validate ordering only when not all-day
         if (!allDay && !endCal.after(startCal)) {
             Toast.makeText(requireContext(), "End time must be after start time", Toast.LENGTH_SHORT).show();
             return;

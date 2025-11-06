@@ -65,46 +65,76 @@
             android:layout_marginBottom="16dp" />
 
         <!-- Password -->
-        <TextView
-            android:id="@+id/password_label"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Password"
-            android:textSize="16sp"
-            android:textColor="@android:color/black"
-            android:background="@null"/>
-
-        <EditText
-            android:id="@+id/password_input"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:hint="At least 8 characters, 1 capital, 1 number, 1 symbol"
-            android:inputType="textPassword"
             android:background="@drawable/input_background"
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
-            android:layout_marginBottom="16dp" />
+            android:clipToPadding="true"
+            android:clipChildren="true">
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/password_input"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:includeFontPadding="false"
+                android:paddingStart="0dp"
+                android:paddingEnd="44dp"
+                android:gravity="center_vertical"
+                android:textSize="16sp"
+                android:hint="At least 8 characters, 1 capital, 1 number, 1 symbol"
+                android:inputType="textPassword" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/btn_toggle_password"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_gravity="end|center_vertical"
+                android:background="?attr/selectableItemBackground"
+                android:contentDescription="Show password"
+                android:padding="6dp"
+                app:srcCompat="@drawable/ic_visibility_off"
+                app:tint="@android:color/black" />
+            </FrameLayout>
 
         <!-- Confirm Password -->
-        <TextView
-            android:id="@+id/confirm_password_label"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:text="Confirm Password"
-            android:textSize="16sp"
-            android:textColor="@android:color/black"
-            android:background="@null"/>
-
-        <EditText
-            android:id="@+id/confirm_password_input"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="48dp"
-            android:hint="Re-enter your password"
-            android:inputType="textPassword"
+            android:layout_marginTop="16dp"
             android:background="@drawable/input_background"
             android:paddingStart="12dp"
             android:paddingEnd="12dp"
-            android:layout_marginBottom="32dp" />
+            android:clipToPadding="true"
+            android:clipChildren="true">
+
+            <androidx.appcompat.widget.AppCompatEditText
+                android:id="@+id/confirm_password_input"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:background="@null"
+                android:includeFontPadding="false"
+                android:paddingStart="0dp"
+                android:paddingEnd="44dp"
+                android:gravity="center_vertical"
+                android:textSize="16sp"
+                android:hint="Re-enter your password"
+                android:inputType="textPassword" />
+
+            <androidx.appcompat.widget.AppCompatImageButton
+                android:id="@+id/btn_toggle_confirm"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:layout_gravity="end|center_vertical"
+                android:background="?attr/selectableItemBackground"
+                android:contentDescription="Show password"
+                android:padding="6dp"
+                app:srcCompat="@drawable/ic_visibility_off"
+                app:tint="@android:color/black" />
+        </FrameLayout>
+
 
         <!-- Sign Up Button -->
         <com.google.android.material.button.MaterialButton

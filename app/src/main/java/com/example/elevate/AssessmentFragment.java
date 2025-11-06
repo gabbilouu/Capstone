@@ -15,6 +15,8 @@ import androidx.navigation.Navigation;
 
 public class AssessmentFragment extends Fragment {
 
+    private static final String GATE_KEY_ASSESSMENT = "assessment_done";
+
     private ImageView emojiVeryHappy, emojiHappy, emojiNeutral, emojiSad, emojiVerySad;
     private Button nextButton;
     private int selectedMood = -1;
@@ -54,6 +56,12 @@ public class AssessmentFragment extends Fragment {
             if (selectedMood == -1) {
                 Toast.makeText(requireContext(), "Please select a mood first.", Toast.LENGTH_SHORT).show();
             } else {
+                // ✅ Mark assessment as done for today BEFORE navigating
+                DailyGate.markDoneToday(requireContext(), GATE_KEY_ASSESSMENT);
+
+                // Optional: prevent double taps
+                nextButton.setEnabled(false);
+
                 // Navigate to LoginStreakFragment
                 navC.navigate(R.id.action_assessmentFragment_to_loginStreakFragment);
             }
@@ -72,21 +80,11 @@ public class AssessmentFragment extends Fragment {
 
         // Highlight selected mood
         switch (mood) {
-            case 0:
-                emojiVeryHappy.setAlpha(1f);
-                break;
-            case 1:
-                emojiHappy.setAlpha(1f);
-                break;
-            case 2:
-                emojiNeutral.setAlpha(1f);
-                break;
-            case 3:
-                emojiSad.setAlpha(1f);
-                break;
-            case 4:
-                emojiVerySad.setAlpha(1f);
-                break;
+            case 0: emojiVeryHappy.setAlpha(1f); break;
+            case 1: emojiHappy.setAlpha(1f); break;
+            case 2: emojiNeutral.setAlpha(1f); break;
+            case 3: emojiSad.setAlpha(1f); break;
+            case 4: emojiVerySad.setAlpha(1f); break;
         }
     }
 }

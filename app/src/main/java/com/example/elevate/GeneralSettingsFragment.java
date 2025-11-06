@@ -3,12 +3,13 @@ package com.example.elevate;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.*;
-import android.widget.Toast;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.work.Data;
 import androidx.work.ExistingPeriodicWorkPolicy;
@@ -24,27 +25,31 @@ public class GeneralSettingsFragment extends Fragment {
 
     private static final String PREFS = "general_settings";
 
-    private static final String KEY_LOGIN_STREAKS   = "login_streaks_enabled";
-    private static final String KEY_DAILY_MOOD      = "daily_mood_enabled";
-    private static final String KEY_WEEKLY_MOOD     = "weekly_mood_enabled";
-    private static final String KEY_AFFIRMATIONS    = "affirmations_enabled";
-    private static final String KEY_SOUND_EFFECTS   = "sound_effects_enabled";
-    private static final String KEY_HAPTIC          = "haptic_enabled";
+    private static final String KEY_DAILY_MOOD    = "daily_mood_enabled";
+    private static final String KEY_WEEKLY_MOOD   = "weekly_mood_enabled";
+    private static final String KEY_AFFIRMATIONS  = "affirmations_enabled";
 
-    // Work tags (unique)
-    private static final String WTAG_DAILY_MOOD   = "wt_daily_mood";
-    private static final String WTAG_WEEKLY_MOOD  = "wt_weekly_mood";
-    private static final String WTAG_AFFIRMATIONS = "wt_affirmations";
+    // Unique work names
+    private static final String WTAG_DAILY_MOOD     = "wt_daily_mood";
+    private static final String WTAG_WEEKLY_MOOD    = "wt_weekly_mood";
+    private static final String WTAG_AFFIRMATIONS   = "wt_affirmations";
 
     private SharedPreferences prefs;
 
-    private SwitchMaterial swLoginStreaks, swDailyMood, swWeeklyMood, swAffirmations, swSoundEffects, swHaptic;
+    private SwitchMaterial swDailyMood;
+    private SwitchMaterial swWeeklyMood;
+    private SwitchMaterial swAffirmations;
+
+    // Prevent listener recursion when we programmatically flip switches
+    private boolean suppressSwitchCallbacks = false;
 
     public GeneralSettingsFragment() {}
 
     @Nullable
     @Override
-    public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(@NonNull LayoutInflater inflater,
+                             @Nullable ViewGroup container,
+                             @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_general_settings, container, false);
     }
 
@@ -54,61 +59,95 @@ public class GeneralSettingsFragment extends Fragment {
 
         prefs = requireContext().getSharedPreferences(PREFS, Context.MODE_PRIVATE);
 
-        // Toolbar back arrow
-        Toolbar toolbar = v.findViewById(R.id.toolbar);
-        if (toolbar != null) {
-            toolbar.setNavigationOnClickListener(x ->
-                    requireActivity().getOnBackPressedDispatcher().onBackPressed());
+        // Back arrow button in custom header
+        ImageButton back = v.findViewById(R.id.btn_back);
+        if (back != null) {
+            back.setOnClickListener(click ->
+                    androidx.navigation.Navigation.findNavController(click).navigateUp()
+            );
         }
 
-        // Bind switches
-        swLoginStreaks  = v.findViewById(R.id.switch_login_streaks);
+        // Bind switches (ensure these IDs exist in fragment_general_settings.xml)
         swDailyMood     = v.findViewById(R.id.switch_daily_mood);
         swWeeklyMood    = v.findViewById(R.id.switch_weekly_mood);
         swAffirmations  = v.findViewById(R.id.switch_affirmations);
-        swSoundEffects  = v.findViewById(R.id.switch_sound_effects);
-        swHaptic        = v.findViewById(R.id.switch_haptic);
 
-        // Hide the Launch Lock row entirely (since we're holding off on PIN)
-        SwitchMaterial launchLockSwitch = v.findViewById(R.id.switch_launch_lock);
-        if (launchLockSwitch != null) {
-            View parentRow = (View) launchLockSwitch.getParent();
-            if (parentRow != null) parentRow.setVisibility(View.GONE);
+        // --- Read persisted values
+        boolean daily  = prefs.getBoolean(KEY_DAILY_MOOD, false);
+        boolean weekly = prefs.getBoolean(KEY_WEEKLY_MOOD, false);
+
+        // Enforce "both off OR exactly one on" at startup.
+        // If both were ON previously, prefer Daily and turn Weekly OFF.
+        if (daily && weekly) {
+            weekly = false;
+            putBool(KEY_WEEKLY_MOOD, false);
+            cancelWork(WTAG_WEEKLY_MOOD);
         }
 
-        // Initial states
-        swLoginStreaks.setChecked(prefs.getBoolean(KEY_LOGIN_STREAKS, false));
-        swDailyMood.setChecked(prefs.getBoolean(KEY_DAILY_MOOD, false));
-        swWeeklyMood.setChecked(prefs.getBoolean(KEY_WEEKLY_MOOD, false));
-        swAffirmations.setChecked(prefs.getBoolean(KEY_AFFIRMATIONS, false));
-        swSoundEffects.setChecked(prefs.getBoolean(KEY_SOUND_EFFECTS, true));
-        swHaptic.setChecked(prefs.getBoolean(KEY_HAPTIC, true));
+        // Apply to UI (no listeners attached yet)
+        if (swDailyMood != null)     swDailyMood.setChecked(daily);
+        if (swWeeklyMood != null)    swWeeklyMood.setChecked(weekly);
+        if (swAffirmations != null)  swAffirmations.setChecked(prefs.getBoolean(KEY_AFFIRMATIONS, false));
 
         // Listeners
-        swLoginStreaks.setOnCheckedChangeListener((b, v1) -> putBool(KEY_LOGIN_STREAKS, v1));
 
-        swDailyMood.setOnCheckedChangeListener((b, enabled) -> {
-            putBool(KEY_DAILY_MOOD, enabled);
-            if (enabled) scheduleDailyMood(); else cancelWork(WTAG_DAILY_MOOD);
-        });
+        if (swDailyMood != null) {
+            swDailyMood.setOnCheckedChangeListener((b, enabled) -> {
+                if (suppressSwitchCallbacks) return;
 
-        swWeeklyMood.setOnCheckedChangeListener((b, enabled) -> {
-            putBool(KEY_WEEKLY_MOOD, enabled);
-            if (enabled) scheduleWeeklyMood(); else cancelWork(WTAG_WEEKLY_MOOD);
-        });
+                putBool(KEY_DAILY_MOOD, enabled);
 
-        swAffirmations.setOnCheckedChangeListener((b, enabled) -> {
-            putBool(KEY_AFFIRMATIONS, enabled);
-            if (enabled) scheduleAffirmations(); else cancelWork(WTAG_AFFIRMATIONS);
-        });
+                if (enabled) {
+                    // If Weekly is ON, turn it OFF (mutual exclusivity)
+                    if (swWeeklyMood != null && swWeeklyMood.isChecked()) {
+                        suppressSwitchCallbacks = true;
+                        swWeeklyMood.setChecked(false);
+                        suppressSwitchCallbacks = false;
+                        putBool(KEY_WEEKLY_MOOD, false);
+                        cancelWork(WTAG_WEEKLY_MOOD);
+                    }
+                    scheduleDailyMood();
+                } else {
+                    // Both-off is allowed
+                    cancelWork(WTAG_DAILY_MOOD);
+                }
+            });
+        }
 
-        swSoundEffects.setOnCheckedChangeListener((b, v12) -> putBool(KEY_SOUND_EFFECTS, v12));
-        swHaptic.setOnCheckedChangeListener((b, v13) -> putBool(KEY_HAPTIC, v13));
+        if (swWeeklyMood != null) {
+            swWeeklyMood.setOnCheckedChangeListener((b, enabled) -> {
+                if (suppressSwitchCallbacks) return;
 
-        // Auto (re)schedule if already enabled
-        if (swDailyMood.isChecked()) scheduleDailyMood();
-        if (swWeeklyMood.isChecked()) scheduleWeeklyMood();
-        if (swAffirmations.isChecked()) scheduleAffirmations();
+                putBool(KEY_WEEKLY_MOOD, enabled);
+
+                if (enabled) {
+                    // If Daily is ON, turn it OFF (mutual exclusivity)
+                    if (swDailyMood != null && swDailyMood.isChecked()) {
+                        suppressSwitchCallbacks = true;
+                        swDailyMood.setChecked(false);
+                        suppressSwitchCallbacks = false;
+                        putBool(KEY_DAILY_MOOD, false);
+                        cancelWork(WTAG_DAILY_MOOD);
+                    }
+                    scheduleWeeklyMood();
+                } else {
+                    // Both-off is allowed
+                    cancelWork(WTAG_WEEKLY_MOOD);
+                }
+            });
+        }
+
+        if (swAffirmations != null) {
+            swAffirmations.setOnCheckedChangeListener((b, enabled) -> {
+                putBool(KEY_AFFIRMATIONS, enabled);
+                if (enabled) scheduleAffirmations(); else cancelWork(WTAG_AFFIRMATIONS);
+            });
+        }
+
+        // Auto (re)schedule based on final states
+        if (swDailyMood != null)  { if (swDailyMood.isChecked())  scheduleDailyMood();  else cancelWork(WTAG_DAILY_MOOD); }
+        if (swWeeklyMood != null) { if (swWeeklyMood.isChecked()) scheduleWeeklyMood(); else cancelWork(WTAG_WEEKLY_MOOD); }
+        if (swAffirmations != null) { if (swAffirmations.isChecked()) scheduleAffirmations(); else cancelWork(WTAG_AFFIRMATIONS); }
     }
 
     // ---------- Work scheduling ----------
@@ -157,8 +196,8 @@ public class GeneralSettingsFragment extends Fragment {
                 .enqueueUniquePeriodicWork(WTAG_AFFIRMATIONS, ExistingPeriodicWorkPolicy.UPDATE, work);
     }
 
-    private void cancelWork(String tag) {
-        WorkManager.getInstance(requireContext()).cancelUniqueWork(tag);
+    private void cancelWork(String uniqueName) {
+        WorkManager.getInstance(requireContext()).cancelUniqueWork(uniqueName);
     }
 
     private long nextDelayMillis(int hour24, int min, int dayOfWeekOrMinus1) {
@@ -168,6 +207,7 @@ public class GeneralSettingsFragment extends Fragment {
         next.set(Calendar.MILLISECOND, 0);
         next.set(Calendar.MINUTE, min);
         next.set(Calendar.HOUR_OF_DAY, hour24);
+
         if (dayOfWeekOrMinus1 != -1) {
             next.set(Calendar.DAY_OF_WEEK, dayOfWeekOrMinus1);
             if (!next.after(now)) next.add(Calendar.WEEK_OF_YEAR, 1);

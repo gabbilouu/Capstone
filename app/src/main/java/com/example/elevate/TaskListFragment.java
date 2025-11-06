@@ -13,27 +13,25 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import androidx.navigation.fragment.NavHostFragment;
 import androidx.recyclerview.widget.ItemTouchHelper;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.material.snackbar.Snackbar;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.ListenerRegistration;
+
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Paint;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import androidx.core.content.ContextCompat;
 
-import com.google.firebase.firestore.FirebaseFirestore;
-
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 public class TaskListFragment extends Fragment implements View.OnClickListener {
@@ -41,12 +39,14 @@ public class TaskListFragment extends Fragment implements View.OnClickListener {
     private NavController navC;
     private RecyclerView recyclerView;
     private TaskAdapter adapter;
-    private List<Task> taskList;
-    private List<String> docIds;
-    private FirebaseFirestore db;
+    private final List<Task> taskList = new ArrayList<>();
+    private final List<String> docIds = new ArrayList<>();
     private TextView tvTimer;
-    private Handler timerHandler = new Handler();
+    private final Handler timerHandler = new Handler();
     private Runnable timerRunnable;
+
+    private TaskRepository repo;
+    private ListenerRegistration registration;
 
     public TaskListFragment() {}
 
@@ -60,137 +60,120 @@ public class TaskListFragment extends Fragment implements View.OnClickListener {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        repo = new TaskRepository();
         navC = NavHostFragment.findNavController(this);
-        db = FirebaseFirestore.getInstance();
 
         // Timer setup
         tvTimer = view.findViewById(R.id.tvTimer);
         startMidnightCountdown();
 
         // RecyclerView and adapter
-        taskList = new ArrayList<>();
-        docIds = new ArrayList<>();
         recyclerView = view.findViewById(R.id.recyclerViewTasks);
         recyclerView.setLayoutManager(new LinearLayoutManager(requireContext()));
         adapter = new TaskAdapter(taskList, docIds);
         recyclerView.setAdapter(adapter);
-        adapter.setOnCompletionToggleListener((taskId, task, completed) -> {
-            db.collection("tasks").document(taskId).update("completed", completed)
-                    .addOnSuccessListener(x -> {
-                        if (completed) {
-                            HomeStats.applyNewCompletion(requireContext());
-                        } else {
-                            HomeStats.revertCompletion(requireContext());
-                        }
-                    });
-        });
 
+        // Toggle completion -> Firestore
+        adapter.setOnCompletionToggleListener((taskId, task, completed) ->
+                repo.setCompleted(taskId, task, true) // always true; no unchecking
+        );
 
         // Add task bar
         View addTaskBar = view.findViewById(R.id.addTaskBar);
-        addTaskBar.setOnClickListener(v ->
-                navC.navigate(R.id.action_taskListFragment_to_newTaskFragment)
-        );
+        if (addTaskBar != null) {
+            addTaskBar.setOnClickListener(v ->
+                    navC.navigate(R.id.action_taskListFragment_to_newTaskFragment));
+        }
 
-        // Item click listener
+        // Item click -> edit
         adapter.setOnItemClickListener((task, taskId) -> {
             Bundle bundle = new Bundle();
             bundle.putSerializable("task", task);
             bundle.putString("taskId", taskId);
             navC.navigate(R.id.action_taskListFragment_to_editTaskFragment, bundle);
         });
-        ItemTouchHelper.SimpleCallback simpleCallback = new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
-            private final ColorDrawable background = new ColorDrawable(Color.RED);
-            private final Drawable deleteIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_delete); // add this icon to res/drawable
 
-            @Override
-            public boolean onMove(@NonNull RecyclerView recyclerView,
-                                  @NonNull RecyclerView.ViewHolder viewHolder,
-                                  @NonNull RecyclerView.ViewHolder target) {
-                return false;
-            }
+        // Swipe to delete (with Undo)
+        ItemTouchHelper.SimpleCallback simpleCallback =
+                new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.LEFT) {
+                    private final ColorDrawable background = new ColorDrawable(Color.RED);
+                    private final Drawable deleteIcon = ContextCompat.getDrawable(requireContext(), R.drawable.ic_delete);
 
-            @Override
-            public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-                int position = viewHolder.getAdapterPosition();
-                String docId = docIds.get(position);
-                Task deletedTask = taskList.get(position);
-
-                // Remove locally for instant UI feedback
-                taskList.remove(position);
-                docIds.remove(position);
-                adapter.notifyItemRemoved(position);
-
-                // Show Snackbar with Undo
-                Snackbar.make(recyclerView, "Task deleted", Snackbar.LENGTH_LONG)
-                        .setAction("Undo", v -> {
-                            // Reinsert locally
-                            taskList.add(position, deletedTask);
-                            docIds.add(position, docId);
-                            adapter.notifyItemInserted(position);
-                        })
-                        .addCallback(new Snackbar.Callback() {
-                            @Override
-                            public void onDismissed(Snackbar snackbar, int event) {
-                                if (event != Snackbar.Callback.DISMISS_EVENT_ACTION) {
-                                    // Delete from Firestore only if not undone
-                                    db.collection("tasks").document(docId).delete()
-                                            .addOnSuccessListener(aVoid ->
-                                                    Log.d("TaskListFragment", "Task deleted from Firestore"))
-                                            .addOnFailureListener(e ->
-                                                    Log.e("TaskListFragment", "Error deleting task", e));
-                                }
-                            }
-                        })
-                        .show();
-            }
-
-            @Override
-            public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView recyclerView,
-                                    @NonNull RecyclerView.ViewHolder viewHolder,
-                                    float dX, float dY, int actionState, boolean isCurrentlyActive) {
-                super.onChildDraw(c, recyclerView, viewHolder, dX, dY, actionState, isCurrentlyActive);
-
-                View itemView = viewHolder.itemView;
-                int backgroundCornerOffset = 20;
-
-                if (dX < 0) { // Swiping left
-                    background.setBounds(
-                            itemView.getRight() + (int) dX - backgroundCornerOffset,
-                            itemView.getTop(),
-                            itemView.getRight(),
-                            itemView.getBottom()
-                    );
-                    background.draw(c);
-
-                    // Draw trash icon
-                    if (deleteIcon != null) {
-                        int iconMargin = (itemView.getHeight() - deleteIcon.getIntrinsicHeight()) / 2;
-                        int iconTop = itemView.getTop() + (itemView.getHeight() - deleteIcon.getIntrinsicHeight()) / 2;
-                        int iconLeft = itemView.getRight() - iconMargin - deleteIcon.getIntrinsicWidth();
-                        int iconRight = itemView.getRight() - iconMargin;
-                        int iconBottom = iconTop + deleteIcon.getIntrinsicHeight();
-
-                        deleteIcon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
-                        deleteIcon.draw(c);
+                    @Override
+                    public boolean onMove(@NonNull RecyclerView recyclerView,
+                                          @NonNull RecyclerView.ViewHolder viewHolder,
+                                          @NonNull RecyclerView.ViewHolder target) {
+                        return false;
                     }
-                }
-            }
-        };
 
-        ItemTouchHelper itemTouchHelper = new ItemTouchHelper(simpleCallback);
-        itemTouchHelper.attachToRecyclerView(recyclerView);
+                    @Override
+                    public void onSwiped(@NonNull RecyclerView.ViewHolder viewHolder, int direction) {
+                        int position = viewHolder.getAdapterPosition();
+                        String docId = docIds.get(position);
+                        Task deletedTask = taskList.get(position);
 
-        // Listen for new task results (optional, snapshot listener handles updates)
+                        // Remove locally for instant UI feedback
+                        taskList.remove(position);
+                        docIds.remove(position);
+                        adapter.notifyItemRemoved(position);
+
+                        Snackbar.make(recyclerView, "Task deleted", Snackbar.LENGTH_LONG)
+                                .setAction("Undo", v -> {
+                                    taskList.add(position, deletedTask);
+                                    docIds.add(position, docId);
+                                    adapter.notifyItemInserted(position);
+                                })
+                                .addCallback(new Snackbar.Callback() {
+                                    @Override
+                                    public void onDismissed(Snackbar snackbar, int event) {
+                                        if (event != Snackbar.Callback.DISMISS_EVENT_ACTION) {
+                                            // Commit delete to Firestore only if not undone
+                                            repo.delete(docId);
+                                        }
+                                    }
+                                })
+                                .show();
+                    }
+
+                    @Override
+                    public void onChildDraw(@NonNull Canvas c, @NonNull RecyclerView rv,
+                                            @NonNull RecyclerView.ViewHolder vh,
+                                            float dX, float dY, int actionState, boolean isCurrentlyActive) {
+                        super.onChildDraw(c, rv, vh, dX, dY, actionState, isCurrentlyActive);
+
+                        View itemView = vh.itemView;
+                        int backgroundCornerOffset = 20;
+
+                        if (dX < 0) { // Swiping left
+                            background.setBounds(
+                                    itemView.getRight() + (int) dX - backgroundCornerOffset,
+                                    itemView.getTop(),
+                                    itemView.getRight(),
+                                    itemView.getBottom()
+                            );
+                            background.draw(c);
+
+                            if (deleteIcon != null) {
+                                int iconMargin = (itemView.getHeight() - deleteIcon.getIntrinsicHeight()) / 2;
+                                int iconTop = itemView.getTop() + iconMargin;
+                                int iconLeft = itemView.getRight() - iconMargin - deleteIcon.getIntrinsicWidth();
+                                int iconRight = itemView.getRight() - iconMargin;
+                                int iconBottom = iconTop + deleteIcon.getIntrinsicHeight();
+                                deleteIcon.setBounds(iconLeft, iconTop, iconRight, iconBottom);
+                                deleteIcon.draw(c);
+                            }
+                        }
+                    }
+                };
+
+        new ItemTouchHelper(simpleCallback).attachToRecyclerView(recyclerView);
+
+        // (Optional) result listener; realtime updates already handle insertions
         getParentFragmentManager().setFragmentResultListener("newTask", this,
-                (requestKey, bundle) -> {
-                    boolean added = bundle.getBoolean("taskAdded", false);
-                    if (added) Log.d("TaskListFragment", "New task added, listener updates UI.");
-                });
+                (requestKey, bundle) -> Log.d("TaskListFragment", "New task added"));
 
-        // Load tasks and reset if needed
+        // Start realtime import (single call)
         listenToFirebaseTasks();
-        resetTasksIfNeeded();
 
         // Bottom nav buttons
         ImageButton homeButton = view.findViewById(R.id.HomeButton);
@@ -201,10 +184,44 @@ public class TaskListFragment extends Fragment implements View.OnClickListener {
         if (homeButton != null) homeButton.setOnClickListener(this);
         if (listButton != null) listButton.setOnClickListener(this);
         if (profileButton != null) profileButton.setOnClickListener(this);
+        if (taskButton != null) taskButton.setOnClickListener(v -> { /* no-op */ });
+    }
 
-        // Task button is inert
-        if (taskButton != null) taskButton.setOnClickListener(v -> {
-            // Do nothing
+    private void listenToFirebaseTasks() {
+        if (registration != null) {
+            registration.remove();
+            registration = null;
+        }
+        registration = repo.listenForUserTasks((snap, error) -> {
+            if (error != null || snap == null) {
+                if (error != null) Log.e("Firestore", "Listen failed.", error);
+                return;
+            }
+
+            taskList.clear();
+            docIds.clear();
+
+            for (DocumentSnapshot doc : snap.getDocuments()) {
+                Task task = doc.toObject(Task.class);
+                if (task == null) continue;
+
+                // Derive completion from completionKey for the current period
+                boolean isCompleted = PeriodKeyUtil.currentKeyFor(task)
+                        .equals(task.getCompletionKey());
+                task.setCompleted(isCompleted); // UI-only flag
+
+                // Safe defaults
+                if (task.getStartDate() == null) task.setStartDate("");
+                if (task.getEndDate() == null) task.setEndDate("");
+                if (task.getStartTime() == null) task.setStartTime("");
+                if (task.getEndTime() == null) task.setEndTime("");
+                if (task.getEmoji() == null) task.setEmoji("📝");
+                if (task.getName() == null) task.setName("Unnamed Task");
+
+                taskList.add(task);
+                docIds.add(doc.getId());
+            }
+            adapter.notifyDataSetChanged();
         });
     }
 
@@ -236,82 +253,25 @@ public class TaskListFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onDestroyView() {
         super.onDestroyView();
-        if (timerHandler != null && timerRunnable != null) {
+        if (timerRunnable != null) {
             timerHandler.removeCallbacks(timerRunnable);
         }
-    }
-
-    private void listenToFirebaseTasks() {
-        db.collection("tasks").addSnapshotListener((value, error) -> {
-            if (error != null) {
-                Log.e("Firestore", "Listen failed.", error);
-                return;
-            }
-            if (value == null) return;
-
-            taskList.clear();
-            docIds.clear();
-
-            for (var doc : value.getDocuments()) {
-                Task task = doc.toObject(Task.class);
-                if (task == null) continue;
-
-                // Ensure no null fields
-                if (task.getStartDate() == null) task.setStartDate("");
-                if (task.getEndDate() == null) task.setEndDate("");
-                if (task.getStartTime() == null) task.setStartTime("");
-                if (task.getEndTime() == null) task.setEndTime("");
-                if (task.getEmoji() == null) task.setEmoji("📝");
-                if (task.getName() == null) task.setName("Unnamed Task");
-
-                taskList.add(task);
-                docIds.add(doc.getId());
-            }
-            adapter.notifyDataSetChanged();
-        });
-    }
-
-    private void resetTasksIfNeeded() {
-        db.collection("tasks").get().addOnSuccessListener(querySnapshot -> {
-            Calendar today = Calendar.getInstance();
-            String[] weekdays = {"Sun","Mon","Tue","Wed","Thu","Fri","Sat"};
-
-            for (var doc : querySnapshot.getDocuments()) {
-                Task task = doc.toObject(Task.class);
-                if (task == null) continue;
-
-                boolean shouldReset = false;
-                String repeatType = task.getRepeatType();
-                if (repeatType == null) continue;
-
-                switch (repeatType) {
-                    case "Daily": shouldReset = true; break;
-                    case "Weekly": shouldReset = today.get(Calendar.DAY_OF_WEEK) == Calendar.MONDAY; break;
-                    case "Monthly": shouldReset = today.get(Calendar.DAY_OF_MONTH) == 1; break;
-                    case "Select Days":
-                        Calendar yesterday = (Calendar) today.clone();
-                        yesterday.add(Calendar.DAY_OF_MONTH, -1);
-                        String yesterdayStr = weekdays[yesterday.get(Calendar.DAY_OF_WEEK)-1];
-                        if (task.getRepeatDays() != null && task.getRepeatDays().contains(yesterdayStr))
-                            shouldReset = true;
-                        break;
-                }
-
-                if (shouldReset && task.isCompleted()) {
-                    Map<String,Object> updates = new HashMap<>();
-                    updates.put("completed", false);
-                    db.collection("tasks").document(doc.getId()).update(updates);
-                }
-            }
-        });
+        if (registration != null) {
+            registration.remove();
+            registration = null;
+        }
     }
 
     @Override
     public void onClick(View v) {
         if (navC == null) return;
         int id = v.getId();
-        if (id == R.id.HomeButton) navC.navigate(R.id.action_taskListFragment_to_homePageFragment);
-        else if (id == R.id.CalendarButton) navC.navigate(R.id.action_taskListFragment_to_eventFragment);
-        else if (id == R.id.SettingsButton) navC.navigate(R.id.action_taskListFragment_to_settingsFragment);
+        if (id == R.id.HomeButton) {
+            navC.navigate(R.id.action_taskListFragment_to_homePageFragment);
+        } else if (id == R.id.CalendarButton) {
+            navC.navigate(R.id.action_taskListFragment_to_eventFragment);
+        } else if (id == R.id.SettingsButton) {
+            navC.navigate(R.id.action_taskListFragment_to_settingsFragment);
+        }
     }
 }

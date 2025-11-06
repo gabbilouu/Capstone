@@ -13,6 +13,14 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
+
+import java.util.HashMap;
+import java.util.Map;
+
 public class QuestionnaireFragment extends Fragment {
 
     private NavController navC;
@@ -23,6 +31,10 @@ public class QuestionnaireFragment extends Fragment {
     private static final String KEY_GOAL = "userGoal";
     private static final String ARG_FROM_WELCOME = "from_welcome";
     private boolean fromWelcome = false;
+
+    private FirebaseAuth auth;
+    private FirebaseUser user;
+    private FirebaseFirestore db;
 
     public QuestionnaireFragment() {}
 
@@ -41,6 +53,10 @@ public class QuestionnaireFragment extends Fragment {
             fromWelcome = getArguments().getBoolean(ARG_FROM_WELCOME, false);
         }
 
+        auth = FirebaseAuth.getInstance();
+        user = auth.getCurrentUser();
+        db = FirebaseFirestore.getInstance();
+
         option1 = view.findViewById(R.id.option1);
         option2 = view.findViewById(R.id.option2);
         option3 = view.findViewById(R.id.option3);
@@ -51,7 +67,7 @@ public class QuestionnaireFragment extends Fragment {
         SharedPreferences prefs = requireContext().getSharedPreferences(PREFS_NAME, 0);
         String savedGoal = prefs.getString(KEY_GOAL, null);
 
-        // Restore previously selected option
+        // Restore from local cache
         if (savedGoal != null) {
             Button[] options = {option1, option2, option3, option4, option5};
             for (Button btn : options) {
@@ -62,17 +78,48 @@ public class QuestionnaireFragment extends Fragment {
             }
         }
 
+        // Also try restoring from Firestore (in case user reinstalled or changed devices)
+        if (user != null) {
+            db.collection("users").document(user.getUid()).get()
+                    .addOnSuccessListener(snap -> {
+                        if (snap != null && snap.exists()) {
+                            String cloudGoal = snap.getString(KEY_GOAL);
+                            if (cloudGoal != null && !cloudGoal.trim().isEmpty()) {
+                                prefs.edit().putString(KEY_GOAL, cloudGoal).apply();
+                                Button[] options = {option1, option2, option3, option4, option5};
+                                for (Button btn : options) {
+                                    if (btn.getText().toString().equals(cloudGoal)) {
+                                        if (selectedOption != null) {
+                                            selectedOption.setBackgroundResource(R.drawable.btn_white_pill);
+                                        }
+                                        selectedOption = btn;
+                                        btn.setBackgroundResource(R.drawable.btn_white_pill_selected);
+                                    }
+                                }
+                            }
+                        }
+                    });
+        }
+
         View.OnClickListener optionClickListener = v -> {
             // Reset previous selection
             if (selectedOption != null) {
                 selectedOption.setBackgroundResource(R.drawable.btn_white_pill);
             }
-
             // Highlight new selection
             selectedOption = (Button) v;
             selectedOption.setBackgroundResource(R.drawable.btn_white_pill_selected);
 
-            prefs.edit().putString(KEY_GOAL, selectedOption.getText().toString()).apply();
+            String goal = selectedOption.getText().toString();
+            prefs.edit().putString(KEY_GOAL, goal).apply();
+
+            // Save immediately to Firestore (merge) so Settings can show it
+            if (user != null) {
+                Map<String, Object> data = new HashMap<>();
+                data.put(KEY_GOAL, goal);
+                db.collection("users").document(user.getUid())
+                        .set(data, SetOptions.merge());
+            }
         };
 
         option1.setOnClickListener(optionClickListener);
@@ -87,7 +134,15 @@ public class QuestionnaireFragment extends Fragment {
                 return;
             }
 
-            prefs.edit().putString(KEY_GOAL, selectedOption.getText().toString()).apply();
+            String goal = selectedOption.getText().toString();
+            prefs.edit().putString(KEY_GOAL, goal).apply();
+
+            if (user != null) {
+                Map<String, Object> data = new HashMap<>();
+                data.put(KEY_GOAL, goal);
+                db.collection("users").document(user.getUid())
+                        .set(data, SetOptions.merge());
+            }
 
             if (fromWelcome) {
                 navC.navigate(R.id.action_questionnaireFragment_to_thanksFragment);

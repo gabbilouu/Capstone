@@ -27,6 +27,7 @@
             android:textSize="48sp"
             android:textStyle="bold"
             android:textColor="@android:color/black"
+            android:background="@null"
             android:layout_marginBottom="8dp"
             android:gravity="center"
             android:fontFamily="@font/bumbbled"/>
@@ -40,6 +41,7 @@
             android:textSize="16sp"
             android:textStyle="bold"
             android:textColor="@android:color/black"
+            android:background="@null"
             android:gravity="center"
             android:layout_marginBottom="24dp"/>
 
