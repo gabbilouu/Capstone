@@ -27,18 +27,15 @@ public class GeneralSettingsFragment extends Fragment {
 
     private static final String KEY_DAILY_MOOD    = "daily_mood_enabled";
     private static final String KEY_WEEKLY_MOOD   = "weekly_mood_enabled";
-    private static final String KEY_AFFIRMATIONS  = "affirmations_enabled";
 
     // Unique work names
-    private static final String WTAG_DAILY_MOOD     = "wt_daily_mood";
-    private static final String WTAG_WEEKLY_MOOD    = "wt_weekly_mood";
-    private static final String WTAG_AFFIRMATIONS   = "wt_affirmations";
+    private static final String WTAG_DAILY_MOOD   = "wt_daily_mood";
+    private static final String WTAG_WEEKLY_MOOD  = "wt_weekly_mood";
 
     private SharedPreferences prefs;
 
     private SwitchMaterial swDailyMood;
     private SwitchMaterial swWeeklyMood;
-    private SwitchMaterial swAffirmations;
 
     // Prevent listener recursion when we programmatically flip switches
     private boolean suppressSwitchCallbacks = false;
@@ -68,12 +65,12 @@ public class GeneralSettingsFragment extends Fragment {
         }
 
         // Bind switches (ensure these IDs exist in fragment_general_settings.xml)
-        swDailyMood     = v.findViewById(R.id.switch_daily_mood);
-        swWeeklyMood    = v.findViewById(R.id.switch_weekly_mood);
-        swAffirmations  = v.findViewById(R.id.switch_affirmations);
+        swDailyMood  = v.findViewById(R.id.switch_daily_mood);
+        swWeeklyMood = v.findViewById(R.id.switch_weekly_mood);
 
         // --- Read persisted values
-        boolean daily  = prefs.getBoolean(KEY_DAILY_MOOD, false);
+        // Default: Daily ON, Weekly OFF
+        boolean daily  = prefs.getBoolean(KEY_DAILY_MOOD, true);
         boolean weekly = prefs.getBoolean(KEY_WEEKLY_MOOD, false);
 
         // Enforce "both off OR exactly one on" at startup.
@@ -85,9 +82,8 @@ public class GeneralSettingsFragment extends Fragment {
         }
 
         // Apply to UI (no listeners attached yet)
-        if (swDailyMood != null)     swDailyMood.setChecked(daily);
-        if (swWeeklyMood != null)    swWeeklyMood.setChecked(weekly);
-        if (swAffirmations != null)  swAffirmations.setChecked(prefs.getBoolean(KEY_AFFIRMATIONS, false));
+        if (swDailyMood != null)  swDailyMood.setChecked(daily);
+        if (swWeeklyMood != null) swWeeklyMood.setChecked(weekly);
 
         // Listeners
 
@@ -137,17 +133,15 @@ public class GeneralSettingsFragment extends Fragment {
             });
         }
 
-        if (swAffirmations != null) {
-            swAffirmations.setOnCheckedChangeListener((b, enabled) -> {
-                putBool(KEY_AFFIRMATIONS, enabled);
-                if (enabled) scheduleAffirmations(); else cancelWork(WTAG_AFFIRMATIONS);
-            });
-        }
-
         // Auto (re)schedule based on final states
-        if (swDailyMood != null)  { if (swDailyMood.isChecked())  scheduleDailyMood();  else cancelWork(WTAG_DAILY_MOOD); }
-        if (swWeeklyMood != null) { if (swWeeklyMood.isChecked()) scheduleWeeklyMood(); else cancelWork(WTAG_WEEKLY_MOOD); }
-        if (swAffirmations != null) { if (swAffirmations.isChecked()) scheduleAffirmations(); else cancelWork(WTAG_AFFIRMATIONS); }
+        if (swDailyMood != null)  {
+            if (swDailyMood.isChecked())  scheduleDailyMood();
+            else cancelWork(WTAG_DAILY_MOOD);
+        }
+        if (swWeeklyMood != null) {
+            if (swWeeklyMood.isChecked()) scheduleWeeklyMood();
+            else cancelWork(WTAG_WEEKLY_MOOD);
+        }
     }
 
     // ---------- Work scheduling ----------
@@ -179,21 +173,6 @@ public class GeneralSettingsFragment extends Fragment {
                 .build();
         WorkManager.getInstance(requireContext())
                 .enqueueUniquePeriodicWork(WTAG_WEEKLY_MOOD, ExistingPeriodicWorkPolicy.UPDATE, work);
-    }
-
-    private void scheduleAffirmations() {
-        long delay = nextDelayMillis(7, 30, -1); // daily 7:30 AM
-        PeriodicWorkRequest work = new PeriodicWorkRequest.Builder(SimpleReminderWorker.class, 24, TimeUnit.HOURS)
-                .setInitialDelay(delay, TimeUnit.MILLISECONDS)
-                .setInputData(new Data.Builder()
-                        .putString(SimpleReminderWorker.KEY_TITLE, "Daily Affirmation")
-                        .putString(SimpleReminderWorker.KEY_TEXT, "You’ve got this. One step at a time 🌱")
-                        .putString(SimpleReminderWorker.KEY_CHANNEL, ElevateApp.CH_AFFIRMATIONS)
-                        .putInt(SimpleReminderWorker.KEY_NOTIF_ID, 2003)
-                        .build())
-                .build();
-        WorkManager.getInstance(requireContext())
-                .enqueueUniquePeriodicWork(WTAG_AFFIRMATIONS, ExistingPeriodicWorkPolicy.UPDATE, work);
     }
 
     private void cancelWork(String uniqueName) {

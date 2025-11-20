@@ -88,7 +88,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Messages from your Plant"
+                android:text="Messages from your plant"
                 android:textSize="16sp" />
 
             <Switch
@@ -111,7 +111,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Daily Affirmations"
+                android:text="Daily affirmations"
                 android:textSize="16sp" />
 
             <Switch
@@ -134,7 +134,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Task Reminders"
+                android:text="Task reminders"
                 android:textSize="16sp" />
 
             <Switch
@@ -157,7 +157,7 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="Calendar Reminders"
+                android:text="Calendar reminders"
                 android:textSize="16sp" />
 
             <Switch
@@ -166,27 +166,7 @@
                 android:layout_height="wrap_content" />
         </LinearLayout>
 
-        <!-- Mood Report -->
-        <LinearLayout
-            android:id="@+id/row_mood"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:padding="12dp">
+        <!-- Mood report row removed -->
 
-            <TextView
-                android:id="@+id/label_mood"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Notify when mood report is ready"
-                android:textSize="16sp" />
-
-            <Switch
-                android:id="@+id/switch_mood"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
-        </LinearLayout>
     </LinearLayout>
 </LinearLayout>

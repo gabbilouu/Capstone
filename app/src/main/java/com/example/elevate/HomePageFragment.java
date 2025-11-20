@@ -14,6 +14,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.DrawableRes;
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
@@ -50,6 +51,13 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
     private static final int MAX_MOOD = 100;
     private static final int MAX_HYDRATION = 100;
 
+    // Level thresholds for plant evolution:
+    // Stage 1: levels 1–5
+    // Stage 2: levels 6–15 (5 levels gained from level 1)
+    // Stage 3: levels 16+ (another 10 levels)
+    private static final int LEVEL_STAGE_2 = 6;
+    private static final int LEVEL_STAGE_3 = 16;
+
     // ===== Local prefs keys =====
     private static final String PREFS = "home_state";
     private static final String KEY_LAST_RESET = "last_reset_ymd";
@@ -57,15 +65,37 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
     private static final String KEY_STREAK     = "streak";
     private static final String KEY_MOOD       = "mood";
     private static final String KEY_HYDRATION  = "hydration";
+
+    // Points = store currency
     private static final String KEY_POINTS     = "points_total";
+
+    // XP = used for EXP bar / level (separate from points)
+    private static final String KEY_XP         = "xp_total";
+
     private static final String KEY_TODAY_SNAPSHOT_DATE   = "today_snapshot_date";
     private static final String KEY_TODAY_COMPLETED_SNAP  = "today_completed_snapshot";
+
+    // Yesterday stats (for penalties)
     private static final String KEY_YEST_DUE   = "yesterday_due";
     private static final String KEY_YEST_DONE  = "yesterday_done";
     private static final String KEY_YEST_DATE  = "yesterday_date";
 
+    // Track the date when the daily “all goals done” bonus was last granted
+    private static final String KEY_DAILY_BONUS_DATE      = "daily_bonus_date";
+
+    // Daily goals persistence (per-day)
+    private static final String KEY_GOAL_OPEN_CAL_DATE    = "goal_open_calendar_date";
+    private static final String KEY_GOAL_TAP_PLANT_DATE   = "goal_tap_plant_date";
+
+    // Shop prefs (shared with ShopFragment)
+    private static final String SHOP_PREFS   = "shop_prefs";
+    private static final String KEY_EQ_PLANT = "eq_plant";
+    private static final String KEY_EQ_POT   = "eq_pot";
+    private static final String KEY_EQ_ROOM  = "eq_room";
+
     // ===== Firestore field names =====
     private static final String FS_POINTS     = "pointsTotal";
+    private static final String FS_XP         = "xpTotal";   // sync XP
     private static final String FS_HYDRATION  = "hydration";
     private static final String FS_MOOD       = "mood";
     private static final String FS_STREAK     = "streak";
@@ -83,22 +113,31 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
     private NavController navC;
 
     private TextView tvName;
+    private TextView tvLevel;     // level label
     private ProgressBar progressExp;
     private TextView tvStreak;
     private TextView tvPoints;
     private ProgressBar progressMood;
     private ProgressBar progressHydration;
     private ProgressBar progressDailyTasks;
-
     private TextView tvTasksCount;
     private TextView tvTaskBoardTitle;
 
     private ImageButton taskButton, calendarButton, settingsButton;
-
-    // Daily log-in check icon
     private ImageView imgDailyLoginCheck;
 
-    private SharedPreferences prefs;
+    // Goal views
+    private TextView tvGoal5Count, tvGoalFeatured, tvGoalCalendar, tvGoalPlant;
+    private ImageView ivGoal5Check, ivGoalFeaturedCheck, ivGoalCalendarCheck, ivGoalPlantCheck;
+
+    // Plant scene views
+    private ImageView imgCarpet, imgTable, imgPot, imgPlant, imgFace;
+
+    // Store area view
+    private View storeArea;
+
+    private SharedPreferences prefs;     // home_state
+    private SharedPreferences shopPrefs; // shop_prefs
     private SharedPreferences.OnSharedPreferenceChangeListener prefListener;
 
     private final SimpleDateFormat YMD = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
@@ -128,14 +167,39 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
         bindViews(v);
 
         prefs = requireContext().getSharedPreferences(PREFS, 0);
+        shopPrefs = requireContext().getSharedPreferences(SHOP_PREFS, 0);
+
         prefListener = (p, key) -> {
             if (KEY_POINTS.equals(key) || KEY_HYDRATION.equals(key) ||
-                    KEY_TODAY_COMPLETED_SNAP.equals(key) || KEY_TODAY_SNAPSHOT_DATE.equals(key)) {
+                    KEY_TODAY_COMPLETED_SNAP.equals(key) || KEY_TODAY_SNAPSHOT_DATE.equals(key) ||
+                    KEY_MOOD.equals(key)) {
                 refreshQuickFromPrefs();
+                applyEquippedCosmetics();
             }
         };
 
         wireBottomNav();
+
+        // Tap plant -> mark "Tap the plant" goal done
+        if (imgPlant != null) {
+            imgPlant.setOnClickListener(view1 -> {
+                markGoalTapPlantDone();
+                // Refresh goals immediately
+                loadTasksAndRender();
+            });
+        }
+
+        // Store area click → Shop
+        if (storeArea != null) {
+            storeArea.setOnClickListener(x -> {
+                if (navC == null) return;
+                try {
+                    navC.navigate(R.id.action_homePageFragment_to_shopFragment);
+                } catch (Exception e) {
+                    try { navC.navigate(R.id.shopFragment); } catch (Exception ignored) {}
+                }
+            });
+        }
 
         // Plant name: quick local default, + realtime listener + tap to rename
         if (tvName != null) {
@@ -152,7 +216,8 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
     }
 
     private void bindViews(View v) {
-        tvName = v.findViewById(R.id.tvName);
+        tvName  = v.findViewById(R.id.tvName);
+        tvLevel = v.findViewById(R.id.tvLevel);
 
         progressExp = v.findViewById(R.id.progressExp);
         tvStreak    = v.findViewById(R.id.tvStreak);
@@ -163,13 +228,34 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
         progressDailyTasks = v.findViewById(R.id.progressDailyTasks);
 
         tvTaskBoardTitle = v.findViewById(R.id.tvTaskBoardTitle);
-        tvTasksCount     = null; // Optional
+        tvTasksCount     = null; // not used now; title shows "Daily Goals"
 
         taskButton     = v.findViewById(R.id.TaskButton);
         calendarButton = v.findViewById(R.id.CalendarButton);
         settingsButton = v.findViewById(R.id.SettingsButton);
 
         imgDailyLoginCheck = v.findViewById(R.id.imgDailyLoginCheck);
+
+        // Goal rows
+        tvGoal5Count     = v.findViewById(R.id.tvGoal5Count);
+        tvGoalFeatured   = v.findViewById(R.id.tvGoalFeatured);
+        tvGoalCalendar   = v.findViewById(R.id.tvGoalCalendar);
+        tvGoalPlant      = v.findViewById(R.id.tvGoalPlant);
+
+        ivGoal5Check       = v.findViewById(R.id.ivGoal5Check);
+        ivGoalFeaturedCheck = v.findViewById(R.id.ivGoalFeaturedCheck);
+        ivGoalCalendarCheck = v.findViewById(R.id.ivGoalCalendarCheck);
+        ivGoalPlantCheck    = v.findViewById(R.id.ivGoalPlantCheck);
+
+        // Plant scene
+        imgCarpet = v.findViewById(R.id.imgCarpet);
+        imgTable  = v.findViewById(R.id.imgTable);
+        imgPot    = v.findViewById(R.id.imgPot);
+        imgPlant  = v.findViewById(R.id.imgPlant);
+        imgFace   = v.findViewById(R.id.imgFace);
+
+        // Store clickable area
+        storeArea = v.findViewById(R.id.storeArea);
     }
 
     private void wireBottomNav() {
@@ -199,12 +285,22 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
                 String  lastLogin = snap.getString(FS_LAST_LOGIN);
                 String  lastReset = snap.getString(FS_LAST_RESET);
 
+                // XP from Firestore
+                Integer xp        = safeInt(snap.getLong(FS_XP));
+
                 if (points != null)    ed.putInt(KEY_POINTS, points);
                 if (hydration != null) ed.putInt(KEY_HYDRATION, clamp0_100(hydration));
                 if (mood != null)      ed.putInt(KEY_MOOD, clamp0_100(mood));
                 if (streak != null)    ed.putInt(KEY_STREAK, Math.max(0, streak));
                 if (!TextUtils.isEmpty(lastLogin)) ed.putString(KEY_LAST_LOGIN, lastLogin);
                 if (!TextUtils.isEmpty(lastReset)) ed.putString(KEY_LAST_RESET, lastReset);
+
+                // XP: if present, use it; otherwise default to points for old users
+                if (xp != null) {
+                    ed.putInt(KEY_XP, xp);
+                } else if (points != null) {
+                    ed.putInt(KEY_XP, points);
+                }
 
                 ed.apply();
             }
@@ -223,6 +319,12 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
         if (streak != null)       data.put(FS_STREAK, Math.max(0, streak));
         if (lastLoginYMD != null) data.put(FS_LAST_LOGIN, lastLoginYMD);
         if (lastResetYMD != null) data.put(FS_LAST_RESET, lastResetYMD);
+
+        // Always sync XP from prefs (fallback to points if XP missing)
+        int xpToSave = getPrefs().getInt(KEY_XP,
+                getPrefs().getInt(KEY_POINTS, 0));
+        data.put(FS_XP, xpToSave);
+
         if (data.isEmpty()) return;
 
         userDoc().set(data, SetOptions.merge())
@@ -339,6 +441,8 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
             if (progressMood != null) progressMood.setProgress(getPrefs().getInt(KEY_MOOD, 80));
             if (progressHydration != null) progressHydration.setProgress(getPrefs().getInt(KEY_HYDRATION, 80));
 
+            applyEquippedCosmetics();
+
             if (loginAdvanced) {
                 saveCloudState(
                         null,
@@ -403,6 +507,8 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
             if (progressHydration != null) progressHydration.setProgress(hydration);
             updateDailyLoginCheck();
 
+            applyEquippedCosmetics();
+
             // Sync cloud state after penalties / date updates
             saveCloudState(
                     getPrefs().getInt(KEY_POINTS, 0),
@@ -431,6 +537,8 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
             if (progressHydration != null) progressHydration.setProgress(hydration);
             updateDailyLoginCheck();
 
+            applyEquippedCosmetics();
+
             // Sync anyway
             saveCloudState(
                     getPrefs().getInt(KEY_POINTS, 0),
@@ -456,6 +564,10 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
             int dueToday = 0;
             int completedToday = 0;
 
+            String firstDueTitle = null;
+            String featuredTaskTitle = null;
+            boolean featuredTaskCompleted = false;
+
             if (snap != null) {
                 for (DocumentSnapshot ds : snap.getDocuments()) {
                     Task t = ds.toObject(Task.class);
@@ -463,24 +575,47 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
 
                     if (isTaskDueOn(t, todayCal)) {
                         dueToday++;
-                        if (Boolean.TRUE.equals(t.isCompleted())) completedToday++;
+                        boolean done = Boolean.TRUE.equals(t.isCompleted());
+                        if (done) completedToday++;
+
+                        String title = t.getName();
+
+
+                        if (firstDueTitle == null && !TextUtils.isEmpty(title)) {
+                            firstDueTitle = title;
+                        }
+
+                        // Prefer a completed task as featured if possible
+                        if (done && TextUtils.isEmpty(featuredTaskTitle) && !TextUtils.isEmpty(title)) {
+                            featuredTaskTitle = title;
+                            featuredTaskCompleted = true;
+                        }
                     }
                 }
             }
 
-            // Daily task board
+            // If no completed due-today task found, fall back to first due task as featured
+            if (TextUtils.isEmpty(featuredTaskTitle) && !TextUtils.isEmpty(firstDueTitle)) {
+                featuredTaskTitle = firstDueTitle;
+                featuredTaskCompleted = false;
+            }
+
+            // Daily task board (still for tasks, but label is "Daily Goals")
             if (progressDailyTasks != null) {
-                progressDailyTasks.setMax(Math.max(1, dueToday));
-                progressDailyTasks.setProgress(completedToday);
+                // We'll override max/progress inside updateDailyGoals; here just basic
+                progressDailyTasks.setMax(100);
+                progressDailyTasks.setProgress(0);
             }
             if (tvTasksCount != null) {
                 tvTasksCount.setText(completedToday + "/" + Math.max(1, dueToday));
-            } else if (tvTaskBoardTitle != null) {
-                tvTaskBoardTitle.setText("Daily Task Board (" + completedToday + "/" + Math.max(1, dueToday) + ")");
             }
 
-            // Points & EXP (delta from previous snapshot)
+            // ===== Points & XP logic =====
             int points = getPrefs().getInt(KEY_POINTS, 0);
+
+            // XP is a separate counter (default to points if not yet set to preserve old progress)
+            int xp = getPrefs().getInt(KEY_XP, points);
+
             String snapDate = getPrefs().getString(KEY_TODAY_SNAPSHOT_DATE, null);
             int prevCompletedSnap = getPrefs().getInt(KEY_TODAY_COMPLETED_SNAP, 0);
             if (!TextUtils.equals(snapDate, today)) {
@@ -491,12 +626,16 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
             boolean hydrationChanged = false;
 
             if (deltaNewCompletions > 0) {
+                // Each newly completed task gives +1 point and +1 XP
                 points += deltaNewCompletions;
-                getPrefs().edit()
-                        .putInt(KEY_POINTS, points)
-                        .putString(KEY_TODAY_SNAPSHOT_DATE, today)
-                        .putInt(KEY_TODAY_COMPLETED_SNAP, completedToday)
-                        .apply();
+                xp += deltaNewCompletions;
+
+                SharedPreferences.Editor ed = getPrefs().edit();
+                ed.putInt(KEY_POINTS, points);
+                ed.putInt(KEY_XP, xp);
+                ed.putString(KEY_TODAY_SNAPSHOT_DATE, today);
+                ed.putInt(KEY_TODAY_COMPLETED_SNAP, completedToday);
+                ed.apply();
                 pointsChanged = true;
 
                 int hydration = clamp0_100(getPrefs().getInt(KEY_HYDRATION, 80)
@@ -506,25 +645,40 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
 
                 if (progressHydration != null) progressHydration.setProgress(hydration);
             } else {
+                // No new completions; just make sure snapshot date is up to date
                 if (!TextUtils.equals(snapDate, today)) {
                     getPrefs().edit()
                             .putString(KEY_TODAY_SNAPSHOT_DATE, today)
                             .putInt(KEY_TODAY_COMPLETED_SNAP, completedToday)
                             .apply();
                 }
-                if (progressHydration != null) progressHydration.setProgress(getPrefs().getInt(KEY_HYDRATION, 80));
+                if (progressHydration != null) {
+                    progressHydration.setProgress(getPrefs().getInt(KEY_HYDRATION, 80));
+                }
             }
 
+            // UI updates: points & EXP
             if (tvPoints != null) tvPoints.setText(String.valueOf(points));
 
-            LevelState ls = deriveLevelFromPoints(points);
+            // EXP bar uses XP only (bonus points don't increase XP)
+            LevelState ls = deriveLevelFromPoints(xp);
+            int userLevel = ls.level + 1;  // make it 1-based for display
+
             if (progressExp != null) {
                 progressExp.setMax(ls.threshold);
                 progressExp.setProgress(ls.expInLevel);
             }
+            if (tvLevel != null) {
+                tvLevel.setText("Lvl. " + userLevel);
+            }
 
             if (progressMood != null) progressMood.setProgress(getPrefs().getInt(KEY_MOOD, 80));
             if (tvStreak != null) tvStreak.setText(String.valueOf(getPrefs().getInt(KEY_STREAK, 0)));
+
+            applyEquippedCosmetics();
+
+            // Update daily goals UI (login, 5 tasks, featured, open calendar, tap plant)
+            updateDailyGoals(dueToday, completedToday, featuredTaskTitle, featuredTaskCompleted);
 
             // Sync cloud if points or hydration changed (mood/streak handled during reset/login)
             if (pointsChanged || hydrationChanged) {
@@ -546,24 +700,32 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
        ================== */
 
     private static class LevelState {
-        int level;
-        int expInLevel;
-        int threshold;
+        int level;       // 0-based internal
+        int expInLevel;  // XP progress inside current level
+        int threshold;   // XP needed for next level
     }
 
-    private LevelState deriveLevelFromPoints(int points) {
+    private LevelState deriveLevelFromPoints(int pointsForXp) {
         int n = 0;
         while (true) {
             int need = 5 * ((n + 1) * (n + 2)) / 2;
-            if (points < need) break;
+            if (pointsForXp < need) break;
             n++;
         }
         int completedForN = 5 * (n * (n + 1)) / 2;
         LevelState ls = new LevelState();
-        ls.level = n;
-        ls.expInLevel = points - completedForN;
+        ls.level = n;  // internal 0-based
+        ls.expInLevel = pointsForXp - completedForN;
         ls.threshold = 5 * (n + 1);
         return ls;
+    }
+
+    /** Returns the current 1-based level derived from XP stored in prefs. */
+    private int getCurrentUserLevel() {
+        int points = getPrefs().getInt(KEY_POINTS, 0);
+        int xp = getPrefs().getInt(KEY_XP, points);
+        LevelState ls = deriveLevelFromPoints(xp);
+        return ls.level + 1;
     }
 
     private boolean isYesterday(String ymdStr) {
@@ -589,15 +751,24 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
     private void refreshQuickFromPrefs() {
         if (tvPoints != null) {
             int points = prefs.getInt(KEY_POINTS, 0);
+            int xp = prefs.getInt(KEY_XP, points); // default XP = points if not set yet
             tvPoints.setText(String.valueOf(points));
-            LevelState ls = deriveLevelFromPoints(points);
+            LevelState ls = deriveLevelFromPoints(xp);
+            int userLevel = ls.level + 1;
+
             if (progressExp != null) {
                 progressExp.setMax(ls.threshold);
                 progressExp.setProgress(ls.expInLevel);
             }
+            if (tvLevel != null) {
+                tvLevel.setText("Lvl. " + userLevel);
+            }
         }
         if (progressHydration != null) {
             progressHydration.setProgress(prefs.getInt(KEY_HYDRATION, 80));
+        }
+        if (progressMood != null) {
+            progressMood.setProgress(prefs.getInt(KEY_MOOD, 80));
         }
     }
 
@@ -618,6 +789,177 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
     }
 
     /* ===========
+       Daily Goals logic
+       =========== */
+
+    private void updateDailyGoals(int dueToday, int completedToday,
+                                  String featuredTaskTitle, boolean featuredTaskCompleted) {
+        String today = YMD.format(new Date());
+        SharedPreferences p = getPrefs();
+
+        // Goal 1: Daily login
+        boolean loginDone = isTodayVal(p.getString(KEY_LAST_LOGIN, null));
+        setCheck(imgDailyLoginCheck, loginDone);
+
+        // Goal 2: Complete 5 tasks today
+        boolean goal5Done = completedToday >= 5;
+        if (tvGoal5Count != null) {
+            tvGoal5Count.setText(completedToday + "/5");
+        }
+        if (ivGoal5Check != null) {
+            setCheck(ivGoal5Check, goal5Done);
+        }
+
+        // Goal 3: Featured task (show some task title if available)
+        if (tvGoalFeatured != null) {
+            if (!TextUtils.isEmpty(featuredTaskTitle)) {
+                tvGoalFeatured.setText(featuredTaskTitle);
+            } else {
+                tvGoalFeatured.setText("Featured task");
+            }
+        }
+        boolean goalFeaturedDone = featuredTaskCompleted;
+        if (ivGoalFeaturedCheck != null) {
+            setCheck(ivGoalFeaturedCheck, goalFeaturedDone);
+        }
+
+        // Goal 4: Open Calendar (date-based)
+        boolean openCalDone = today.equals(p.getString(KEY_GOAL_OPEN_CAL_DATE, null));
+        if (ivGoalCalendarCheck != null) {
+            setCheck(ivGoalCalendarCheck, openCalDone);
+        }
+
+        // Goal 5: Tap the plant (date-based)
+        boolean tapPlantDone = today.equals(p.getString(KEY_GOAL_TAP_PLANT_DATE, null));
+        if (ivGoalPlantCheck != null) {
+            setCheck(ivGoalPlantCheck, tapPlantDone);
+        }
+
+        // Count completed goals
+        int goalsTotal = 5;
+        int goalsDoneCount = 0;
+        if (loginDone)        goalsDoneCount++;
+        if (goal5Done)        goalsDoneCount++;
+        if (goalFeaturedDone) goalsDoneCount++;
+        if (openCalDone)      goalsDoneCount++;
+        if (tapPlantDone)     goalsDoneCount++;
+
+        if (progressDailyTasks != null) {
+            progressDailyTasks.setMax(goalsTotal);
+            progressDailyTasks.setProgress(goalsDoneCount);
+        }
+
+        // Bonus +20 once per day if all daily goals completed
+        if (goalsDoneCount == goalsTotal) {
+            String lastBonusDate = p.getString(KEY_DAILY_BONUS_DATE, null);
+            if (!today.equals(lastBonusDate)) {
+                int points = p.getInt(KEY_POINTS, 0) + 20;
+                p.edit()
+                        .putInt(KEY_POINTS, points)
+                        .putString(KEY_DAILY_BONUS_DATE, today)
+                        .apply();
+                if (tvPoints != null) {
+                    tvPoints.setText(String.valueOf(points));
+                }
+                Toast.makeText(requireContext(),
+                        "All daily goals complete! +20 points 🌸",
+                        Toast.LENGTH_SHORT).show();
+
+                // Sync the new points to Firestore
+                saveCloudState(points, null, null, null, null, null);
+            }
+        }
+    }
+
+    private void markGoalOpenCalendarDone() {
+        String today = YMD.format(new Date());
+        getPrefs().edit().putString(KEY_GOAL_OPEN_CAL_DATE, today).apply();
+    }
+
+    private void markGoalTapPlantDone() {
+        String today = YMD.format(new Date());
+        getPrefs().edit().putString(KEY_GOAL_TAP_PLANT_DATE, today).apply();
+    }
+
+    /* ===========
+       Plant cosmetics & faces
+       =========== */
+
+    private void applyEquippedCosmetics() {
+        if (imgCarpet == null || imgPot == null || imgPlant == null || imgFace == null) return;
+        if (shopPrefs == null) {
+            shopPrefs = requireContext().getSharedPreferences(SHOP_PREFS, 0);
+        }
+
+        String eqPlant = shopPrefs.getString(KEY_EQ_PLANT, "plant_cactus");
+        String eqPot   = shopPrefs.getString(KEY_EQ_POT,   "pot_classic");
+        String eqRoom  = shopPrefs.getString(KEY_EQ_ROOM,  "room_green_carpet");
+
+        // Carpet (room)
+        if ("room_blue_carpet".equals(eqRoom)) {
+            imgCarpet.setImageResource(R.drawable.carpet_blue);
+        } else {
+            imgCarpet.setImageResource(R.drawable.carpet_green);
+        }
+
+        // Pot
+        if ("pot_rounded".equals(eqPot)) {
+            imgPot.setImageResource(R.drawable.pot_rounded);
+        } else {
+            imgPot.setImageResource(R.drawable.pot_classic);
+        }
+
+        int hydration = getPrefs().getInt(KEY_HYDRATION, 80);
+        int mood = getPrefs().getInt(KEY_MOOD, 80);
+
+        int userLevel = getCurrentUserLevel();
+
+        // Plant sprite chosen by equipped plant + level
+        imgPlant.setImageResource(resolvePlantDrawableForLevel(eqPlant, userLevel));
+
+        // Face sprite chosen by mood + hydration
+        imgFace.setImageResource(resolveFaceDrawable(mood, hydration));
+    }
+
+    /**
+     * Decide which plant drawable to use based on the equipped plant key and the user's level.
+     * - Cactus grows across 3 stages by level.
+     * - Succulent is a single-stage plant for now.
+     */
+    private int resolvePlantDrawableForLevel(String eqPlant, int userLevel) {
+        // Succulent: only one stage at the moment.
+        if ("plant_succulent".equals(eqPlant)) {
+            return R.drawable.succulent_stage_1;
+        }
+
+        // Default: cactus with level-based stages.
+        if (userLevel >= LEVEL_STAGE_3) {
+            return R.drawable.cactus_stage_3;
+        } else if (userLevel >= LEVEL_STAGE_2) {
+            return R.drawable.cactus_stage_2;
+        } else {
+            return R.drawable.cactus_stage_1;
+        }
+    }
+
+    private int resolveFaceDrawable(int mood, int hydration) {
+        // Simple rules combining mood + hydration into a face
+        if (mood >= 80 && hydration >= 60) {
+            return R.drawable.face_happy;
+        } else if (mood >= 60 && hydration >= 40) {
+            return R.drawable.face_default;
+        } else if (mood < 30 && hydration < 30) {
+            return R.drawable.face_angry;
+        } else if (mood < 40) {
+            return R.drawable.face_sad;
+        } else if (hydration < 40) {
+            return R.drawable.face_tired;
+        } else {
+            return R.drawable.face_upset;
+        }
+    }
+
+    /* ===========
        Clicks
        =========== */
     @Override
@@ -627,6 +969,8 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
         if (id == R.id.TaskButton) {
             navC.navigate(R.id.action_homePageFragment_to_taskListFragment);
         } else if (id == R.id.CalendarButton) {
+            // Mark "Open Calendar" goal done
+            markGoalOpenCalendarDone();
             navC.navigate(R.id.action_homePageFragment_to_eventFragment);
         } else if (id == R.id.SettingsButton) {
             navC.navigate(R.id.action_homePageFragment_to_settingsFragment);
@@ -641,6 +985,9 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
         }
         refreshQuickFromPrefs();
         updateDailyLoginCheck();
+        applyEquippedCosmetics();
+        // Recompute tasks & daily goals when coming back to this screen
+        loadTasksAndRender();
     }
 
     @Override
@@ -658,6 +1005,13 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
             plantNameReg.remove();
             plantNameReg = null;
         }
+    }
+
+    private void applySelectedPlant(@DrawableRes int plantResId) {
+        ImageView imgPlant = requireView().findViewById(R.id.imgPlant);
+        imgPlant.setImageResource(plantResId);
+        imgPlant.setBackground(null);      // just in case
+        imgPlant.setColorFilter(null);     // no tint overlays
     }
 
     /* =========================

@@ -1,5 +1,7 @@
 package com.example.elevate;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,9 +15,17 @@ import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+
 public class AssessmentFragment extends Fragment {
 
     private static final String GATE_KEY_ASSESSMENT = "assessment_done";
+
+    // General settings prefs + keys (must match GeneralSettingsFragment)
+    private static final String GS_PREFS        = "general_settings";
+    private static final String KEY_DAILY_MOOD  = "daily_mood_enabled";
+    private static final String KEY_WEEKLY_MOOD = "weekly_mood_enabled";
 
     private ImageView emojiVeryHappy, emojiHappy, emojiNeutral, emojiSad, emojiVerySad;
     private Button nextButton;
@@ -38,11 +48,11 @@ public class AssessmentFragment extends Fragment {
 
         // Initialize emoji views
         emojiVeryHappy = view.findViewById(R.id.emojiVeryHappy);
-        emojiHappy = view.findViewById(R.id.emojiHappy);
-        emojiNeutral = view.findViewById(R.id.emojiNeutral);
-        emojiSad = view.findViewById(R.id.emojiSad);
-        emojiVerySad = view.findViewById(R.id.emojiVerySad);
-        nextButton = view.findViewById(R.id.nextButton);
+        emojiHappy     = view.findViewById(R.id.emojiHappy);
+        emojiNeutral   = view.findViewById(R.id.emojiNeutral);
+        emojiSad       = view.findViewById(R.id.emojiSad);
+        emojiVerySad   = view.findViewById(R.id.emojiVerySad);
+        nextButton     = view.findViewById(R.id.nextButton);
 
         // Emoji click listeners
         emojiVeryHappy.setOnClickListener(v -> selectMood(0));
@@ -56,8 +66,28 @@ public class AssessmentFragment extends Fragment {
             if (selectedMood == -1) {
                 Toast.makeText(requireContext(), "Please select a mood first.", Toast.LENGTH_SHORT).show();
             } else {
-                // ✅ Mark assessment as done for today BEFORE navigating
-                DailyGate.markDoneToday(requireContext(), GATE_KEY_ASSESSMENT);
+                Context ctx = requireContext();
+
+                // Read current mood logging mode
+                SharedPreferences gs =
+                        ctx.getSharedPreferences(GS_PREFS, Context.MODE_PRIVATE);
+                boolean weekly = gs.getBoolean(KEY_WEEKLY_MOOD, false);
+                boolean daily  = gs.getBoolean(KEY_DAILY_MOOD, true);
+
+                // Build a user-specific gate key so multiple accounts on one device don't collide.
+                String gateKey = GATE_KEY_ASSESSMENT;
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+                if (user != null) {
+                    gateKey = gateKey + "_" + user.getUid();
+                }
+
+                if (weekly && !daily) {
+                    // Weekly mode: mark gate for THIS WEEK
+                    DailyGate.markDoneThisWeek(ctx, gateKey);
+                } else {
+                    // Default / daily: mark gate for TODAY
+                    DailyGate.markDoneToday(ctx, gateKey);
+                }
 
                 // Optional: prevent double taps
                 nextButton.setEnabled(false);

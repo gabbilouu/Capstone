@@ -56,7 +56,7 @@ public class NotificationsManager {
                     "Elevate Notifications",
                     NotificationManager.IMPORTANCE_DEFAULT
             );
-            channel.setDescription("Notifications for daily/weekly mood tracking");
+            channel.setDescription("Notifications for Elevate reminders");
             NotificationManager notificationManager =
                     context.getSystemService(NotificationManager.class);
             if (notificationManager != null) {
@@ -78,8 +78,8 @@ public class NotificationsManager {
             Context context = getApplicationContext();
             NotificationCompat.Builder builder = new NotificationCompat.Builder(context, CHANNEL_ID)
                     .setSmallIcon(android.R.drawable.ic_dialog_info)
-                    .setContentTitle("Elevate")
-                    .setContentText("Check in on your mood today!")
+                    .setContentTitle("Elevate reminder")
+                    .setContentText("Take a moment to check in on your mood and tasks in Elevate 🌱")
                     .setPriority(NotificationCompat.PRIORITY_DEFAULT);
 
             NotificationManager notificationManager =

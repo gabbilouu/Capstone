@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Track (background) -->
+    <item android:id="@android:id/background">
+        <shape android:shape="rectangle">
+            <corners android:radius="50dp" />
+            <!-- NEW background color -->
+            <solid android:color="#E5CFAF" />
+        </shape>
+    </item>
+
+    <!-- Progress (filled part) -->
+    <item android:id="@android:id/progress">
+        <clip>
+            <shape android:shape="rectangle">
+                <corners android:radius="50dp" />
+                <!-- Mood fill color -->
+                <solid android:color="#EBBE6A" />
+            </shape>
+        </clip>
+    </item>
+
+</layer-list>

@@ -12,14 +12,36 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
+import androidx.core.content.ContextCompat;
 
+import com.google.firebase.ai.type.GenerativeBackend;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 
+// Firebase AI Logic SDK
+import com.google.firebase.ai.FirebaseAI;
+import com.google.firebase.ai.GenerativeModel;
+import com.google.firebase.ai.java.GenerativeModelFutures;
+import com.google.firebase.ai.type.Content;
+import com.google.firebase.ai.type.GenerateContentResponse;
+
+// Guava for ListenableFuture callbacks
+import com.google.common.util.concurrent.Futures;
+import com.google.common.util.concurrent.FutureCallback;
+import com.google.common.util.concurrent.ListenableFuture;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
+import java.util.concurrent.Executor;
 
 public class QuestionnaireFragment extends Fragment {
 
@@ -29,12 +51,18 @@ public class QuestionnaireFragment extends Fragment {
 
     private static final String PREFS_NAME = "UserChoicesPrefs";
     private static final String KEY_GOAL = "userGoal";
+    private static final String KEY_AI_TASKS_CREATED = "ai_tasks_created";
     private static final String ARG_FROM_WELCOME = "from_welcome";
+
     private boolean fromWelcome = false;
 
     private FirebaseAuth auth;
     private FirebaseUser user;
     private FirebaseFirestore db;
+
+    // Firebase AI model + executor for callbacks
+    private GenerativeModelFutures aiModel;
+    private Executor mainExecutor;
 
     public QuestionnaireFragment() {}
 
@@ -56,6 +84,12 @@ public class QuestionnaireFragment extends Fragment {
         auth = FirebaseAuth.getInstance();
         user = auth.getCurrentUser();
         db = FirebaseFirestore.getInstance();
+
+        // Executor for running callbacks on main thread
+        mainExecutor = ContextCompat.getMainExecutor(requireContext());
+
+        // Init Firebase AI Gemini model
+        initAiModel();
 
         option1 = view.findViewById(R.id.option1);
         option2 = view.findViewById(R.id.option2);
@@ -144,10 +178,13 @@ public class QuestionnaireFragment extends Fragment {
                         .set(data, SetOptions.merge());
             }
 
-            if (fromWelcome) {
-                navC.navigate(R.id.action_questionnaireFragment_to_thanksFragment);
+            // Only auto-create starter tasks the first time
+            if (!prefs.getBoolean(KEY_AI_TASKS_CREATED, false)) {
+                nextButton.setEnabled(false);
+                nextButton.setText("Creating your plan…");
+                generateTasksForGoal(goal, prefs);
             } else {
-                navC.navigate(R.id.action_questionnaireFragment_to_settingsFragment);
+                navigateAfterQuestionnaire();
             }
         });
     }
@@ -158,5 +195,151 @@ public class QuestionnaireFragment extends Fragment {
         args.putBoolean(ARG_FROM_WELCOME, fromWelcome);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    // -------------------- Firebase AI helpers --------------------
+
+    private void initAiModel() {
+        if (aiModel != null) return;
+
+        // Initialize the Gemini Developer API backend service (Firebase AI Logic)
+        // and create a GenerativeModel instance.
+        GenerativeModel ai = FirebaseAI.getInstance(GenerativeBackend.googleAI())
+                .generativeModel("gemini-2.5-flash");
+
+        // Java compatibility layer (ListenableFuture API)
+        aiModel = GenerativeModelFutures.from(ai);
+    }
+
+    private void generateTasksForGoal(String goal, SharedPreferences prefs) {
+        if (aiModel == null || user == null) {
+            // Fallback: if AI not available, just continue
+            nextButton.setEnabled(true);
+            nextButton.setText("Next");
+            navigateAfterQuestionnaire();
+            return;
+        }
+
+        String promptText =
+                "You are helping a user in a self-improvement & mental health app called Elevate.\n" +
+                        "The user's main goal is:\n\"" + goal + "\"\n\n" +
+                        "Create EXACTLY 5 small, concrete, healthy tasks that support this goal.\n" +
+                        "Each task should be realistic for a busy college student.\n\n" +
+                        "Return ONLY valid JSON (no markdown, no backticks, no explanation text).\n" +
+                        "Format:\n" +
+                        "[\n" +
+                        "  {\n" +
+                        "    \"name\": \"Short task name\",\n" +
+                        "    \"emoji\": \"emoji character like 🧘 or 😌\",\n" +
+                        "    \"repeatType\": \"Daily\" or \"Weekly\",\n" +
+                        "    \"taskType\": \"short category like Sleep, Exercise, Stress, Mood\",\n" +
+                        "    \"notes\": \"1–2 short sentences describing what to do\"\n" +
+                        "  },\n" +
+                        "  ...(total 5 objects)\n" +
+                        "]";
+
+        Content prompt = new Content.Builder()
+                .addText(promptText)
+                .build();
+
+        ListenableFuture<GenerateContentResponse> future =
+                aiModel.generateContent(prompt);
+
+        Futures.addCallback(future, new FutureCallback<GenerateContentResponse>() {
+            @Override
+            public void onSuccess(GenerateContentResponse result) {
+                String text = result.getText();
+                boolean ok = parseAndSaveTasksFromJson(text);
+
+                if (ok) {
+                    prefs.edit().putBoolean(KEY_AI_TASKS_CREATED, true).apply();
+                }
+
+                nextButton.setEnabled(true);
+                nextButton.setText("Next");
+                navigateAfterQuestionnaire();
+            }
+
+            @Override
+            public void onFailure(@NonNull Throwable t) {
+                t.printStackTrace();
+                Toast.makeText(requireContext(),
+                        "Couldn't auto-create starter tasks, but you can add your own later.",
+                        Toast.LENGTH_LONG).show();
+
+                nextButton.setEnabled(true);
+                nextButton.setText("Next");
+                navigateAfterQuestionnaire();
+            }
+        }, mainExecutor);
+    }
+
+    private boolean parseAndSaveTasksFromJson(String jsonText) {
+        if (user == null || jsonText == null) return false;
+
+        try {
+            // Try to isolate JSON array if extra text slips through
+            String trimmed = jsonText.trim();
+            int firstBracket = trimmed.indexOf('[');
+            int lastBracket = trimmed.lastIndexOf(']');
+            if (firstBracket != -1 && lastBracket != -1 && lastBracket > firstBracket) {
+                trimmed = trimmed.substring(firstBracket, lastBracket + 1);
+            }
+
+            JSONArray array = new JSONArray(trimmed);
+            if (array.length() == 0) return false;
+
+            // Basic "today" defaults for dates/times
+            Calendar now = Calendar.getInstance();
+            SimpleDateFormat dateFormat =
+                    new SimpleDateFormat("MMM d, yyyy", Locale.getDefault());
+            SimpleDateFormat timeFormat =
+                    new SimpleDateFormat("hh:mma", Locale.getDefault());
+            String todayDate = dateFormat.format(now.getTime());
+            String nowTime = timeFormat.format(now.getTime());
+
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject obj = array.getJSONObject(i);
+
+                String name = obj.optString("name", "").trim();
+                if (name.isEmpty()) continue;
+
+                String emoji = obj.optString("emoji", "");
+                String repeatType = obj.optString("repeatType", "Daily");
+                String taskType = obj.optString("taskType", "General");
+                String notes = obj.optString("notes", "");
+
+                Task task = new Task();
+                task.setName(name);
+                task.setEmoji(emoji);
+                task.setRepeatType(repeatType);
+                task.setTaskType(taskType);
+                task.setNotes(notes);
+                task.setUserId(user.getUid());
+                task.setCompleted(false);
+
+                // Simple defaults; adjust if your TaskListFragment expects something else
+                task.setStartDate(todayDate);
+                task.setStartTime(nowTime);
+                task.setEndDate(null);
+                task.setEndTime(null);
+
+                // Save to Firestore. Change path if you use users/{uid}/tasks instead.
+                db.collection("tasks").add(task);
+            }
+
+            return true;
+        } catch (JSONException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    private void navigateAfterQuestionnaire() {
+        if (fromWelcome) {
+            navC.navigate(R.id.action_questionnaireFragment_to_thanksFragment);
+        } else {
+            navC.navigate(R.id.action_questionnaireFragment_to_settingsFragment);
+        }
     }
 }

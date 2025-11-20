@@ -34,14 +34,14 @@ public class NotificationsFragment extends Fragment {
     private static final String KEY_AFFIRMATIONS   = "notif_affirmations";
     private static final String KEY_TASKS          = "notif_tasks";
     private static final String KEY_CALENDAR       = "notif_calendar";
-    private static final String KEY_MOOD           = "notif_mood";
+    // (Mood report per-switch removed from this screen)
 
-    // unique work names (match your GeneralSettings ones where applicable!)
+    // unique work names (match your other usage where applicable!)
     private static final String WTAG_AFFIRMATIONS   = "wt_affirmations";
     private static final String WTAG_PLANT_MESSAGES = "wt_plant_messages";
     private static final String WTAG_TASKS          = "wt_tasks_daily";
     private static final String WTAG_CALENDAR       = "wt_calendar_daily";
-    private static final String WTAG_MOOD_WEEKLY    = "wt_weekly_mood";
+    private static final String WTAG_MOOD_WEEKLY    = "wt_weekly_mood"; // still canceled when master off
 
     // channels (make sure these exist in ElevateApp)
     private static final String CH_PLANT_MESSAGES = "plant_messages";
@@ -53,7 +53,7 @@ public class NotificationsFragment extends Fragment {
     private SharedPreferences prefs;
 
     private LinearLayout optionsContainer;
-    private Switch swMaster, swMsgs, swAffirm, swTasks, swCalendar, swMood;
+    private Switch swMaster, swMsgs, swAffirm, swTasks, swCalendar;
 
     public NotificationsFragment() {}
 
@@ -79,7 +79,7 @@ public class NotificationsFragment extends Fragment {
         swAffirm   = v.findViewById(R.id.switch_affirmations);
         swTasks    = v.findViewById(R.id.switch_tasks);
         swCalendar = v.findViewById(R.id.switch_calendar);
-        swMood     = v.findViewById(R.id.switch_mood);
+        // swMood removed
 
         // Back to Settings
         if (back != null) {
@@ -105,7 +105,7 @@ public class NotificationsFragment extends Fragment {
         swAffirm.setChecked(prefs.getBoolean(KEY_AFFIRMATIONS, false));
         swTasks.setChecked(prefs.getBoolean(KEY_TASKS, false));
         swCalendar.setChecked(prefs.getBoolean(KEY_CALENDAR, false));
-        swMood.setChecked(prefs.getBoolean(KEY_MOOD, false));
+        // no mood key here anymore
 
         // listeners
         swMaster.setOnCheckedChangeListener((b, enabled) -> {
@@ -126,47 +126,66 @@ public class NotificationsFragment extends Fragment {
 
         swMsgs.setOnCheckedChangeListener((b, on) -> {
             prefs.edit().putBoolean(KEY_MSGS, on).apply();
-            if (on) scheduleDaily(WTAG_PLANT_MESSAGES, 12, 0,
-                    "A note from your plant",
-                    "Psst 🌿 remember to check in on your tasks!",
-                    CH_PLANT_MESSAGES, 3001);
-            else cancel(WTAG_PLANT_MESSAGES);
+            if (on) {
+                scheduleDaily(
+                        WTAG_PLANT_MESSAGES,
+                        12, 0,
+                        "A note from your plant 🌿",
+                        "Your plant is checking in—open Elevate to see how you’re doing today.",
+                        CH_PLANT_MESSAGES,
+                        3001
+                );
+            } else {
+                cancel(WTAG_PLANT_MESSAGES);
+            }
         });
 
         swAffirm.setOnCheckedChangeListener((b, on) -> {
             prefs.edit().putBoolean(KEY_AFFIRMATIONS, on).apply();
-            if (on) scheduleDaily(WTAG_AFFIRMATIONS, 7, 30,
-                    "Daily Affirmation",
-                    "You’ve got this. One step at a time 🌱",
-                    CH_AFFIRMATIONS, 2003);
-            else cancel(WTAG_AFFIRMATIONS);
+            if (on) {
+                scheduleDaily(
+                        WTAG_AFFIRMATIONS,
+                        7, 30,
+                        "Daily affirmation ✨",
+                        "Here’s a tiny boost for today: you’re growing, even on the slow days.",
+                        CH_AFFIRMATIONS,
+                        2003
+                );
+            } else {
+                cancel(WTAG_AFFIRMATIONS);
+            }
         });
 
         swTasks.setOnCheckedChangeListener((b, on) -> {
             prefs.edit().putBoolean(KEY_TASKS, on).apply();
-            if (on) scheduleDaily(WTAG_TASKS, 18, 0,
-                    "Task Reminder",
-                    "Quick sweep: any tasks to wrap up today?",
-                    CH_TASKS, 3002);
-            else cancel(WTAG_TASKS);
+            if (on) {
+                scheduleDaily(
+                        WTAG_TASKS,
+                        18, 0,
+                        "Today’s tasks",
+                        "Take 30 seconds to review your Elevate tasks and celebrate one small win.",
+                        CH_TASKS,
+                        3002
+                );
+            } else {
+                cancel(WTAG_TASKS);
+            }
         });
 
         swCalendar.setOnCheckedChangeListener((b, on) -> {
             prefs.edit().putBoolean(KEY_CALENDAR, on).apply();
-            if (on) scheduleDaily(WTAG_CALENDAR, 8, 0,
-                    "Today's Calendar",
-                    "Review your events for today 🌤️",
-                    CH_CALENDAR, 3003);
-            else cancel(WTAG_CALENDAR);
-        });
-
-        swMood.setOnCheckedChangeListener((b, on) -> {
-            prefs.edit().putBoolean(KEY_MOOD, on).apply();
-            if (on) scheduleWeekly(WTAG_MOOD_WEEKLY, Calendar.MONDAY, 9, 0,
-                    "Weekly Mood Report",
-                    "Your mood report is ready to review.",
-                    CH_WEEKLY_MOOD, 2002);
-            else cancel(WTAG_MOOD_WEEKLY);
+            if (on) {
+                scheduleDaily(
+                        WTAG_CALENDAR,
+                        8, 0,
+                        "Today’s schedule",
+                        "Peek at your Elevate calendar so you’re ready for the day.",
+                        CH_CALENDAR,
+                        3003
+                );
+            } else {
+                cancel(WTAG_CALENDAR);
+            }
         });
     }
 
@@ -234,7 +253,7 @@ public class NotificationsFragment extends Fragment {
         cancel(WTAG_AFFIRMATIONS);
         cancel(WTAG_TASKS);
         cancel(WTAG_CALENDAR);
-        cancel(WTAG_MOOD_WEEKLY);
+        cancel(WTAG_MOOD_WEEKLY); // also kills weekly mood reminders if you use them elsewhere
     }
 
     private void setChildSwitches(boolean on) {
@@ -242,7 +261,7 @@ public class NotificationsFragment extends Fragment {
         swAffirm.setChecked(on);
         swTasks.setChecked(on);
         swCalendar.setChecked(on);
-        swMood.setChecked(on);
+        // mood switch removed
     }
 
     private long nextDelayMillis(int hour24, int min, int dayOfWeekOrMinus1) {

@@ -38,6 +38,9 @@ import com.github.mikephil.charting.data.RadarData;
 import com.github.mikephil.charting.data.RadarDataSet;
 import com.github.mikephil.charting.data.RadarEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.auth.EmailAuthProvider;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthRecentLoginRequiredException;
 import com.google.firebase.auth.FirebaseUser;
@@ -75,7 +78,7 @@ public class SettingsFragment extends Fragment {
     private static final String KEY_USER_PHOTO_URI = "user_photo_uri";
     private static final String KEY_USER_BIRTHDAY = "user_birthday";
 
-    // Goal prefs (local) — unify name with questionnaire
+    // Goal prefs (local)
     private static final String PREFS_GOAL = "UserChoicesPrefs";
     private static final String KEY_GOAL = "userGoal";
 
@@ -196,11 +199,12 @@ public class SettingsFragment extends Fragment {
         Button notificationsButton = view.findViewById(R.id.notificationsButton);
         Button faqButton = view.findViewById(R.id.faqButton);
         Button contactUsButton = view.findViewById(R.id.contactUsButton);
+        Button changePasswordButton = view.findViewById(R.id.changePasswordButton);
         Button logoutButton = view.findViewById(R.id.logoutButton);
         Button deleteAccountButton = view.findViewById(R.id.deleteAccountButton);
+        Button moodReportButton = view.findViewById(R.id.moodReportButton);
 
         myGoalsButton.setOnClickListener(v -> {
-            // Always show the freshest value we cached (we also refresh on screen open)
             SharedPreferences goalPrefs = requireContext().getSharedPreferences(PREFS_GOAL, 0);
             String currentGoal = goalPrefs.getString(KEY_GOAL, "No goal set");
 
@@ -215,6 +219,9 @@ public class SettingsFragment extends Fragment {
                     .setNegativeButton("Close", null)
                     .show();
         });
+        moodReportButton.setOnClickListener(v ->
+                navC.navigate(R.id.action_settingsFragment_to_moodReportFragment)
+        );
 
         generalButton.setOnClickListener(v -> navC.navigate(R.id.action_settingsFragment_to_generalSettingsFragment));
         aboutButton.setOnClickListener(v -> navC.navigate(R.id.action_settingsFragment_to_aboutFragment));
@@ -231,6 +238,9 @@ public class SettingsFragment extends Fragment {
                 Toast.makeText(requireContext(), "No email app found on this device.", Toast.LENGTH_SHORT).show();
             }
         });
+
+        // NEW: Change Password click
+        changePasswordButton.setOnClickListener(v -> showChangePasswordDialog());
 
         logoutButton.setOnClickListener(v -> {
             new AlertDialog.Builder(requireContext())
@@ -307,6 +317,126 @@ public class SettingsFragment extends Fragment {
         doc.set(data, SetOptions.merge())
                 .addOnFailureListener(e -> Toast.makeText(requireContext(),
                         "Couldn't update cloud profile: " + e.getMessage(), Toast.LENGTH_SHORT).show());
+    }
+
+    /* ---------------- NEW: Change Password dialog ---------------- */
+
+    private void showChangePasswordDialog() {
+        if (firebaseUser == null || firebaseUser.getEmail() == null) {
+            Toast.makeText(requireContext(), "No signed-in user.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        View dialogView = LayoutInflater.from(requireContext())
+                .inflate(R.layout.dialog_change_password, null, false);
+
+        TextInputLayout tilCurrent = dialogView.findViewById(R.id.tilCurrentPassword);
+        TextInputLayout tilNew     = dialogView.findViewById(R.id.tilNewPassword);
+        TextInputLayout tilConfirm = dialogView.findViewById(R.id.tilConfirmPassword);
+
+        TextInputEditText etCurrent = dialogView.findViewById(R.id.etCurrentPassword);
+        TextInputEditText etNew     = dialogView.findViewById(R.id.etNewPassword);
+        TextInputEditText etConfirm = dialogView.findViewById(R.id.etConfirmPassword);
+
+        // Set up eye toggles using your icons
+        setupPasswordToggle(tilCurrent, etCurrent);
+        setupPasswordToggle(tilNew, etNew);
+        setupPasswordToggle(tilConfirm, etConfirm);
+
+        AlertDialog dlg = new AlertDialog.Builder(requireContext())
+                .setTitle("Change password")
+                .setView(dialogView)
+                .setNegativeButton("Cancel", null)
+                .setPositiveButton("Save", null) // we override later
+                .create();
+
+        dlg.setOnShowListener(d -> {
+            Button saveBtn = dlg.getButton(AlertDialog.BUTTON_POSITIVE);
+            saveBtn.setOnClickListener(v -> {
+                String currentPass = etCurrent.getText() != null ? etCurrent.getText().toString() : "";
+                String newPass     = etNew.getText() != null ? etNew.getText().toString() : "";
+                String confirmPass = etConfirm.getText() != null ? etConfirm.getText().toString() : "";
+
+                boolean hasError = false;
+
+                if (currentPass.isEmpty()) {
+                    tilCurrent.setError("Required");
+                    hasError = true;
+                } else {
+                    tilCurrent.setError(null);
+                }
+
+                if (newPass.length() < 6) {
+                    tilNew.setError("At least 6 characters");
+                    hasError = true;
+                } else {
+                    tilNew.setError(null);
+                }
+
+                if (!newPass.equals(confirmPass)) {
+                    tilConfirm.setError("Passwords do not match");
+                    hasError = true;
+                } else {
+                    tilConfirm.setError(null);
+                }
+
+                if (hasError) return;
+
+                String email = firebaseUser.getEmail();
+                if (email == null || email.isEmpty()) {
+                    Toast.makeText(requireContext(),
+                            "Missing email for account.", Toast.LENGTH_LONG).show();
+                    return;
+                }
+
+                // Re-authenticate with current password first
+                var credential = EmailAuthProvider.getCredential(email, currentPass);
+                firebaseUser.reauthenticate(credential)
+                        .addOnSuccessListener(unused -> {
+                            firebaseUser.updatePassword(newPass)
+                                    .addOnSuccessListener(v1 -> {
+                                        Toast.makeText(requireContext(),
+                                                "Password updated.", Toast.LENGTH_LONG).show();
+                                        dlg.dismiss();
+                                    })
+                                    .addOnFailureListener(e -> Toast.makeText(requireContext(),
+                                            "Couldn't update password: " + e.getMessage(),
+                                            Toast.LENGTH_LONG).show());
+                        })
+                        .addOnFailureListener(e -> {
+                            tilCurrent.setError("Incorrect password");
+                        });
+            });
+        });
+
+        dlg.show();
+    }
+
+    /** Helper: toggles show/hide password with ic_visibility/ic_visibility_off */
+    private void setupPasswordToggle(TextInputLayout til, TextInputEditText et) {
+        if (til == null || et == null) return;
+
+        til.setEndIconMode(TextInputLayout.END_ICON_CUSTOM);
+        til.setEndIconDrawable(R.drawable.ic_visibility_off);
+        til.setTag(Boolean.FALSE); // FALSE = currently hidden
+
+        til.setEndIconOnClickListener(v -> {
+            boolean showing = Boolean.TRUE.equals(til.getTag());
+            int cursor = et.getText() != null ? et.getText().length() : 0;
+
+            if (showing) {
+                // Switch to hidden
+                et.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+                til.setEndIconDrawable(R.drawable.ic_visibility_off);
+                til.setTag(Boolean.FALSE);
+            } else {
+                // Switch to visible
+                et.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD);
+                til.setEndIconDrawable(R.drawable.ic_visibility);
+                til.setTag(Boolean.TRUE);
+            }
+            et.setSelection(cursor);
+        });
     }
 
     /* ---------------- Delete Account flow ---------------- */

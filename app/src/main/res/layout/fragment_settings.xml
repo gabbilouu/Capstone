@@ -308,6 +308,7 @@
                     android:text="FAQ"
                     android:textAllCaps="false"
                     android:textColor="@android:color/black"
+                    android:visibility="gone"
                     app:backgroundTint="@android:color/white"
                     app:cornerRadius="14dp"
                     app:rippleColor="#1F000000" />
@@ -331,7 +332,27 @@
                     app:cornerRadius="14dp"
                     app:rippleColor="#1F000000" />
 
-                <!-- divider -->
+                <!-- divider (between Contact Us and Change Password) -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:layout_marginVertical="8dp"
+                    android:background="#E0E0E0" />
+
+                <!-- NEW: Change Password -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/changePasswordButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="48dp"
+                    android:gravity="center"
+                    android:text="Change Password"
+                    android:textAllCaps="false"
+                    android:textColor="@android:color/black"
+                    app:backgroundTint="@android:color/white"
+                    app:cornerRadius="14dp"
+                    app:rippleColor="#1F000000" />
+
+                <!-- divider (between Change Password and Log Out) -->
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
@@ -352,6 +373,7 @@
                     app:rippleColor="#1F000000"
                     app:strokeColor="@null"
                     app:strokeWidth="0dp" />
+
                 <!-- divider -->
                 <View
                     android:layout_width="match_parent"

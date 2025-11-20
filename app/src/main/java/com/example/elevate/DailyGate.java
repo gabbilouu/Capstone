@@ -11,6 +11,7 @@ public final class DailyGate {
 
     private DailyGate() {}
 
+    // ===== Daily helpers =====
     private static String todayKey() {
         Calendar c = Calendar.getInstance(); // device local time
         return String.format(Locale.US, "%04d-%02d-%02d",
@@ -26,21 +27,45 @@ public final class DailyGate {
         return todayKey().equals(stored);
     }
 
-    /** Mark the given gate as done today. Call this when the user finishes the assessment. */
+    /** Mark the given gate as done today. */
     public static void markDoneToday(Context ctx, String gateKey) {
         SharedPreferences p = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         p.edit().putString(gateKey, todayKey()).apply();
     }
 
-    /** Clear the stored state for a specific gate (so isDoneToday() will return false). */
+    /** Clear the stored state for a specific gate (daily only). */
     public static void clearKey(Context ctx, String gateKey) {
         SharedPreferences p = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         p.edit().remove(gateKey).apply();
+        p.edit().remove(gateKey + "_week").apply(); // also clear weekly key if you want
     }
 
-    /** (Optional) Clear all gates. */
+    /** Clear all gates. */
     public static void clearAll(Context ctx) {
         SharedPreferences p = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
         p.edit().clear().apply();
+    }
+
+    // ===== Weekly helpers =====
+
+    private static String thisWeekKey() {
+        Calendar c = Calendar.getInstance();
+        int year = c.get(Calendar.YEAR);
+        int week = c.get(Calendar.WEEK_OF_YEAR);
+        // Example: "2025-W03"
+        return String.format(Locale.US, "%04d-W%02d", year, week);
+    }
+
+    /** Returns true if the given gate is already marked done for this week. */
+    public static boolean isDoneThisWeek(Context ctx, String gateKey) {
+        SharedPreferences p = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        String stored = p.getString(gateKey + "_week", null);
+        return thisWeekKey().equals(stored);
+    }
+
+    /** Mark the given gate as done for this week. */
+    public static void markDoneThisWeek(Context ctx, String gateKey) {
+        SharedPreferences p = ctx.getSharedPreferences(PREFS, Context.MODE_PRIVATE);
+        p.edit().putString(gateKey + "_week", thisWeekKey()).apply();
     }
 }

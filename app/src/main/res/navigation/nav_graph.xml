@@ -37,6 +37,9 @@
         <action
             android:id="@+id/action_homePageFragment_to_LoginPageFragment"
             app:destination="@id/LoginPageFragment" />
+        <action
+            android:id="@+id/action_homePageFragment_to_shopFragment"
+            app:destination="@id/shopFragment" />
     </fragment>
     <fragment
         android:id="@+id/taskListFragment"
@@ -94,6 +97,9 @@
         android:name="com.example.elevate.SettingsFragment"
         android:label="fragment_settings"
         tools:layout="@layout/fragment_settings" >
+        <action
+            android:id="@+id/action_settingsFragment_to_moodReportFragment"
+            app:destination="@id/moodReportFragment" />
         <action
             android:id="@+id/action_settingsFragment_to_homePageFragment"
             app:destination="@id/homePageFragment" />
@@ -377,4 +383,17 @@
             android:id="@+id/action_editEventFragment_to_eventFragment"
             app:destination="@id/eventFragment" />
     </fragment>
+    <fragment
+        android:id="@+id/shopFragment"
+        android:name="com.example.elevate.ShopFragment"
+        android:label="fragment_shop"
+        tools:layout="@layout/fragment_shop" >
+        <action
+            android:id="@+id/action_shopFragment_to_homePageFragment"
+            app:destination="@id/homePageFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/moodReportFragment"
+        android:name="com.example.elevate.MoodReportFragment"
+        android:label="Mood Report" />
 </navigation>

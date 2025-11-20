@@ -143,38 +143,6 @@
                         app:splitTrack="false" />
                 </LinearLayout>
 
-                <View
-                    android:layout_width="match_parent"
-                    android:layout_height="1dp"
-                    android:layout_marginVertical="4dp" />
-
-                <!-- Enable Daily Affirmations -->
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical"
-                    android:paddingVertical="6dp">
-
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="1"
-                        android:text="Enable Daily Affirmations"
-                        android:textSize="16sp" />
-
-                    <com.google.android.material.switchmaterial.SwitchMaterial
-                        android:id="@+id/switch_affirmations"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:track="@drawable/switch_track_events"
-                        app:thumbTint="@null"
-                        app:trackTint="@null"
-                        app:showText="false"
-                        app:switchMinWidth="60dp"
-                        android:minWidth="60dp"
-                        app:splitTrack="false" />
-                </LinearLayout>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
