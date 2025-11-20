@@ -875,7 +875,7 @@ public class SettingsFragment extends Fragment {
         radarChart.getLegend().setEnabled(false);
         radarChart.getDescription().setEnabled(false);
         radarChart.setRotationEnabled(false);
-        radarChart.setExtraOffsets(0f, 0f, 0f, 0f);
+        radarChart.setExtraOffsets(0f, 24f, 0f, 8f);
         radarChart.setMinOffset(0f);
         radarChart.setPadding(0, 0, 0, 0);
         radarChart.setWebLineWidth(1f);
