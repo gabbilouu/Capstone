@@ -178,7 +178,7 @@ public class EventListFragment extends Fragment implements View.OnClickListener 
         final int[] selectedColor = {0xFF2196F3};
 
         View.OnClickListener colorClickListener = colorView -> {
-            int color = ((Button) colorView).getBackgroundTintList().getDefaultColor();
+            int color = colorView.getBackgroundTintList().getDefaultColor();
             selectedColor[0] = color;
         };
 
@@ -554,7 +554,7 @@ public class EventListFragment extends Fragment implements View.OnClickListener 
 
     // Toggle the active tag filter and refresh UI
     private void toggleFilter(String tag) {
-        if (activeFilterTag != null && tagEquals(activeFilterTag, tag)) {
+        if (tagEquals(activeFilterTag, tag)) {
             activeFilterTag = null; // clear filter
         } else {
             activeFilterTag = tag;

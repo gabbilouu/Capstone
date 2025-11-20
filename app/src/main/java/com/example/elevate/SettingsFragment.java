@@ -38,6 +38,7 @@ import com.github.mikephil.charting.data.RadarData;
 import com.github.mikephil.charting.data.RadarDataSet;
 import com.github.mikephil.charting.data.RadarEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.utils.Utils;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.EmailAuthProvider;
@@ -83,9 +84,9 @@ public class SettingsFragment extends Fragment {
     private static final String KEY_GOAL = "userGoal";
 
     // Firestore fields
-    private static final String FS_FIELD_NAME  = "name";
-    private static final String FS_FIELD_BDAY  = "birthday";
-    private static final String FS_FIELD_GOAL  = "userGoal";
+    private static final String FS_FIELD_NAME = "name";
+    private static final String FS_FIELD_BDAY = "birthday";
+    private static final String FS_FIELD_GOAL = "userGoal";
 
     // Daily gate key (assessment)
     private static final String GATE_KEY_ASSESSMENT = "assessment_done";
@@ -105,7 +106,8 @@ public class SettingsFragment extends Fragment {
     private FirebaseUser firebaseUser;
     private FirebaseFirestore db;
 
-    public SettingsFragment() {}
+    public SettingsFragment() {
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -125,7 +127,8 @@ public class SettingsFragment extends Fragment {
                     try {
                         requireContext().getContentResolver()
                                 .takePersistableUriPermission(uri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                    } catch (Exception ignored) {}
+                    } catch (Exception ignored) {
+                    }
                     pendingPhotoUri = uri;
                     if (editDialog != null && editDialog.isShowing()) {
                         ImageView iv = editDialog.findViewById(R.id.ivProfilePreview);
@@ -146,7 +149,10 @@ public class SettingsFragment extends Fragment {
                         }
                         Toast.makeText(requireContext(), "Photo captured", Toast.LENGTH_SHORT).show();
                     } else if (capturedPhotoUri != null) {
-                        try { requireContext().getContentResolver().delete(capturedPhotoUri, null, null); } catch (Exception ignored) {}
+                        try {
+                            requireContext().getContentResolver().delete(capturedPhotoUri, null, null);
+                        } catch (Exception ignored) {
+                        }
                     }
                     capturedPhotoUri = null;
                 }
@@ -162,10 +168,10 @@ public class SettingsFragment extends Fragment {
         firebaseUser = auth.getCurrentUser();
         db = FirebaseFirestore.getInstance();
 
-        profileImage   = view.findViewById(R.id.profileImage);
-        profileName    = view.findViewById(R.id.profileName);
+        profileImage = view.findViewById(R.id.profileImage);
+        profileName = view.findViewById(R.id.profileName);
         profileDetails = view.findViewById(R.id.profileDetails);
-        userSince      = view.findViewById(R.id.userSince);
+        userSince = view.findViewById(R.id.userSince);
 
         ensureDefaultNameOnce();
         applyProfileFromPrefs();
@@ -280,8 +286,10 @@ public class SettingsFragment extends Fragment {
                 SharedPreferences sp = requireContext().getSharedPreferences(PREFS_USER, 0);
                 SharedPreferences.Editor ed = sp.edit();
 
-                if (cloudName != null && !cloudName.trim().isEmpty()) ed.putString(KEY_USER_NAME, cloudName);
-                if (cloudBday != null && !cloudBday.trim().isEmpty()) ed.putString(KEY_USER_BIRTHDAY, cloudBday);
+                if (cloudName != null && !cloudName.trim().isEmpty())
+                    ed.putString(KEY_USER_NAME, cloudName);
+                if (cloudBday != null && !cloudBday.trim().isEmpty())
+                    ed.putString(KEY_USER_BIRTHDAY, cloudBday);
                 ed.apply();
 
                 applyProfileFromPrefs();
@@ -311,7 +319,7 @@ public class SettingsFragment extends Fragment {
         if (doc == null) return;
 
         Map<String, Object> data = new HashMap<>();
-        if (name != null)     data.put(FS_FIELD_NAME, name);
+        if (name != null) data.put(FS_FIELD_NAME, name);
         if (birthday != null) data.put(FS_FIELD_BDAY, birthday);
 
         doc.set(data, SetOptions.merge())
@@ -331,11 +339,11 @@ public class SettingsFragment extends Fragment {
                 .inflate(R.layout.dialog_change_password, null, false);
 
         TextInputLayout tilCurrent = dialogView.findViewById(R.id.tilCurrentPassword);
-        TextInputLayout tilNew     = dialogView.findViewById(R.id.tilNewPassword);
+        TextInputLayout tilNew = dialogView.findViewById(R.id.tilNewPassword);
         TextInputLayout tilConfirm = dialogView.findViewById(R.id.tilConfirmPassword);
 
         TextInputEditText etCurrent = dialogView.findViewById(R.id.etCurrentPassword);
-        TextInputEditText etNew     = dialogView.findViewById(R.id.etNewPassword);
+        TextInputEditText etNew = dialogView.findViewById(R.id.etNewPassword);
         TextInputEditText etConfirm = dialogView.findViewById(R.id.etConfirmPassword);
 
         // Set up eye toggles using your icons
@@ -354,7 +362,7 @@ public class SettingsFragment extends Fragment {
             Button saveBtn = dlg.getButton(AlertDialog.BUTTON_POSITIVE);
             saveBtn.setOnClickListener(v -> {
                 String currentPass = etCurrent.getText() != null ? etCurrent.getText().toString() : "";
-                String newPass     = etNew.getText() != null ? etNew.getText().toString() : "";
+                String newPass = etNew.getText() != null ? etNew.getText().toString() : "";
                 String confirmPass = etConfirm.getText() != null ? etConfirm.getText().toString() : "";
 
                 boolean hasError = false;
@@ -412,7 +420,9 @@ public class SettingsFragment extends Fragment {
         dlg.show();
     }
 
-    /** Helper: toggles show/hide password with ic_visibility/ic_visibility_off */
+    /**
+     * Helper: toggles show/hide password with ic_visibility/ic_visibility_off
+     */
     private void setupPasswordToggle(TextInputLayout til, TextInputEditText et) {
         if (til == null || et == null) return;
 
@@ -459,11 +469,18 @@ public class SettingsFragment extends Fragment {
             final Button positive = dlg.getButton(AlertDialog.BUTTON_POSITIVE);
             positive.setEnabled(false);
             input.addTextChangedListener(new TextWatcher() {
-                @Override public void beforeTextChanged(CharSequence s, int st, int c, int a) {}
-                @Override public void onTextChanged(CharSequence s, int st, int b, int c) {
+                @Override
+                public void beforeTextChanged(CharSequence s, int st, int c, int a) {
+                }
+
+                @Override
+                public void onTextChanged(CharSequence s, int st, int b, int c) {
                     positive.setEnabled(s != null && "delete".equalsIgnoreCase(s.toString().trim()));
                 }
-                @Override public void afterTextChanged(Editable s) {}
+
+                @Override
+                public void afterTextChanged(Editable s) {
+                }
             });
         });
 
@@ -518,7 +535,7 @@ public class SettingsFragment extends Fragment {
     }
 
     private void deleteAllUserData(FirebaseFirestore db, String uid, Runnable onDone, OnError onError) {
-        Query tasksQ  = db.collection("tasks").whereEqualTo("userId", uid);
+        Query tasksQ = db.collection("tasks").whereEqualTo("userId", uid);
         Query eventsQ = db.collection("events").whereEqualTo("userId", uid);
 
         deleteQueryInBatches(db, tasksQ, () ->
@@ -570,7 +587,9 @@ public class SettingsFragment extends Fragment {
         }).addOnFailureListener(onError::onError);
     }
 
-    private interface OnError { void onError(Exception e); }
+    private interface OnError {
+        void onError(Exception e);
+    }
 
     /* ---------------- Navigation helpers ---------------- */
 
@@ -582,7 +601,10 @@ public class SettingsFragment extends Fragment {
         try {
             navC.navigate(R.id.splashFragment, null, opts);
         } catch (Exception e) {
-            try { navC.navigate(R.id.splashFragment); } catch (Exception ignored) {}
+            try {
+                navC.navigate(R.id.splashFragment);
+            } catch (Exception ignored) {
+            }
         }
     }
 
@@ -599,13 +621,17 @@ public class SettingsFragment extends Fragment {
             ContentResolver resolver = requireContext().getContentResolver();
             for (UriPermission perm : resolver.getPersistedUriPermissions()) {
                 int flags = 0;
-                if (perm.isReadPermission())  flags |= Intent.FLAG_GRANT_READ_URI_PERMISSION;
+                if (perm.isReadPermission()) flags |= Intent.FLAG_GRANT_READ_URI_PERMISSION;
                 if (perm.isWritePermission()) flags |= Intent.FLAG_GRANT_WRITE_URI_PERMISSION;
-                try { resolver.releasePersistableUriPermission(perm.getUri(), flags); } catch (Exception ignored) {}
+                try {
+                    resolver.releasePersistableUriPermission(perm.getUri(), flags);
+                } catch (Exception ignored) {
+                }
             }
 
             deleteRecursive(requireContext().getCacheDir());
-        } catch (Exception ignored) {}
+        } catch (Exception ignored) {
+        }
     }
 
     private void deleteRecursive(File f) {
@@ -642,12 +668,12 @@ public class SettingsFragment extends Fragment {
     private void applyProfileFromPrefs() {
         SharedPreferences sp = requireContext().getSharedPreferences(PREFS_USER, 0);
 
-        String name   = sp.getString(KEY_USER_NAME, "");
-        String pronoun= sp.getString(KEY_USER_PRONOUN, "");
-        String uni    = sp.getString(KEY_USER_UNI, "");
-        String major  = sp.getString(KEY_USER_MAJOR, "");
-        String photo  = sp.getString(KEY_USER_PHOTO_URI, null);
-        String bday   = sp.getString(KEY_USER_BIRTHDAY, "");
+        String name = sp.getString(KEY_USER_NAME, "");
+        String pronoun = sp.getString(KEY_USER_PRONOUN, "");
+        String uni = sp.getString(KEY_USER_UNI, "");
+        String major = sp.getString(KEY_USER_MAJOR, "");
+        String photo = sp.getString(KEY_USER_PHOTO_URI, null);
+        String bday = sp.getString(KEY_USER_BIRTHDAY, "");
 
         String title = name == null ? "" : name;
         if (pronoun != null && !pronoun.trim().isEmpty()) {
@@ -670,7 +696,10 @@ public class SettingsFragment extends Fragment {
         profileDetails.setText(details.toString());
 
         if (photo != null) {
-            try { profileImage.setImageURI(Uri.parse(photo)); } catch (Exception ignored) {}
+            try {
+                profileImage.setImageURI(Uri.parse(photo));
+            } catch (Exception ignored) {
+            }
         }
     }
 
@@ -684,7 +713,7 @@ public class SettingsFragment extends Fragment {
         EditText etMajor = dialogView.findViewById(R.id.etMajor);
         EditText etBirthday = dialogView.findViewById(R.id.etBirthday);
         Button btnChangePhoto = dialogView.findViewById(R.id.btnChangePhoto);
-        Button btnTakePhoto   = dialogView.findViewById(R.id.btnTakePhoto);
+        Button btnTakePhoto = dialogView.findViewById(R.id.btnTakePhoto);
         Button btnCancel = dialogView.findViewById(R.id.btnCancel);
         Button btnSave = dialogView.findViewById(R.id.btnSave);
 
@@ -718,7 +747,10 @@ public class SettingsFragment extends Fragment {
         }
 
         if (photo != null) {
-            try { iv.setImageURI(Uri.parse(photo)); } catch (Exception ignored) {}
+            try {
+                iv.setImageURI(Uri.parse(photo));
+            } catch (Exception ignored) {
+            }
         }
 
         if (btnChangePhoto != null) {
@@ -730,7 +762,8 @@ public class SettingsFragment extends Fragment {
                 try {
                     capturedPhotoUri = createImageCaptureUri();
                     if (capturedPhotoUri != null) takePhotoLauncher.launch(capturedPhotoUri);
-                    else Toast.makeText(requireContext(), "Couldn't create camera file", Toast.LENGTH_SHORT).show();
+                    else
+                        Toast.makeText(requireContext(), "Couldn't create camera file", Toast.LENGTH_SHORT).show();
                 } catch (Exception e) {
                     Toast.makeText(requireContext(), "Camera unavailable: " + e.getMessage(), Toast.LENGTH_SHORT).show();
                     capturedPhotoUri = null;
@@ -744,8 +777,11 @@ public class SettingsFragment extends Fragment {
         editDialog.show();
 
         btnCancel.setOnClickListener(v -> {
-            if (capturedPhotoUri != null && (pendingPhotoUri == null || !capturedPhotoUri.equals(pendingPhotoUri))) {
-                try { requireContext().getContentResolver().delete(capturedPhotoUri, null, null); } catch (Exception ignored) {}
+            if (capturedPhotoUri != null && (!capturedPhotoUri.equals(pendingPhotoUri))) {
+                try {
+                    requireContext().getContentResolver().delete(capturedPhotoUri, null, null);
+                } catch (Exception ignored) {
+                }
             }
             capturedPhotoUri = null;
             editDialog.dismiss();
@@ -765,7 +801,8 @@ public class SettingsFragment extends Fragment {
             ed.putString(KEY_USER_UNI, newUni);
             ed.putString(KEY_USER_MAJOR, newMajor);
             ed.putString(KEY_USER_BIRTHDAY, newBday);
-            if (pendingPhotoUri != null) ed.putString(KEY_USER_PHOTO_URI, pendingPhotoUri.toString());
+            if (pendingPhotoUri != null)
+                ed.putString(KEY_USER_PHOTO_URI, pendingPhotoUri.toString());
             ed.apply();
 
             // Push to Firestore
@@ -807,7 +844,8 @@ public class SettingsFragment extends Fragment {
                 long diffDays = (today.getTimeInMillis() - lastLogin.getTimeInMillis()) / (1000 * 60 * 60 * 24);
                 if (diffDays > 1) streak = 0;
                 else if (diffDays == 1) streak++;
-            } catch (Exception ignored) {}
+            } catch (Exception ignored) {
+            }
         } else {
             streak = 1;
         }
@@ -823,65 +861,83 @@ public class SettingsFragment extends Fragment {
 
     private void setupPersonalityRadarChart() {
         RadarChart radarChart = requireView().findViewById(R.id.personalityRadarChart);
-        SharedPreferences prefs = requireContext().getSharedPreferences("MoodPrefs", 0);
+        if (radarChart != null) {
+            // Give the chart extra space inside its own bounds
+            float top = Utils.convertDpToPixel(24f);
+            float bottom = Utils.convertDpToPixel(12f);
+            radarChart.setExtraOffsets(0f, top, 0f, bottom);
 
-        String[] moodNames  = {"Very Happy", "Happy", "Neutral", "Sad", "Very Sad"};
-        String[] moodEmojis = {"😄", "😊", "😐", "☹️", "😞"};
-        int[] counts = new int[moodNames.length];
+            // Nudge labels down a little
+            radarChart.getXAxis().setYOffset(16f);
 
-        Calendar cal = Calendar.getInstance();
-        for (int i = 0; i < 30; i++) {
-            String dayKey = new SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(cal.getTime());
-            String mood = prefs.getString(dayKey, null);
-            if (mood != null) {
-                for (int j = 0; j < moodNames.length; j++) {
-                    if (mood.equals(moodNames[j])) counts[j]++;
-                }
+            // Make sure nothing clips in parents
+            radarChart.setClipToPadding(false);
+            radarChart.setClipChildren(false);
+            ViewGroup parent = (ViewGroup) radarChart.getParent();
+            if (parent != null) {
+                parent.setClipToPadding(false);
+                parent.setClipChildren(false);
             }
-            cal.add(Calendar.DAY_OF_YEAR, -1);
+            SharedPreferences prefs = requireContext().getSharedPreferences("MoodPrefs", 0);
+
+            String[] moodNames = {"Very Happy", "Happy", "Neutral", "Sad", "Very Sad"};
+            String[] moodEmojis = {"😄", "😊", "😐", "☹️", "😞"};
+            int[] counts = new int[moodNames.length];
+
+            Calendar cal = Calendar.getInstance();
+            for (int i = 0; i < 30; i++) {
+                String dayKey = new SimpleDateFormat("yyyyMMdd", Locale.getDefault()).format(cal.getTime());
+                String mood = prefs.getString(dayKey, null);
+                if (mood != null) {
+                    for (int j = 0; j < moodNames.length; j++) {
+                        if (mood.equals(moodNames[j])) counts[j]++;
+                    }
+                }
+                cal.add(Calendar.DAY_OF_YEAR, -1);
+            }
+
+            ArrayList<RadarEntry> entries = new ArrayList<>();
+            int maxCount = 0;
+            for (int cVal : counts) {
+                entries.add(new RadarEntry(cVal));
+                if (cVal > maxCount) maxCount = cVal;
+            }
+
+            RadarDataSet dataSet = new RadarDataSet(entries, null);
+            dataSet.setDrawFilled(true);
+            dataSet.setFillAlpha(180);
+            dataSet.setLineWidth(2f);
+            dataSet.setColor(getResources().getColor(android.R.color.holo_blue_light));
+            dataSet.setFillColor(getResources().getColor(android.R.color.holo_blue_light));
+            dataSet.setDrawValues(false);
+            dataSet.setDrawHighlightCircleEnabled(false);
+
+            RadarData data = new RadarData(dataSet);
+            radarChart.setData(data);
+
+            XAxis xAxis = radarChart.getXAxis();
+            xAxis.setValueFormatter(new IndexAxisValueFormatter(moodEmojis));
+            xAxis.setTextSize(11f);
+            xAxis.setXOffset(0f);
+            xAxis.setYOffset(0f);
+
+            YAxis yAxis = radarChart.getYAxis();
+            yAxis.setAxisMinimum(0f);
+            yAxis.setAxisMaximum(Math.max(5f, maxCount));
+            yAxis.setLabelCount(5, true);
+            yAxis.setDrawLabels(false);
+
+            radarChart.getLegend().setEnabled(false);
+            radarChart.getDescription().setEnabled(false);
+            radarChart.setRotationEnabled(false);
+            radarChart.setExtraOffsets(0f, 24f, 0f, 8f);
+            radarChart.setMinOffset(0f);
+            radarChart.setPadding(0, 0, 0, 0);
+            radarChart.setWebLineWidth(1f);
+            radarChart.setWebColor(getResources().getColor(android.R.color.darker_gray));
+            radarChart.setWebAlpha(180);
+
+            radarChart.invalidate();
         }
-
-        ArrayList<RadarEntry> entries = new ArrayList<>();
-        int maxCount = 0;
-        for (int cVal : counts) {
-            entries.add(new RadarEntry(cVal));
-            if (cVal > maxCount) maxCount = cVal;
-        }
-
-        RadarDataSet dataSet = new RadarDataSet(entries, null);
-        dataSet.setDrawFilled(true);
-        dataSet.setFillAlpha(180);
-        dataSet.setLineWidth(2f);
-        dataSet.setColor(getResources().getColor(android.R.color.holo_blue_light));
-        dataSet.setFillColor(getResources().getColor(android.R.color.holo_blue_light));
-        dataSet.setDrawValues(false);
-        dataSet.setDrawHighlightCircleEnabled(false);
-
-        RadarData data = new RadarData(dataSet);
-        radarChart.setData(data);
-
-        XAxis xAxis = radarChart.getXAxis();
-        xAxis.setValueFormatter(new IndexAxisValueFormatter(moodEmojis));
-        xAxis.setTextSize(11f);
-        xAxis.setXOffset(0f);
-        xAxis.setYOffset(0f);
-
-        YAxis yAxis = radarChart.getYAxis();
-        yAxis.setAxisMinimum(0f);
-        yAxis.setAxisMaximum(Math.max(5f, maxCount));
-        yAxis.setLabelCount(5, true);
-        yAxis.setDrawLabels(false);
-
-        radarChart.getLegend().setEnabled(false);
-        radarChart.getDescription().setEnabled(false);
-        radarChart.setRotationEnabled(false);
-        radarChart.setExtraOffsets(0f, 24f, 0f, 8f);
-        radarChart.setMinOffset(0f);
-        radarChart.setPadding(0, 0, 0, 0);
-        radarChart.setWebLineWidth(1f);
-        radarChart.setWebColor(getResources().getColor(android.R.color.darker_gray));
-        radarChart.setWebAlpha(180);
-
-        radarChart.invalidate();
     }
 }

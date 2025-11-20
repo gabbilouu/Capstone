@@ -1,12 +1,13 @@
-<androidx.cardview.widget.CardView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:minHeight="150dp"
     android:layout_margin="8dp"
     android:clickable="true"
     android:foreground="?attr/selectableItemBackground"
-    app:cardUseCompatPadding="false"
+    app:cardUseCompatPadding="true"
     app:cardElevation="2dp"
     app:cardCornerRadius="16dp"
     app:cardBackgroundColor="#FBF7EF">
@@ -15,9 +16,12 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:minHeight="150dp"
-        android:padding="12dp">
+        android:paddingLeft="12dp"
+        android:paddingTop="12dp"
+        android:paddingRight="12dp"
+        android:paddingBottom="16dp">
 
-        <!-- Item icon -->
+        <!-- Item icon (the adapter will overwrite this src with the real icon) -->
         <ImageView
             android:id="@+id/img"
             android:layout_width="56dp"
@@ -49,6 +53,7 @@
             android:layout_marginTop="6dp"
             android:gravity="center_vertical">
 
+            <!-- Use your existing flower currency icon -->
             <ImageView
                 android:layout_width="16dp"
                 android:layout_height="16dp"
@@ -65,18 +70,20 @@
                 android:textSize="13sp" />
         </LinearLayout>
 
-        <!-- Equipped badge -->
+        <!-- Equipped badge: small green-ish check in bottom-left -->
         <ImageView
             android:id="@+id/equippedBadge"
             android:layout_width="18dp"
             android:layout_height="18dp"
             android:layout_alignParentStart="true"
             android:layout_alignParentBottom="true"
+            android:layout_marginStart="4dp"
+            android:layout_marginBottom="4dp"
             android:src="@android:drawable/checkbox_on_background"
             android:visibility="gone"
             app:tint="@null" />
 
-        <!-- Locked overlay -->
+        <!-- Locked overlay (semi-transparent, centered "Locked" text) -->
         <LinearLayout
             android:id="@+id/lockedOverlay"
             android:layout_width="match_parent"

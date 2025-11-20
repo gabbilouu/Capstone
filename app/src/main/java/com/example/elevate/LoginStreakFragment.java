@@ -24,7 +24,7 @@ public class LoginStreakFragment extends Fragment {
 
     private NavController navC;
     private TextView streakNumber;
-    private TextView[] daysOfWeek = new TextView[7];
+    private final TextView[] daysOfWeek = new TextView[7];
     private SharedPreferences prefs;
 
     private static final String PREFS_NAME = "LoginStreakPrefs";

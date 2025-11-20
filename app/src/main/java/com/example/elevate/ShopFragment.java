@@ -57,7 +57,7 @@ public class ShopFragment extends Fragment implements ShopItemAdapter.OnShopClic
     private Category current = Category.PLANTS;
 
     // countdown like TaskListFragment
-    private Handler timerHandler = new Handler(Looper.getMainLooper());
+    private final Handler timerHandler = new Handler(Looper.getMainLooper());
     private Runnable timerRunnable;
 
     @Nullable

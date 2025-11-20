@@ -472,7 +472,7 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
                     if (t == null) continue;
                     if (isTaskDueOn(t, cal)) {
                         dueYesterday++;
-                        if (Boolean.TRUE.equals(t.isCompleted())) doneYesterday++;
+                        if (t.isCompleted()) doneYesterday++;
                     }
                 }
             }
