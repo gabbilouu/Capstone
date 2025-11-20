@@ -163,7 +163,7 @@
                     <com.github.mikephil.charting.charts.RadarChart
                         android:id="@+id/personalityRadarChart"
                         android:layout_width="match_parent"
-                        android:layout_height="150dp" />
+                        android:layout_height="159dp" />
                 </LinearLayout>
             </LinearLayout>
 

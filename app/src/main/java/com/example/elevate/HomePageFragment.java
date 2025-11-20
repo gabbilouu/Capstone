@@ -242,7 +242,7 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
         tvGoalCalendar   = v.findViewById(R.id.tvGoalCalendar);
         tvGoalPlant      = v.findViewById(R.id.tvGoalPlant);
 
-        ivGoal5Check       = v.findViewById(R.id.ivGoal5Check);
+        ivGoal5Check        = v.findViewById(R.id.ivGoal5Check);
         ivGoalFeaturedCheck = v.findViewById(R.id.ivGoalFeaturedCheck);
         ivGoalCalendarCheck = v.findViewById(R.id.ivGoalCalendarCheck);
         ivGoalPlantCheck    = v.findViewById(R.id.ivGoalPlantCheck);
@@ -553,6 +553,13 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
         });
     }
 
+    /**
+     * Recomputes "today" state from Firestore tasks:
+     * - Counts due-today tasks
+     * - Counts completed-today tasks (using PeriodKeyUtil + completionKey)
+     * - Awards points / XP / hydration for new completions since last snapshot
+     * - Updates daily goals (5 tasks, featured, open calendar, tap plant)
+     */
     private void loadTasksAndRender() {
         String today = YMD.format(new Date());
         Calendar todayCal = Calendar.getInstance();
@@ -573,20 +580,35 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
                     Task t = ds.toObject(Task.class);
                     if (t == null) continue;
 
+                    // === NEW: derive completion from completionKey + PeriodKeyUtil,
+                    //          not from transient t.isCompleted().
+                    boolean doneForCurrentPeriod = false;
+                    try {
+                        String curKey = PeriodKeyUtil.currentKeyFor(t);
+                        String compKey = t.getCompletionKey();
+                        doneForCurrentPeriod = (compKey != null && compKey.equals(curKey));
+                        t.setCompleted(doneForCurrentPeriod);
+                    } catch (Exception ex) {
+                        Log.w(TAG, "Error deriving completion for task " + t.getName(), ex);
+                    }
+
                     if (isTaskDueOn(t, todayCal)) {
                         dueToday++;
-                        boolean done = Boolean.TRUE.equals(t.isCompleted());
-                        if (done) completedToday++;
+
+                        if (doneForCurrentPeriod) {
+                            completedToday++;
+                        }
 
                         String title = t.getName();
-
 
                         if (firstDueTitle == null && !TextUtils.isEmpty(title)) {
                             firstDueTitle = title;
                         }
 
                         // Prefer a completed task as featured if possible
-                        if (done && TextUtils.isEmpty(featuredTaskTitle) && !TextUtils.isEmpty(title)) {
+                        if (doneForCurrentPeriod
+                                && TextUtils.isEmpty(featuredTaskTitle)
+                                && !TextUtils.isEmpty(title)) {
                             featuredTaskTitle = title;
                             featuredTaskCompleted = true;
                         }
@@ -600,9 +622,9 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
                 featuredTaskCompleted = false;
             }
 
-            // Daily task board (still for tasks, but label is "Daily Goals")
+            // Daily task board (label is "Daily Goals" now)
             if (progressDailyTasks != null) {
-                // We'll override max/progress inside updateDailyGoals; here just basic
+                // actual progress/max is overridden in updateDailyGoals
                 progressDailyTasks.setMax(100);
                 progressDailyTasks.setProgress(0);
             }
@@ -621,12 +643,13 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
             if (!TextUtils.equals(snapDate, today)) {
                 prevCompletedSnap = 0;
             }
+
             int deltaNewCompletions = Math.max(0, completedToday - prevCompletedSnap);
             boolean pointsChanged = false;
             boolean hydrationChanged = false;
 
             if (deltaNewCompletions > 0) {
-                // Each newly completed task gives +1 point and +1 XP
+                // Each newly completed *due-today* task gives +1 point and +1 XP
                 points += deltaNewCompletions;
                 xp += deltaNewCompletions;
 
@@ -638,6 +661,7 @@ public class HomePageFragment extends Fragment implements View.OnClickListener {
                 ed.apply();
                 pointsChanged = true;
 
+                // Hydration gain per newly completed task
                 int hydration = clamp0_100(getPrefs().getInt(KEY_HYDRATION, 80)
                         + deltaNewCompletions * HYDRATION_GAIN_PER_TASK);
                 getPrefs().edit().putInt(KEY_HYDRATION, hydration).apply();

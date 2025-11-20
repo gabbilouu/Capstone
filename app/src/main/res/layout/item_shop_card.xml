@@ -13,7 +13,7 @@
 
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="150dp"
         android:padding="12dp">
 
         <!-- Item icon (the adapter will overwrite this src with the real icon) -->
@@ -35,8 +35,8 @@
             android:layout_marginTop="10dp"
             android:text="Potted Cactus"
             android:textColor="#5F5A4A"
-            android:textStyle="bold"
-            android:textSize="14sp" />
+            android:textSize="14sp"
+            android:textStyle="bold" />
 
         <!-- Price row -->
         <LinearLayout
@@ -59,10 +59,10 @@
                 android:id="@+id/price"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
                 android:text="30"
                 android:textColor="#7D7A6C"
-                android:textSize="13sp"
-                android:layout_marginStart="4dp" />
+                android:textSize="13sp" />
         </LinearLayout>
 
         <!-- Equipped badge: small green-ish check in bottom-left -->
@@ -73,31 +73,31 @@
             android:layout_alignParentStart="true"
             android:layout_alignParentBottom="true"
             android:src="@android:drawable/checkbox_on_background"
-            app:tint="@null"
-            android:visibility="gone" />
+            android:visibility="gone"
+            app:tint="@null" />
 
         <!-- Locked overlay (semi-transparent, centered "Locked" text) -->
         <LinearLayout
             android:id="@+id/lockedOverlay"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:gravity="center"
             android:background="#33B0B0B0"
+            android:gravity="center"
             android:visibility="gone">
 
             <TextView
                 android:id="@+id/tvLocked"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:background="#F9F3E3"
+                android:paddingLeft="8dp"
+                android:paddingTop="4dp"
+                android:paddingRight="8dp"
+                android:paddingBottom="4dp"
                 android:text="Locked"
                 android:textColor="#8E8A7C"
-                android:textStyle="bold"
                 android:textSize="12sp"
-                android:paddingLeft="8dp"
-                android:paddingRight="8dp"
-                android:paddingTop="4dp"
-                android:paddingBottom="4dp"
-                android:background="#F9F3E3" />
+                android:textStyle="bold" />
         </LinearLayout>
 
     </RelativeLayout>

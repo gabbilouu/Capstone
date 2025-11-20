@@ -21,8 +21,6 @@ public class Task implements Serializable {
     @com.google.firebase.firestore.ServerTimestamp
     private java.util.Date lastModified;
     private transient boolean completed;
-// + getters and setters
-
 
     public Task() {
         // Firestore requires empty constructor
@@ -81,12 +79,13 @@ public class Task implements Serializable {
 
     public boolean isCompleted() { return completed; }
     public void setCompleted(boolean completed) { this.completed = completed; }
+
     public String getUserId() { return userId; }
     public void setUserId(String userId) { this.userId = userId; }
 
     public String getCompletionKey() { return completionKey; }
     public void setCompletionKey(String completionKey) { this.completionKey = completionKey; }
 
-    public java.util.Date getLastModified() { return lastModified; }
-    public void setLastModified(java.util.Date lm) { this.lastModified = lm; }
+    public Date getLastModified() { return lastModified; }
+    public void setLastModified(Date lm) { this.lastModified = lm; }
 }

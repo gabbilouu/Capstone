@@ -73,9 +73,9 @@ public class TaskListFragment extends Fragment implements View.OnClickListener {
         adapter = new TaskAdapter(taskList, docIds);
         recyclerView.setAdapter(adapter);
 
-        // Toggle completion -> Firestore
+        // Toggle completion -> Firestore (always set to true; no unchecking)
         adapter.setOnCompletionToggleListener((taskId, task, completed) ->
-                repo.setCompleted(taskId, task, true) // always true; no unchecking
+                repo.setCompleted(taskId, task, true)
         );
 
         // Add task bar
