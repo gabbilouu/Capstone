@@ -117,7 +117,6 @@
 
         <!-- Rounded box: All-day + Start + End + Repeat (with dividers, equal row heights) -->
         <LinearLayout
-            android:id="@+id/boxDuration"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/bg_group"
@@ -136,7 +135,6 @@
 
                 <!-- All-day -->
                 <TextView
-                    android:id="@+id/labelAllDay"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -174,7 +172,6 @@
 
                 <!-- Start -->
                 <TextView
-                    android:id="@+id/labelStart"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -235,7 +232,6 @@
 
                 <!-- End -->
                 <TextView
-                    android:id="@+id/labelEnd"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
@@ -296,7 +292,6 @@
 
                 <!-- Repeat -->
                 <TextView
-                    android:id="@+id/labelRepeat"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"
@@ -351,7 +346,6 @@
 
                 <!-- Tag -->
                 <TextView
-                    android:id="@+id/labelTag"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="8dp"

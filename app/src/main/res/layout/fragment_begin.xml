@@ -10,7 +10,6 @@
 
     <!-- Title -->
     <TextView
-        android:id="@+id/journeyTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Let’s begin your journey."
@@ -23,7 +22,6 @@
 
     <!-- Subtitle -->
     <TextView
-        android:id="@+id/journeySubtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Would you like us to check your mood and give you a report? This helps you better understand your mood on a daily basis!"

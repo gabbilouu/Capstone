@@ -10,7 +10,6 @@
 
     <!-- Title -->
     <TextView
-        android:id="@+id/screenTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Weekly it is!"
@@ -23,7 +22,6 @@
 
     <!-- Description -->
     <TextView
-        android:id="@+id/screenDescription"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="We’ll send you a monthly report based off of your response. Let’s jump right in!"
@@ -35,7 +33,6 @@
 
     <!-- Subtext -->
     <TextView
-        android:id="@+id/screenSubtext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="You can also check your report in your user profile!"

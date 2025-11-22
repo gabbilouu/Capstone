@@ -9,7 +9,6 @@
 
     <!-- Bottom Navigation Bar -->
     <ScrollView
-        android:id="@+id/scrollContent"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_above="@+id/bottomNav"
@@ -24,7 +23,6 @@
 
             <!-- Profile Card -->
             <FrameLayout
-                android:id="@+id/profileCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
@@ -63,7 +61,6 @@
                             android:textSize="18sp"
                             android:textStyle="bold" />
                         <TextView
-                            android:id="@+id/profileBirthday"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
@@ -223,7 +220,6 @@
                 android:textStyle="bold" />
 
             <LinearLayout
-                android:id="@+id/generalCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"
@@ -293,7 +289,6 @@
                 android:textStyle="bold" />
 
             <LinearLayout
-                android:id="@+id/miscCard"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="16dp"

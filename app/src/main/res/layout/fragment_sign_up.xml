@@ -20,7 +20,6 @@
 
     <!-- Centered Form -->
     <LinearLayout
-        android:id="@+id/form_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
@@ -33,7 +32,6 @@
 
     <!-- Title -->
         <TextView
-            android:id="@+id/sign_up_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Sign Up"
@@ -45,7 +43,6 @@
 
         <!-- Email -->
         <TextView
-            android:id="@+id/email_label"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Email"

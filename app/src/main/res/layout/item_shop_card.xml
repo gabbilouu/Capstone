@@ -93,7 +93,6 @@
             android:visibility="gone">
 
             <TextView
-                android:id="@+id/tvLocked"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="#F9F3E3"

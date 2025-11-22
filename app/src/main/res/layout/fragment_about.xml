@@ -42,7 +42,6 @@
 
     <!-- Card container with rounded white background -->
     <LinearLayout
-        android:id="@+id/cardContainer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="16dp"

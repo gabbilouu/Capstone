@@ -31,7 +31,6 @@
 
         <!-- Bottom row: Left = Level + EXP bar, Right = streak + store -->
         <LinearLayout
-            android:id="@+id/headerBottomRow"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -106,7 +105,6 @@
                     android:focusable="true">
 
                     <TextView
-                        android:id="@+id/tvStoreLabel"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="Store"
@@ -116,7 +114,6 @@
                         android:textColor="@android:color/black" />
 
                     <LinearLayout
-                        android:id="@+id/storePointsRow"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:orientation="horizontal"
@@ -143,7 +140,6 @@
 
     <!-- ===== ONE backdrop covering everything between header and bottom nav ===== -->
     <FrameLayout
-        android:id="@+id/sceneRoot"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@id/headerRow"
@@ -151,7 +147,6 @@
 
         <!-- Backdrop image: fills width, crops bottom if taller than area -->
         <ImageView
-            android:id="@+id/imgBackdrop"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:src="@drawable/backdrop"
@@ -161,7 +156,6 @@
 
         <!-- Scrollable content over backdrop -->
         <ScrollView
-            android:id="@+id/scrollContent"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:background="@android:color/transparent"
@@ -175,7 +169,6 @@
 
                 <!-- Scene: carpet + table + pot + plant + face -->
                 <FrameLayout
-                    android:id="@+id/sceneContainer"
                     android:layout_width="match_parent"
                     android:layout_height="320dp"
                     android:layout_marginBottom="8dp"
@@ -248,7 +241,6 @@
 
                 <!-- Status card: Mood & Hydration -->
                 <androidx.cardview.widget.CardView
-                    android:id="@+id/cardStatus"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -268,7 +260,6 @@
 
                         <!-- Mood row -->
                         <LinearLayout
-                            android:id="@+id/rowMood"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
@@ -276,7 +267,6 @@
                             android:background="@android:color/transparent">
 
                             <ImageView
-                                android:id="@+id/ivMoodIcon"
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
                                 android:src="@drawable/ic_sun"
@@ -291,7 +281,6 @@
                                 android:background="@android:color/transparent">
 
                                 <TextView
-                                    android:id="@+id/labelMood"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="Mood"
@@ -318,7 +307,6 @@
 
                         <!-- Hydration row -->
                         <LinearLayout
-                            android:id="@+id/rowHydration"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
@@ -326,7 +314,6 @@
                             android:background="@android:color/transparent">
 
                             <ImageView
-                                android:id="@+id/ivHydrationIcon"
                                 android:layout_width="24dp"
                                 android:layout_height="24dp"
                                 android:src="@drawable/ic_water_drop"
@@ -341,7 +328,6 @@
                                 android:background="@android:color/transparent">
 
                                 <TextView
-                                    android:id="@+id/labelHydration"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:text="Hydration"
@@ -366,7 +352,6 @@
 
                 <!-- Daily Goals Card -->
                 <androidx.cardview.widget.CardView
-                    android:id="@+id/cardTasks"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -409,7 +394,6 @@
                                 android:max="100"
                                 android:progress="0" />
                             <ImageView
-                                android:id="@+id/ivDailyGoalsReward"
                                 android:layout_width="18dp"
                                 android:layout_height="18dp"
                                 android:layout_marginStart="8dp"
@@ -417,7 +401,6 @@
                                 android:contentDescription="Daily goals reward" />
 
                             <TextView
-                                android:id="@+id/tvDailyGoalsReward"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
                                 android:layout_marginStart="4dp"
@@ -428,7 +411,6 @@
 
                         <!-- Daily Log-in row -->
                         <LinearLayout
-                            android:id="@+id/rowDailyLogin"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
@@ -443,7 +425,6 @@
                                 android:textSize="16sp" />
 
                             <TextView
-                                android:id="@+id/tvDailyLogin"
                                 android:layout_width="0dp"
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
@@ -461,7 +442,6 @@
 
                         <!-- === Daily Goals list -->
                         <LinearLayout
-                            android:id="@+id/goalsList"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="vertical"
@@ -469,7 +449,6 @@
 
                             <!-- Goal: Complete 5 tasks today -->
                             <LinearLayout
-                                android:id="@+id/rowGoal5Tasks"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal"
@@ -484,7 +463,6 @@
                                     android:textSize="16sp" />
 
                                 <TextView
-                                    android:id="@+id/tvGoal5Title"
                                     android:layout_width="0dp"
                                     android:layout_height="wrap_content"
                                     android:layout_weight="1"
@@ -501,7 +479,6 @@
                                     android:layout_marginEnd="8dp" />
 
                                 <ProgressBar
-                                    android:id="@+id/progressGoal5"
                                     style="@android:style/Widget.ProgressBar.Horizontal"
                                     android:layout_width="120dp"
                                     android:layout_height="8dp"
@@ -520,7 +497,6 @@
 
                             <!-- Goal: Featured task -->
                             <LinearLayout
-                                android:id="@+id/rowGoalFeatured"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal"
@@ -553,7 +529,6 @@
 
                             <!-- Goal: Open Calendar -->
                             <LinearLayout
-                                android:id="@+id/rowGoalCalendar"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal"
@@ -586,7 +561,6 @@
 
                             <!-- Goal: Tap the plant -->
                             <LinearLayout
-                                android:id="@+id/rowGoalPlant"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:orientation="horizontal"
@@ -646,7 +620,7 @@
             android:layout_height="match_parent"
             android:layout_weight="1"
             android:background="@null"
-            android:src="@drawable/ic_home_active"
+            android:src="@drawable/ic_home_inactive"
             android:scaleType="fitCenter"
             android:adjustViewBounds="true"
             android:contentDescription="Home" />

@@ -22,12 +22,13 @@ public class SplashFragment extends Fragment {
 
     private static final String TAG = "SplashFragment";
     private static final String GATE_KEY_ASSESSMENT = "assessment_done";
-    private static final long SPLASH_DELAY_MS = 1000L;
+
+    // 3 second splash delay
+    private static final long SPLASH_DELAY_MS = 3000L;
 
     private NavController navC;
     private final Handler handler = new Handler(Looper.getMainLooper());
     private boolean hasNavigated = false;
-    private FirebaseAuth.AuthStateListener authListener;
 
     public SplashFragment() {}
 
@@ -43,19 +44,26 @@ public class SplashFragment extends Fragment {
         navC = Navigation.findNavController(view);
 
         // Optional: auto sign-out if 2 weeks elapsed (no-op if you don't use it)
-        try { AuthTwoWeekLogout.signOutIfExpired(); } catch (Throwable ignored) {}
+        try {
+            AuthTwoWeekLogout.signOutIfExpired();
+        } catch (Throwable ignored) {}
 
-        // React immediately if auth state flips while we're on splash (e.g., after delete)
-        authListener = fbAuth -> {
-            handler.removeCallbacksAndMessages(null);
-            safeNavigate(resolveDestination());
-        };
-        FirebaseAuth.getInstance().addAuthStateListener(authListener);
-
-        // Normal splash delay
-        handler.postDelayed(() -> safeNavigate(resolveDestination()), SPLASH_DELAY_MS);
+        // Single delayed navigation after the splash time
+        handler.postDelayed(() -> {
+            int dest = resolveDestination();
+            safeNavigate(dest);
+        }, SPLASH_DELAY_MS);
     }
 
+    /**
+     * Decide where to go after the splash delay:
+     *  - Not signed in                       -> startingFragment
+     *  - Signed in, gate not done today      -> assessmentFragment
+     *  - Signed in, gate done today          -> homePageFragment
+     *
+     * FirebaseAuth.getInstance().getCurrentUser() will return the
+     * currently authenticated user if they were logged in before.
+     */
     private int resolveDestination() {
         FirebaseUser u = FirebaseAuth.getInstance().getCurrentUser();
         boolean signedIn = (u != null && !u.isAnonymous());
@@ -75,12 +83,13 @@ public class SplashFragment extends Fragment {
 
     private void safeNavigate(@IdRes int destinationId) {
         if (hasNavigated || navC == null) return;
+
         if (navC.getCurrentDestination() != null
                 && navC.getCurrentDestination().getId() == R.id.splashFragment) {
             hasNavigated = true;
 
-            // Pop splash off the back stack so back doesn't return here
             NavOptions opts = new NavOptions.Builder()
+                    // Pop splash off the back stack so back doesn't return here
                     .setPopUpTo(R.id.splashFragment, true)
                     .build();
 
@@ -88,7 +97,9 @@ public class SplashFragment extends Fragment {
                 navC.navigate(destinationId, null, opts);
             } catch (Exception e) {
                 Log.w(TAG, "navigate failed, trying plain navigate", e);
-                try { navC.navigate(destinationId); } catch (Exception ignored) {}
+                try {
+                    navC.navigate(destinationId);
+                } catch (Exception ignored) {}
             }
         } else {
             Log.w(TAG, "Skipping navigate; destination already changed.");
@@ -99,10 +110,6 @@ public class SplashFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         handler.removeCallbacksAndMessages(null);
-        if (authListener != null) {
-            FirebaseAuth.getInstance().removeAuthStateListener(authListener);
-            authListener = null;
-        }
         navC = null;
         hasNavigated = false;
     }

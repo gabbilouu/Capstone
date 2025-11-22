@@ -3,7 +3,6 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/shopRoot"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#F4F8F0">
@@ -40,7 +39,6 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
     <LinearLayout
-        android:id="@+id/coinsWrap"
         android:layout_width="wrap_content"
         android:layout_height="40dp"
         android:paddingStart="10dp"

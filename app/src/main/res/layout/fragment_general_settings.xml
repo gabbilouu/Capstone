@@ -30,7 +30,6 @@
             android:contentDescription="Back" />
 
         <TextView
-            android:id="@+id/tv_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="General"
@@ -41,7 +40,6 @@
 
     <!-- Content -->
     <LinearLayout
-        android:id="@+id/content"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:orientation="vertical"
@@ -56,7 +54,6 @@
 
         <!-- Section: App Experience -->
         <TextView
-            android:id="@+id/section_app_experience"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="App Experience"
@@ -64,7 +61,6 @@
             android:layout_marginBottom="8dp" />
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/card_experience"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="12dp"

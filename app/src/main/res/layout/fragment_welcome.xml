@@ -10,7 +10,6 @@
 
     <!-- Title -->
     <TextView
-        android:id="@+id/welcomeTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Welcome!"
@@ -22,7 +21,6 @@
 
     <!-- Subtitle -->
     <TextView
-        android:id="@+id/welcomeSubtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Tell us about yourself, friend!"

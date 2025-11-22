@@ -7,6 +7,7 @@ import android.view.*;
 import android.widget.*;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.fragment.app.Fragment;
 import androidx.navigation.NavController;
 import androidx.navigation.fragment.NavHostFragment;
@@ -24,7 +25,7 @@ public class EditEventFragment extends Fragment {
 
     private EditText etEventName, etLocation, etNotes;
     private Spinner spinnerTag, spRepeat;
-    private CheckBox cbAllDay;
+    private SwitchCompat cbAllDay;
     private Button btnStartDate, btnStartTime, btnEndDate, btnEndTime, btnAdd, btnCancel;
     private TextView tvTitle;
 

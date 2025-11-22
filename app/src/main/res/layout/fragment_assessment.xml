@@ -22,7 +22,6 @@
 
     <!-- Emoji Group -->
     <FrameLayout
-        android:id="@+id/emojiContainer"
         android:layout_width="match_parent"
         android:layout_height="480dp"
         android:layout_below="@id/assessmentQuestion"

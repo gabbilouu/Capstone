@@ -10,7 +10,6 @@
 
     <!-- Title -->
     <TextView
-        android:id="@+id/alrightTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Alright!"
@@ -23,7 +22,6 @@
 
     <!-- Subtitle -->
     <TextView
-        android:id="@+id/alrightSubtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Glad to see you take that first step to evaluate your mood and emotions! How often do you want us to assess your emotions?"

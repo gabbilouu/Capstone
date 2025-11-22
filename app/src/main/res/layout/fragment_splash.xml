@@ -8,7 +8,6 @@
 
     <!-- App Title -->
     <TextView
-        android:id="@+id/appTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Elevate"
@@ -21,7 +20,6 @@
 
     <!-- Subtitle -->
     <TextView
-        android:id="@+id/appSubtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Become a better you."

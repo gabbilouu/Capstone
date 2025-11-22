@@ -10,7 +10,6 @@
 
     <!-- Title -->
     <TextView
-        android:id="@+id/tv_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="No Worries!"
@@ -23,7 +22,6 @@
 
     <!-- Subtitle -->
     <TextView
-        android:id="@+id/tv_subtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="If you ever change your mind, you can go to Settings and opt-in. Let’s get started!"

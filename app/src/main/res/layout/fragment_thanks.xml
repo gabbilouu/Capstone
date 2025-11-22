@@ -10,7 +10,6 @@
 
     <!-- Title -->
     <TextView
-        android:id="@+id/thankYouTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Thanks for telling us about you."
@@ -23,7 +22,6 @@
 
     <!-- Subtitle -->
     <TextView
-        android:id="@+id/thankYouSubtitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="We'll try our best to cater to your needs!"
