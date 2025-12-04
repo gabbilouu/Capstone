@@ -1,137 +1,283 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/EventFrame"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/blue"
-    tools:context=".EventListFragment" >
+    android:background="@android:color/white">
 
-    <Button
-        android:id="@+id/UpcomingEventButton2"
-        android:layout_width="300dp"
-        android:layout_height="80dp"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="@color/white"
-        android:text="@string/event_listing"
-        android:textAlignment="textStart"
-        android:textColor="@color/black"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        android:paddingBottom="8dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/bottomNav"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/UpcomingEventButton1" />
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <Button
-        android:id="@+id/UpcomingEventButton3"
-        android:layout_width="300dp"
-        android:layout_height="80dp"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="@color/white"
-        android:text="@string/event_listing"
-        android:textAlignment="textStart"
-        android:textColor="@color/black"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/UpcomingEventButton2" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
-    <Button
-        android:id="@+id/UpcomingEventButton4"
-        android:layout_width="300dp"
-        android:layout_height="80dp"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="@color/white"
-        android:text="@string/event_listing"
-        android:textAlignment="textStart"
-        android:textColor="@color/black"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.495"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/UpcomingEventButton3" />
+            <!-- Header Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="16dp"
+                android:layout_marginBottom="8dp">
 
-    <Button
-        android:id="@+id/UpcomingEventButton1"
-        android:layout_width="300dp"
-        android:layout_height="80dp"
-        android:layout_marginTop="16dp"
-        android:backgroundTint="@color/white"
-        android:text="@string/event_listing"
-        android:textAlignment="textStart"
-        android:textColor="@color/black"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/EventPageLabel" />
+                <TextView
+                    android:id="@+id/monthText"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="October 2025"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/black" />
 
-    <TextView
-        android:id="@+id/EventPageLabel"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="20dp"
-        android:text="@string/event_page"
-        android:textColor="@color/white"
-        android:textSize="20sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/AppName" />
+                <ImageButton
+                    android:id="@+id/addEventButton"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:backgroundTint="#47675E"
+                    android:background="@drawable/rounded_button"
+                    android:src="@android:drawable/ic_input_add"
+                    android:contentDescription="Add Event"
+                    app:tint="@android:color/white" />
+            </LinearLayout>
 
-    <TextView
-        android:id="@+id/AppName"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="80dp"
-        android:text="@string/app_name"
-        android:textColor="@color/white"
-        android:textSize="34sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+            <!-- Category Buttons -->
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:scrollbars="none">
 
-    <ImageButton
-        android:id="@+id/HomeButton"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_marginStart="24dp"
-        android:layout_marginBottom="60dp"
-        android:background="#00FFFFFF"
-        android:contentDescription="@string/hello_blank_fragment"
-        android:src="@drawable/home_icon"
+                <LinearLayout
+                    android:id="@+id/filterRow"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnSchool"
+                        android:layout_width="wrap_content"
+                        android:layout_height="24dp"
+                        android:minWidth="80dp"
+                        android:layout_marginEnd="8dp"
+                        android:text="School"
+                        android:textColor="@android:color/white"
+                        android:background="@drawable/btn_pill_blue"
+                        app:backgroundTint="@null"
+                        android:backgroundTint="@null" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnPersonal"
+                        android:layout_width="wrap_content"
+                        android:layout_height="24dp"
+                        android:minWidth="80dp"
+                        android:layout_marginEnd="8dp"
+                        android:text="Personal"
+                        android:textColor="@android:color/white"
+                        android:background="@drawable/btn_pill_red"
+                        app:backgroundTint="@null"
+                        android:backgroundTint="@null" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnWork"
+                        android:layout_width="wrap_content"
+                        android:layout_height="24dp"
+                        android:minWidth="80dp"
+                        android:layout_marginEnd="8dp"
+                        android:text="Work"
+                        android:textColor="@android:color/white"
+                        android:background="@drawable/btn_pill_brown"
+                        app:backgroundTint="@null"
+                        android:backgroundTint="@null" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnOrgs"
+                        android:layout_width="wrap_content"
+                        android:layout_height="24dp"
+                        android:minWidth="80dp"
+                        android:layout_marginEnd="8dp"
+                        android:text="Orgs."
+                        android:textColor="@android:color/white"
+                        android:background="@drawable/btn_pill_lime"
+                        app:backgroundTint="@null"
+                        android:backgroundTint="@null" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnEvents"
+                        android:layout_width="wrap_content"
+                        android:layout_height="24dp"
+                        android:minWidth="80dp"
+                        android:layout_marginEnd="8dp"
+                        android:text="Events"
+                        android:textColor="@android:color/white"
+                        android:background="@drawable/btn_pill_yellow"
+                        app:backgroundTint="@null"
+                        android:backgroundTint="@null" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnBirthdays"
+                        android:layout_width="wrap_content"
+                        android:layout_height="24dp"
+                        android:minWidth="80dp"
+                        android:layout_marginEnd="8dp"
+                        android:text="Birthdays"
+                        android:textColor="@android:color/white"
+                        android:background="@drawable/btn_pill_pink"
+                        app:backgroundTint="@null"
+                        android:backgroundTint="@null" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnFamily"
+                        android:layout_width="wrap_content"
+                        android:layout_height="24dp"
+                        android:minWidth="80dp"
+                        android:layout_marginEnd="8dp"
+                        android:text="Family"
+                        android:textColor="@android:color/white"
+                        android:background="@drawable/btn_pill_indigo"
+                        app:backgroundTint="@null"
+                        android:backgroundTint="@null" />
+
+                    <androidx.appcompat.widget.AppCompatButton
+                        android:id="@+id/btnCustom"
+                        android:layout_width="wrap_content"
+                        android:layout_height="24dp"
+                        android:minWidth="80dp"
+                        android:layout_marginEnd="8dp"
+                        android:text="Custom"
+                        android:textColor="@android:color/white"
+                        android:background="@drawable/btn_pill_gray"
+                        app:backgroundTint="@null"
+                        android:backgroundTint="@null" />
+                </LinearLayout>
+            </HorizontalScrollView>
+
+
+
+            <!-- Calendar -->
+            <com.prolificinteractive.materialcalendarview.MaterialCalendarView
+                android:id="@+id/calendarView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                app:mcv_showOtherDates="all"
+                app:mcv_selectionColor="@color/pill_green"
+                app:mcv_firstDayOfWeek="monday"
+                app:mcv_tileHeight="44dp" />
+
+            <!-- Today's Schedule -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:text="Today's Schedule"
+                    android:textSize="18sp"
+                    android:textStyle="bold"
+                    android:textColor="@android:color/black"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+
+                <!-- ✅ The dynamic date label -->
+                <TextView
+                    android:id="@+id/tvSelectedDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Thursday — October 9, 2025"
+                    android:textSize="14sp"
+                    android:textColor="@android:color/darker_gray"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="8dp" />
+
+                <!-- Shown when no events -->
+                <TextView
+                    android:id="@+id/tvNoEvents"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="No events for this day."
+                    android:textSize="14sp"
+                    android:textColor="@android:color/darker_gray"
+                    android:visibility="gone" />
+
+                <!-- Dynamic event list -->
+                <LinearLayout
+                    android:id="@+id/scheduleContainer"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+            </LinearLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- Bottom Navigation -->
+    <LinearLayout
+        android:id="@+id/bottomNav"
+        android:layout_width="0dp"
+        android:layout_height="64dp"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:weightSum="4"
+        android:padding="8dp"
+        android:background="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-    <ImageButton
-        android:id="@+id/CheckButton"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_marginBottom="60dp"
-        android:background="#00FFFFFF"
-        android:contentDescription="@string/checklist_button"
-        android:src="@drawable/check_icon"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/ListButton"
-        app:layout_constraintStart_toEndOf="@+id/HomeButton" />
+        <ImageButton
+            android:id="@+id/HomeButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:src="@drawable/ic_home_active"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:contentDescription="Home" />
 
-    <ImageButton
-        android:id="@+id/ListButton"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_marginBottom="60dp"
-        android:background="#00FFFFFF"
-        android:contentDescription="@string/event_button"
-        android:src="@drawable/list_icon"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/ProfileButton"
-        app:layout_constraintStart_toEndOf="@+id/CheckButton" />
+        <ImageButton
+            android:id="@+id/TaskButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:src="@drawable/ic_tasks_active"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:contentDescription="Tasks" />
 
-    <ImageButton
-        android:id="@+id/ProfileButton"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        android:layout_marginEnd="24dp"
-        android:layout_marginBottom="60dp"
-        android:background="#00FFFFFF"
-        android:contentDescription="@string/profile_button"
-        android:src="@drawable/profile_icon"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        <ImageButton
+            android:id="@+id/CalendarButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:src="@drawable/ic_calendar_inactive"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:contentDescription="Calendar" />
+
+        <ImageButton
+            android:id="@+id/SettingsButton"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="@null"
+            android:src="@drawable/ic_settings_active"
+            android:scaleType="fitCenter"
+            android:adjustViewBounds="true"
+            android:contentDescription="Settings" />
+    </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

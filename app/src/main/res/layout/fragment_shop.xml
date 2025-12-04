@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F4F8F0">
+
+    <!-- Top row: back, centered title pill, coin balance -->
+    <androidx.appcompat.widget.AppCompatImageButton
+        android:id="@+id/btnBack"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:src="@drawable/ic_arrow_back"
+        android:contentDescription="back"
+        android:background="@android:color/transparent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp" />
+
+    <!-- Centered title pill: fixed small box, centered in the row -->
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="153dp"
+        android:layout_height="37dp"
+        android:background="@drawable/box_plant_shop_title"
+        android:fontFamily="@font/bumbbled"
+        android:gravity="center"
+        android:text="Plant Shop"
+        android:textColor="#3A5F43"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        app:layout_constrainedWidth="true"
+        app:layout_constraintTop_toTopOf="@id/btnBack"
+        app:layout_constraintBottom_toBottomOf="@id/btnBack"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:paddingStart="10dp"
+        android:paddingEnd="12dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:background="@android:color/transparent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/btnBack"
+        android:layout_marginEnd="16dp">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@drawable/ic_flower"/>
+
+        <TextView
+            android:id="@+id/tvCoins"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="67"
+            android:textColor="#3A5F43"
+            android:textStyle="bold"
+            android:textSize="16sp"
+            android:layout_marginStart="6dp"/>
+    </LinearLayout>
+
+    <!-- Pill tabs: thinner, equal size, centered together -->
+    <LinearLayout
+        android:id="@+id/tabRow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        app:layout_constraintTop_toBottomOf="@id/btnBack"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginTop="12dp">
+
+        <!-- All three tabs: same width/height, same padding → same pill size -->
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/tabPlants"
+            style="@style/ShopTabButton"
+            android:layout_width="80dp"
+            android:layout_height="32dp"
+            android:minWidth="0dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:text="Plants" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/tabPots"
+            style="@style/ShopTabButton"
+            android:layout_width="80dp"
+            android:layout_height="32dp"
+            android:minWidth="0dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:layout_marginStart="8dp"
+            android:text="Pots" />
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/tabRoom"
+            style="@style/ShopTabButton"
+            android:layout_width="80dp"
+            android:layout_height="32dp"
+            android:minWidth="0dp"
+            android:paddingStart="12dp"
+            android:paddingEnd="12dp"
+            android:layout_marginStart="8dp"
+            android:text="Room" />
+    </LinearLayout>
+
+    <!-- Grid -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rvShop"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:clipToPadding="false"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="12dp"
+        android:paddingBottom="72dp"
+        android:background="#F6FAEC"
+        app:layout_constraintTop_toBottomOf="@id/tabRow"
+        app:layout_constraintBottom_toTopOf="@id/refreshChip"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Bottom refresh chip -->
+    <LinearLayout
+        android:id="@+id/refreshChip"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:background="@drawable/chip_bg"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginBottom="12dp">
+
+        <TextView
+            android:id="@+id/tvRefreshCountdown"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="⟳ Store refreshes in 12h 37m"
+            android:textColor="#7D7A6C"
+            android:background="@android:color/transparent"
+            android:textSize="14sp"
+            android:layout_marginStart="6dp"/>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Outer pill: purple outline -->
+    <item android:id="@android:id/background">
+        <shape android:shape="rectangle">
+            <corners android:radius="50dp" />
+            <!-- inner base is white -->
+            <solid android:color="@android:color/white" />
+            <!-- outline -->
+            <stroke
+                android:width="2dp"
+                android:color="#AA789F" />
+        </shape>
+    </item>
+
+    <!-- Progress fill: inset MORE than stroke so white ring shows -->
+    <item
+        android:id="@android:id/progress"
+        android:left="4dp"
+        android:top="4dp"
+        android:right="4dp"
+        android:bottom="4dp">
+        <clip>
+            <shape android:shape="rectangle">
+                <corners android:radius="50dp" />
+                <solid android:color="#AA789F" />
+            </shape>
+        </clip>
+    </item>
+
+</layer-list>

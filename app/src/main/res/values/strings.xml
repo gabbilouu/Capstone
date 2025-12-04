@@ -1,24 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">Elevate</string>
-    <string name="welcome">Welcome back, ______!</string>
-    <string name="login_streak">Login streak #</string>
-    <string name="start_button">START OFF YOUR DAY!</string>
-    <string name="logo_desc">Image of a plant growing from the earth</string>
-    <string name="home_page">Home Page</string>
-    <string name="task_page">Task Page</string>
-    <string name="profile_page">Profile</string>
-    <string name="event_page">Event Board</string>
-    <string name="home_button">Home Button</string>
-    <string name="profile_button">Profile Button</string>
-    <string name="checklist_button">Checklist Button</string>
-    <string name="event_button">Event Button</string>
-    <string name="sprout">A small sprout</string>
-    <string name="account">Account</string>
-    <string name="settings">Settings</string>
-    <string name="log_out">Log out</string>
-    <string name="task_listing">Task</string>
-    <string name="event_listing">Upcoming Event</string>
-    <string name="plus">+</string>
+    <string name="happy">Happy</string>
+    <string name="neutral">Neutral</string>
+    <string name="sad">Sad</string>
+    <string name="very_happy">Very Happy</string>
+    <string name="very_sad">Very Sad</string>
     <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
+
+    <string-array name="repeat_options">
+        <item>None</item>
+        <item>Daily</item>
+        <item>Weekly</item>
+        <item>Monthly</item>
+        <item>Select Days</item>
+    </string-array>
+
+    <string-array name="task_type_options">
+        <item>Sleep 💤</item>
+        <item>Nutrition 🍎</item>
+        <item>Workout 🏋️</item>
+        <item>Self-Care 💅</item>
+        <item>Journaling ✍️</item>
+        <item>Academics 📚</item>
+        <item>Hygiene 🪥</item>
+        <item>Productivity 💻</item>
+        <item>Add New ➕</item>
+    </string-array>
+
+
 </resources>
