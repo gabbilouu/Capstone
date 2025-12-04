@@ -19,5 +19,5 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "Elevate"
+rootProject.name = "elevateTasks"
 include(":app")

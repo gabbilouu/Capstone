@@ -1,0 +1,16 @@
+src/
+├── App.jsx
+├── index.js
+├── components/
+│   ├── CheckInForm.jsx
+│   ├── SliderField.jsx
+│   ├── TagPill.jsx
+│   ├── RecentEntries.jsx
+│   ├── Insights.jsx
+│   ├── Activities.jsx
+│   ├── Profile.jsx
+│   └── Metric.jsx
+├── utils/
+│   ├── store.js
+│   ├── activities.js
+│   └── helpers.js
